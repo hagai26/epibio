@@ -1,0 +1,33 @@
+Acute Myeloid Leukemia [LAML],blood cells
+Adrenocortical carcinoma [ACC],Adrenal (cortex)
+Bladder Urothelial Carcinoma [BLCA],Bladder
+Brain Lower Grade Glioma [LGG],Brain
+Breast invasive carcinoma [BRCA],Breast
+Cervical squamous cell carcinoma and endocervical adenocarcinoma [CESC],Cervix
+Cholangiocarcinoma [CHOL],Bile Duct
+Colon adenocarcinoma [COAD],Colon
+Esophageal carcinoma [ESCA],Esophagus
+Glioblastoma multiforme [GBM],Glia (Part of Brain)
+Head and Neck squamous cell carcinoma [HNSC],Head and Neck
+Kidney Chromophobe [KICH],Kidney
+Kidney renal clear cell carcinoma [KIRC],Kidney
+Kidney renal papillary cell carcinoma [KIRP],Kidney
+Liver hepatocellular carcinoma [LIHC],Liver
+Lung adenocarcinoma [LUAD],Lung
+Lung squamous cell carcinoma [LUSC],Lung
+Lymphoid Neoplasm Diffuse Large B-cell Lymphoma[DLBC],Blood Bells (B cells)
+Mesothelioma [MESO],Mesothelium
+Ovarian serous cystadenocarcinoma [OV],Ovary
+Pancreatic adenocarcinoma [PAAD],Pancreas
+Pheochromocytoma and Paraganglioma [PCPG],Adrenal (medula)
+Prostate adenocarcinoma [PRAD],Prostate
+Rectum adenocarcinoma [READ],Rectum
+Sarcoma [SARC],Mesenchyme
+Skin Cutaneous Melanoma [SKCM],Skin
+Stomach adenocarcinoma [STAD],Stomach
+Testicular Germ Cell Tumors [TGCT],Testis
+Thymoma [THYM],Thymus
+Thyroid carcinoma [THCA],Thyroid
+Uterine Carcinosarcoma [UCS],Uterus
+Uterine Corpus Endometrial Carcinoma [UCEC],Uterus
+Uveal Melanoma [UVM],Uvea
