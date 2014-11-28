@@ -11,8 +11,8 @@ work_on_targets <- function(targets, baseDir) {
   RGSet <- read.450k.exp(base = baseDir, targets = targets)
   MSet <- preprocessIllumina(RGSet, bg.correct = TRUE, normalize = "controls")
   ratioSet <- ratioConvert(MSet, what = "both", keepCN = TRUE)
-  beta <- getBeta(ratioSet)[1:25000,]  #XXX
-  beta <- beta[order(row.names(beta)),]
+  beta <- head(getBeta(ratioSet), 2000) #XXX
+  beta <- beta[order(row.names(beta)),, drop = FALSE]
   ptime2 <- proc.time()
   stime <- (ptime2 - ptime1)[3]
   cat(" in", stime, "seconds\n")
