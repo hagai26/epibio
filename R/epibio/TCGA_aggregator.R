@@ -35,15 +35,12 @@ work_on_targets <- function(targets, baseDir) {
   }
 }
 
-# folders
-data_folder <- file.path("..", "..", "data_small")
-generated_folder  <- file.path("..", "..", "generated")
-new_TCGA_folder <- file.path(generated_folder, "TCGA")
-idat_folder <- file.path(data_folder, "TCGA_L1", "450K_idat")
+
+source("config.R")
 dir.create(new_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
-targets <- read.csv(file.path(idat_folder, "samples.csv"), stringsAsFactors = FALSE)
+targets <- read.csv(samples_filename, stringsAsFactors = FALSE)
 targets$Basename <- file.path(idat_folder, paste(targets$Sentrix.ID, targets$Sentrix.position, sep="_"))
 splited_targets <- split(targets,list(targets$Study, targets$Type), drop=TRUE)
 splited_targets <- lapply(splited_targets, FUN=function(x) head(x, 20))  #XXX
