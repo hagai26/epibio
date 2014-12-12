@@ -3,8 +3,7 @@ library(RnBeads)
 
 source("config.R")
 
-#dir.create(new_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
-
+dir.create(new_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
 targets <- read.csv(samples_filename, stringsAsFactors = FALSE)

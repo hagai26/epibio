@@ -1,6 +1,8 @@
 
 require(minfi)
 
+source("config.R")
+
 
 work_on_targets <- function(targets, baseDir) {
   study_levels <- levels(factor(targets$Study))
@@ -36,7 +38,6 @@ work_on_targets <- function(targets, baseDir) {
 }
 
 
-source("config.R")
 dir.create(new_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
@@ -49,7 +50,7 @@ all_kinds = data.frame(number = sapply(splited_targets, FUN=nrow))
 print("Reading all kinds:")
 print(all_kinds)
 print("")
-chunk_size <- 3
+chunk_size <- 2
 chunked_targets <- split(splited_targets, ceiling(seq_along(splited_targets)/chunk_size))
 grouped_chunked_targets <- lapply(chunked_targets, function(x) do.call("rbind", x))
 ret <- lapply(grouped_chunked_targets, FUN=work_on_targets, NULL)

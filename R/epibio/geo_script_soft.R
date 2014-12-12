@@ -1,8 +1,11 @@
 
 require(minfi)
 
-path <- file.path("..\\..\\data\\GEO\\GSE52621_family.soft")
+source("config.R")
 
-#g <- read.450k.GEO(path=path)
 
-gset <- GEOquery::getGEO(filename = file.path(path, list.files(path, pattern = ".soft")))
+path <- file.path(data_folder_big, "GEO\\GSE52621_family.soft")
+
+g <- read.450k.GEO(path=path)
+
+#gset <- GEOquery::getGEO(filename = file.path(path, list.files(path, pattern = ".soft")))
