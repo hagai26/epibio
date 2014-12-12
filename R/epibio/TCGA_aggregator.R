@@ -30,7 +30,7 @@ work_on_targets <- function(targets, baseDir) {
         
         kind_name <- paste0(study, ".", type)
         kind_output_filename <- paste0(gsub(" ","_", kind_name , fixed=TRUE), ".csv")
-        full_filename <- file.path(new_TCGA_folder, kind_output_filename)
+        full_filename <- file.path(generated_TCGA_folder, kind_output_filename)
         write.csv(cbind(CpG=rownames(level_data), level_data), file = full_filename, row.names=FALSE)
       }
     }
@@ -38,7 +38,7 @@ work_on_targets <- function(targets, baseDir) {
 }
 
 
-dir.create(new_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
+dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
 targets <- read.csv(samples_filename, stringsAsFactors = FALSE)
