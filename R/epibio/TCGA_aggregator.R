@@ -2,6 +2,7 @@
 require(minfi)
 
 source("config.R")
+source("common.R")
 
 
 work_on_targets <- function(targets, baseDir) {
@@ -43,18 +44,15 @@ dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 # targets
 targets <- read.csv(samples_filename, stringsAsFactors = FALSE)
 targets$Basename <- file.path(idat_folder, paste(targets$Sentrix.ID, targets$Sentrix.position, sep="_"))
-splited_targets <- split(targets,list(targets$Study, targets$Type), drop=TRUE)
-splited_targets <- lapply(splited_targets, FUN=function(x) head(x, 20))  #XXX
 
-all_kinds = data.frame(number = sapply(splited_targets, FUN=nrow))
+result <- chunked_group_by(targets, list(targets$Study, targets$Type), 2)
+
+all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
 print("Reading all kinds:")
 print(all_kinds)
 print("")
-chunk_size <- 2
-chunked_targets <- split(splited_targets, ceiling(seq_along(splited_targets)/chunk_size))
-grouped_chunked_targets <- lapply(chunked_targets, function(x) do.call("rbind", x))
-ret <- lapply(grouped_chunked_targets, FUN=work_on_targets, NULL)
+ret <- lapply(result$grouped, FUN=work_on_targets, NULL)
 
-all_kinds_filename = file.path(generated_folder, 'TCGA_all_kinds.csv')
-write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = all_kinds_filename, row.names=FALSE)
+all_kinds_filename <- file.path(generated_TCGA_folder, 'TCGA_all_kinds.csv')
+write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = all_kinds_filename, row.names=FALSE, quote=FALSE)
 print("DONE")

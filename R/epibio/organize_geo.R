@@ -1,70 +1,48 @@
 
+library(RnBeads)
 
-## Download all series suppl data
-# gse_relevant <- read.table("I:/get geo info/GSE_rel_list.txt",sep="\t",header=FALSE,row.names=NULL)
-# series.vector <- as.character(gse_relevant$V1)
-# num_series <- length(series.vector)
-# 
-# 
-# setwd("I:/GEO_data/450k new")
-# 
-# library(doParallel)
-# registerDoParallel(cores=8)
-# foreach (i=1:num_series, .packages='GEOquery',.verbose=TRUE) %dopar% {
-#   a <-getGEOSuppFiles(series.vector[i])  
-# }
-
-# set working directory where you want files to be stored
-setwd("I:/GEO_data/450k new")
+source("config.R")
+source("common.R")
 
 
-## Alternatively, get data for one sample
-gse <- 'GSE32079' 
-a <-getGEOSuppFiles(gse)  
+work_on_targets <- function(targets) {
+  # work on thses targets using RnBeads
+  print(targets)
+}
 
 
-## load data into R
-#change nrows to -1 to download all 450k
-signals <- read.table(gzfile("I:/GEO_data/450k new/GSE32079/GSE32079_non-normalized.txt.gz"),nrows=-1,header=TRUE,row.names=1,skip=0,sep='\t',dec = ".")
+dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
+folder <- file.path(data_folder, "global/GEO/joined")
+joined_files <- file.path(folder, list.files(folder, pattern="*.txt"))
 
-# get info about samples in series
-
-series.info <- read.table("I:/get geo info/GSE_samples/joined/GSE32079.txt",sep='\t',row.names=1,header=TRUE)
-
-
+f1 <- "../../data/global/GEO/joined/GSE32079.txt"
+f2 <- "../../data/global/GEO/joined/GSE32148.txt" # bad - more columns than column names
+f3 <- "../../data/global/GEO/joined/GSE62992.txt"
+f4 <- "../../data/global/GEO/joined/GSE62640.txt"
+f5 <- "../../data/global/GEO/joined/GSE61653.txt"
+f6 <- "../../data/global/GEO/joined/GSE61446.txt"
+f7 <- "../../data/global/GEO/joined/GSE57894.txt"
+f8 <- "../../data/global/GEO/joined/GSE57767.txt"
+f9 <- "../../data/global/GEO/joined/GSE32146.txt"
+f10 <- "../../data/global/GEO/joined/GSE30870.txt"
+f11 <- "../../data/global/GEO/joined/GSE29290.txt"
+joined_files <- c(f1, f3, f4, f5, f6, f7, f8, f10, f11)
+series.info <- do.call("rbind", lapply(joined_files, function(fn) 
+  data.frame(Filename=fn, read.table(fn, sep='\t', row.names=1, header=TRUE))
+  ))
+# get only relevant samples
 relevant.samples.idx <- as.numeric(series.info$relevant)
 relevant.samples.idx[is.na(relevant.samples.idx)] <- 0
 relevant.samples.idx <- relevant.samples.idx == 1
 
-pheno <- series.info[relevant.samples.idx,c('description','tissue','cell_type','disease')]
+pheno <- series.info[relevant.samples.idx, c('description','tissue','cell_type','disease')]
 num_samples <- length(series.info[,1])
 
-# locate relevant samples
-samples.all <- gsub(".Signal_A","",colnames(signals)[seq(1,(3*num_samples-2),3)])
-relevant.samples.loc <- match(as.character(pheno$description),samples.all)
+result <- chunked_group_by(pheno, list(pheno$disease, pheno$tissue), 2)
 
-#remove suffixes from colnames
-colnames(signals) <- gsub(".Signal_A","",colnames(signals))
-colnames(signals) <- gsub(".Signal_B","",colnames(signals))
-colnames(signals) <- gsub(".Detection","",colnames(signals))
+all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
+all_kinds_filename <- file.path(generated_GEO_folder, 'GEO_all_kinds.csv')
+write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = all_kinds_filename, row.names=FALSE, quote=FALSE)
 
-
-#relevant.samples.loc <- c(1,2,3,4)
-#pheno <- pheno[1:4,]
-
-# assign  unmethylated, methylated and pvalue matrices
-U <- data.matrix(signals[,seq(1,(3*num_samples-2),3)])[,relevant.samples.loc]
-M <- data.matrix(signals[,seq(2,(3*num_samples-1),3)])[,relevant.samples.loc]
-p.values <- data.matrix(signals[,seq(3,(3*num_samples),3)])[,relevant.samples.loc]
-
-#run rnbeads preprecossing
-rnb.raw.set <- new('RnBeadRawSet',pheno,U=U,M=M,p.values=p.values,useff=FALSE)
-
-logger.start(fname=NA)
-parallel.setup(8)
-rnb.raw.set.greedy <- rnb.execute.greedycut(rnb.raw.set)
-rnb.raw.set.greedy.snprem <- rnb.execute.snp.removal(rnb.raw.set)$dataset
-rnb.set.norm <- rnb.execute.normalization(rnb.raw.set.greedy.snprem,method="bmiq",bgcorr.method="methylumi.lumi")
-rnb.set.sexrem <- rnb.execute.sex.removal(rnb.set.norm)$dataset
-
-meth.beta <- meth(rnb.set.sexrem)
+ret <- lapply(result$grouped, FUN=work_on_targets)
+print("DONE")
