@@ -3,18 +3,8 @@ library(RnBeads)
 
 source("config.R")
 source("common.R")
+source("geo_l1_reader.R")
 
-read_geo_l1_data <- function(series_id) {
-  cat('Reading ', series_id, ": ")
-  series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*.txt$")
-  if(length(series_id_files) == 0) {
-    print('not found')
-  } else {
-    print(series_id_files)
-    
-  }  
-}
 
 work_on_targets <- function(targets) {
   print("work_on_targets called")
@@ -27,10 +17,10 @@ work_on_targets <- function(targets) {
   # work on these targets
   for(type in type_levels) {
     for(study in study_levels) {
-      relevant_targets <- targets$disease==study & targets$tissue==type
-      if(sum(relevant_targets) > 0) {
-        relevant_targets <- targets[relevant_targets,, drop = FALSE]
-        cat('currently reading:', type, study, ':')
+      is_relevant_targets <- targets$disease==study & targets$tissue==type
+      if(sum(is_relevant_targets) > 0) {
+        relevant_targets <- targets[is_relevant_targets,, drop = FALSE]
+        cat('currently reading:', type, study, "(", sum(is_relevant_targets), "samples) :")
         
         series_id <- levels(factor(targets$series_id))
         series_id <- sub(",.*", "", series_id) # read each sample only once
@@ -62,7 +52,7 @@ f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
 joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- head(joined_files, 3)
+joined_files <- head(joined_files, 1)
 series.info <- do.call("rbind", lapply(joined_files, function(fn) 
   data.frame(
     Filename=fn, 
