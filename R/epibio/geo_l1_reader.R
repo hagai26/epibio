@@ -4,7 +4,8 @@ library(RnBeads)
 source("config.R")
 source("common.R")
 
-read_geo_l1_data <- function(series_id) {
+
+read_geo_l1_data <- function(one_series_id, relevant_targets) {
   cat('Reading ', series_id, ": ")
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
   series_id_files <- list.files(series_id_folder, pattern="*.txt$")
@@ -14,27 +15,28 @@ read_geo_l1_data <- function(series_id) {
     print(series_id_files)
     series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
     print(series_id_fp)
-    series_id_fp <- "../../data/big/GEO/GSE32079/GSE32079_non-normalized_small.txt"
-    print(series_id_fp)
-    #signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
+    signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
     
     # locate relevant samples
-    #print(colnames(signals))
-    #samples.all <- gsub(".Signal_A","", colnames(signals)[seq(1,(3*num_samples-2),3)])
-    #relevant.samples.loc <- match(as.character(pheno$description),samples.all)
+    colnum <- length(colnames(signals))
+    samples.all <- gsub(".Signal_A","", colnames(signals)[seq(1, (colnum-2), 3)])
+    relevant.samples.loc <- c("Q09_MayoCC027T", "Q10_MayoCC049T")
     
-    #remove suffixes from colnames
-    #colnames(signals) <- gsub(".Signal_A","",colnames(signals))
-    #colnames(signals) <- gsub(".Signal_B","",colnames(signals))
-    #colnames(signals) <- gsub(".Detection","",colnames(signals))
+    # remove suffixes from colnames
+    colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
+    colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
+    colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
     
     # assign  unmethylated, methylated and pvalue matrices
-    #U <- data.matrix(signals[,seq(1,(3*num_samples-2),3)])[,relevant.samples.loc]
-    #M <- data.matrix(signals[,seq(2,(3*num_samples-1),3)])[,relevant.samples.loc]
-    #p.values <- data.matrix(signals[,seq(3,(3*num_samples),3)])[,relevant.samples.loc]
+    unmeth_ids = seq(1, colnum-2, 3)
+    meth_ids = seq(2, colnum-1, 3)
+    pval_ids = seq(3, colnum, 3)
+    U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
+    M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
+    p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
     
-    #run rnbeads preprecossing
-    #rnb.raw.set <- new('RnBeadRawSet',pheno,U=U,M=M,p.values=p.values,useff=FALSE)
+    # run rnbeads preprecossing
+    rnb.raw.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
     
     #logger.start(fname=NA)
     #rnb.raw.set.greedy <- rnb.execute.greedycut(rnb.raw.set)
@@ -43,10 +45,6 @@ read_geo_l1_data <- function(series_id) {
     #rnb.set.sexrem <- rnb.execute.sex.removal(rnb.set.norm)$dataset
     
     #meth.beta <- meth(rnb.set.sexrem)
-  }  
+  }
 }
 
-print('start')
-series_id <- "GSE32079"
-read_geo_l1_data(series_id)
-print('done')

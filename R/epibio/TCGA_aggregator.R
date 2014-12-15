@@ -14,10 +14,9 @@ work_on_targets <- function(targets, baseDir) {
   RGSet <- read.450k.exp(base = baseDir, targets = targets)
   MSet <- preprocessIllumina(RGSet, bg.correct = TRUE, normalize = "controls")
   ratioSet <- ratioConvert(MSet, what = "both", keepCN = TRUE)
-  beta <- head(getBeta(ratioSet), 2000) #XXX
+  beta <- head(getBeta(ratioSet), 4000) # XXX
   beta <- beta[order(row.names(beta)),, drop = FALSE]
-  ptime2 <- proc.time()
-  stime <- (ptime2 - ptime1)[3]
+  stime <- (proc.time() - ptime1)[3]
   cat(" in", stime, "seconds\n")
 
   for(type in type_levels) {
@@ -46,7 +45,7 @@ targets <- read.csv(samples_filename, stringsAsFactors = FALSE)
 targets$Basename <- file.path(idat_folder, paste(targets$Sentrix.ID, targets$Sentrix.position, sep="_"))
 
 result <- chunked_group_by(targets, list(targets$Study, targets$Type), 2)
-
+print(head(result$grouped))
 all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
 print("Reading all kinds:")
 print(all_kinds)

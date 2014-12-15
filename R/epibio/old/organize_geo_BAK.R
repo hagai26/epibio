@@ -19,17 +19,17 @@
 
 
 ## Alternatively, get data for one sample
-gse <- 'GSE32079' 
-a <-getGEOSuppFiles(gse)
+#gse <- 'GSE32079' 
+#a <-getGEOSuppFiles(gse)
 
 
 ## load data into R
 #change nrows to -1 to download all 450k
-signals <- read.table(gzfile("GSE32079_non-normalized.txt.gz"),nrows=-1,header=TRUE,row.names=1,skip=0,sep='\t',dec = ".")
+signals <- read.table(file.path("../../data/big/GEO/GSE32079/GSE32079_non-normalized.txt"),nrows=-1,header=TRUE,row.names=1,skip=0,sep='\t',dec = ".")
 
 # get info about samples in series
 
-series.info <- read.table("joined/GSE32079.txt",sep='\t',row.names=1,header=TRUE)
+series.info <- read.table("../../data/global/GEO/joined/GSE32079.txt",sep='\t',row.names=1,header=TRUE)
 
 
 relevant.samples.idx <- as.numeric(series.info$relevant)
@@ -61,7 +61,7 @@ p.values <- data.matrix(signals[,seq(3,(3*num_samples),3)])[,relevant.samples.lo
 rnb.raw.set <- new('RnBeadRawSet',pheno,U=U,M=M,p.values=p.values,useff=FALSE)
 
 logger.start(fname=NA)
-parallel.setup(8)
+parallel.setup(2)
 rnb.raw.set.greedy <- rnb.execute.greedycut(rnb.raw.set)
 rnb.raw.set.greedy.snprem <- rnb.execute.snp.removal(rnb.raw.set)$dataset
 rnb.set.norm <- rnb.execute.normalization(rnb.raw.set.greedy.snprem,method="bmiq",bgcorr.method="methylumi.lumi")

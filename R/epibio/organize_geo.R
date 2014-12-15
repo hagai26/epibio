@@ -3,7 +3,60 @@ library(RnBeads)
 
 source("config.R")
 source("common.R")
-source("geo_l1_reader.R")
+#source("geo_l1_reader.R")
+
+
+read_geo_l1_data <- function(series_id, relevant_targets) {
+  cat('Reading ', series_id, ": ")
+  series_id_folder <- file.path(big_data_folder, "GEO", series_id)
+  series_id_files <- list.files(series_id_folder, pattern="*.txt$")
+  if(length(series_id_files) == 0) {
+    print('not found')
+  } else {
+    ptime1 <- proc.time()
+    print(series_id_files)
+    series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
+    series_id_fp <- "../../data/big/GEO/GSE32079/GSE32079_non-normalized_small.txt"
+    print(series_id_fp)
+    signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
+    
+    # locate relevant samples
+    colnum <- length(colnames(signals))
+    samples.all <- gsub(".Signal_A","", colnames(signals)[seq(1, (colnum-2), 3)])
+    relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
+    
+    # remove suffixes from colnames
+    colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
+    colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
+    colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
+    
+    # assign  unmethylated, methylated and pvalue matrices
+    unmeth_ids = seq(1, colnum-2, 3)
+    meth_ids = seq(2, colnum-1, 3)
+    pval_ids = seq(3, colnum, 3)
+    U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
+    M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
+    p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
+    
+    # run rnbeads preprecossing
+    pheno <- relevant_targets[, c('description','tissue','cell_type','disease')]
+    rnb.raw.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
+    
+    logger.start(fname=NA)
+    rnb.raw.set.greedy <- rnb.execute.greedycut(rnb.raw.set)
+    rnb.raw.set.greedy.snprem <- rnb.execute.snp.removal(rnb.raw.set)$dataset
+    #rnb.set.norm <- rnb.execute.normalization(rnb.raw.set.greedy.snprem, 
+    #                                          method="bmiq", 
+    #                                          bgcorr.method="methylumi.lumi")
+    #rnb.set.sexrem <- rnb.execute.sex.removal(rnb.set.norm)$dataset
+    rnb.set.sexrem <- rnb.raw.set.greedy.snprem
+    
+    meth.beta <- meth(rnb.set.sexrem)
+    print(head(meth.beta))
+    stime <- (proc.time() - ptime1)[3]
+    cat(" in", stime, "seconds\n")
+  }
+}
 
 
 work_on_targets <- function(targets) {
@@ -21,13 +74,10 @@ work_on_targets <- function(targets) {
       if(sum(is_relevant_targets) > 0) {
         relevant_targets <- targets[is_relevant_targets,, drop = FALSE]
         cat('currently reading:', type, study, "(", sum(is_relevant_targets), "samples) :")
-        
         series_id <- levels(factor(targets$series_id))
         series_id <- sub(",.*", "", series_id) # read each sample only once
-        print(series_id)
-        
         for(one_series_id in series_id) {
-          read_geo_l1_data(one_series_id)
+          read_geo_l1_data(one_series_id, relevant_targets)
         }
       }
       
