@@ -1,19 +1,16 @@
 
-library(reshape)
+library(data.table)
 
-mymerge <- function(x) {
-  if(length(x) == 1) {
-    return(x[[1]])
-  } else {
-    return (merge_recurse(x))
-  }
-}
 
 chunked_group_by <- function(targets, group_by_list, chunk_size) {
+  orig_colnames <- colnames(targets)
+  targets$tmp_row_name <- rownames(targets)
   splited_targets <- split(targets, group_by_list, drop=TRUE)
   chunked_targets <- split(splited_targets, ceiling(seq_along(splited_targets)/chunk_size))
-  grouped_chunked_targets <- lapply(chunked_targets, function(x) mymerge(x))
-  
-  result <- list("grouped"=grouped_chunked_targets, "splited"=splited_targets)
+  grouped_chunked_targets <- lapply(chunked_targets, 
+                                    function(x) as.data.frame(rbindlist(x)))
+  t <- lapply(grouped_chunked_targets, function(x) as.data.frame(x, row.names=x$tmp_row_name))
+  grouped <- lapply(t, function(x) subset(x, select=orig_colnames))
+  result <- list("grouped"=grouped, "splited"=splited_targets)
   return(result)
 }

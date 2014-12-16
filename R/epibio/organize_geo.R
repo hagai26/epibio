@@ -9,35 +9,55 @@ source("common.R")
 read_geo_l1_data <- function(series_id, relevant_targets) {
   cat('Reading ', series_id, ": ")
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*.txt$")
+  series_id_files <- list.files(series_id_folder, pattern="*_small.txt$") # XXX
   if(length(series_id_files) == 0) {
     print('not found')
   } else {
     ptime1 <- proc.time()
     print(series_id_files)
-    series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
-    series_id_fp <- "../../data/big/GEO/GSE32079/GSE32079_non-normalized_small.txt"
-    print(series_id_fp)
-    signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
-    
-    # locate relevant samples
-    colnum <- length(colnames(signals))
-    samples.all <- gsub(".Signal_A","", colnames(signals)[seq(1, (colnum-2), 3)])
-    relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
-    
-    # remove suffixes from colnames
-    colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
-    colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
-    colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
-    
-    # assign  unmethylated, methylated and pvalue matrices
-    unmeth_ids = seq(1, colnum-2, 3)
-    meth_ids = seq(2, colnum-1, 3)
-    pval_ids = seq(3, colnum, 3)
-    U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
-    M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
-    p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
-    
+    if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
+      # works for GSE62992
+      # two files of raw signals, signal A and signal B, no pvals
+      series_id_fp <- file.path(series_id_folder, series_id_files)
+      print(series_id_fp)
+      signals <- lapply(series_id_fp, function(x) read.table(x, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = "."))
+      colnum <- length(colnames(signals[[1]]))
+      samples.all <- gsub(".Signal_A","", colnames(signals[[1]]))
+      #relevant.samples.loc <- match(as.character(rownames(relevant_targets)), samples.all)
+      # should fix the description vs samples names
+      
+      # assign  unmethylated, methylated and pvalue matrices
+      U <- data.matrix(signals[[1]])
+      colnames(U) <- samples.all
+      M <- data.matrix(signals[[2]])
+      colnames(M) <- samples.all
+      p.values <- NULL
+      
+    } else {
+      # works for GSE32079
+      # one raw file with 3 columns for each sample
+      series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
+      print(series_id_fp)
+      signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
+      
+      # locate relevant samples
+      unmeth_ids = seq(1, colnum-2, 3)
+      meth_ids = seq(2, colnum-1, 3)
+      pval_ids = seq(3, colnum, 3)
+      colnum <- length(colnames(signals))
+      samples.all <- gsub(".Signal_A","", colnames(signals)[unmeth_ids])
+      relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
+      
+      # remove suffixes from colnames
+      colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
+      colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
+      colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
+      
+      # assign  unmethylated, methylated and pvalue matrices
+      U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
+      M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
+      p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
+    }
     # run rnbeads preprecossing
     pheno <- relevant_targets[, c('description','tissue','cell_type','disease')]
     rnb.raw.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
@@ -50,9 +70,8 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
     #                                          bgcorr.method="methylumi.lumi")
     #rnb.set.sexrem <- rnb.execute.sex.removal(rnb.set.norm)$dataset
     rnb.set.sexrem <- rnb.raw.set.greedy.snprem
-    
     meth.beta <- meth(rnb.set.sexrem)
-    print(head(meth.beta))
+    print(head(meth.beta, 2))
     stime <- (proc.time() - ptime1)[3]
     cat(" in", stime, "seconds\n")
   }
@@ -101,8 +120,8 @@ f8 <- "../../data/global/GEO/joined/GSE57767.txt"
 f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- head(joined_files, 1)
+joined_files <- c(f2, f3, f4, f5, f6, f7, f8, f10, f11)
+joined_files <- head(joined_files, 2) # XXX
 series.info <- do.call("rbind", lapply(joined_files, function(fn) 
   data.frame(
     Filename=fn, 
@@ -118,6 +137,7 @@ pheno <- series.info[relevant.samples.idx, c('series_id', 'description','tissue'
 num_samples <- length(series.info[,1])
 
 result <- chunked_group_by(pheno, list(pheno$disease, pheno$tissue), 3)
+print(head(result))
 
 all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
 all_kinds_filename <- file.path(generated_GEO_folder, 'GEO_all_kinds.csv')
