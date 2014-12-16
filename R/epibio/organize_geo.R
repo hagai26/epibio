@@ -41,10 +41,10 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
       signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
       
       # locate relevant samples
+      colnum <- length(colnames(signals))
       unmeth_ids = seq(1, colnum-2, 3)
       meth_ids = seq(2, colnum-1, 3)
       pval_ids = seq(3, colnum, 3)
-      colnum <- length(colnames(signals))
       samples.all <- gsub(".Signal_A","", colnames(signals)[unmeth_ids])
       relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
       
@@ -80,6 +80,7 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
 
 work_on_targets <- function(targets) {
   print("work_on_targets called")
+  print(levels(factor(targets$series_id)))
   study_levels <- levels(factor(targets$disease))
   type_levels <- levels(factor(targets$tissue))
   
@@ -93,8 +94,9 @@ work_on_targets <- function(targets) {
       if(sum(is_relevant_targets) > 0) {
         relevant_targets <- targets[is_relevant_targets,, drop = FALSE]
         cat('currently reading:', type, study, "(", sum(is_relevant_targets), "samples) :")
-        series_id <- levels(factor(targets$series_id))
-        series_id <- sub(",.*", "", series_id) # read each sample only once
+        series_id <- levels(factor(relevant_targets$series_id))
+        # when sample is from multiple serieses - use the first only
+        series_id <- sub(",.*", "", series_id) 
         for(one_series_id in series_id) {
           read_geo_l1_data(one_series_id, relevant_targets)
         }
@@ -120,8 +122,8 @@ f8 <- "../../data/global/GEO/joined/GSE57767.txt"
 f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-joined_files <- c(f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- head(joined_files, 2) # XXX
+joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
+joined_files <- head(joined_files, 4) # XXX
 series.info <- do.call("rbind", lapply(joined_files, function(fn) 
   data.frame(
     Filename=fn, 
