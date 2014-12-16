@@ -6,7 +6,7 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 
-read_geo_l1_data <- function(series_id, relevant_targets) {
+read_geo_l1_data <- function(series_id, relevant_targets, type, study) {
   cat('Reading ', series_id, ": ")
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
   series_id_files <- list.files(series_id_folder, pattern="*_small.txt$") # XXX
@@ -38,20 +38,34 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
       # one raw file with 3 columns for each sample
       series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
       print(series_id_fp)
-      signals <- read.table(series_id_fp, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".")
+      signals <- read.table(series_id_fp, nrows=-1, 
+                            header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
+                            check.names=FALSE)
       
       # locate relevant samples
       colnum <- length(colnames(signals))
       unmeth_ids = seq(1, colnum-2, 3)
       meth_ids = seq(2, colnum-1, 3)
       pval_ids = seq(3, colnum, 3)
-      samples.all <- gsub(".Signal_A","", colnames(signals)[unmeth_ids])
-      relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
       
       # remove suffixes from colnames
       colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
       colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
+      colnames(signals) <- gsub(".Unmethylated.Signal", "", colnames(signals))
+      colnames(signals) <- gsub(".Methylated.Signal", "", colnames(signals))
       colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
+      colnames(signals) <- gsub(".Pval", "", colnames(signals))
+      
+      samples.all <- colnames(signals)[unmeth_ids]
+      relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
+      if(all(is.na(relevant.samples.loc))) {
+        print('trying first word as sample name')
+        first_word <- gsub(" .*", '', relevant_targets$source_name_ch1)
+        relevant.samples.loc <- match(as.character(first_word), samples.all)
+        if(all(is.na(relevant.samples.loc))) {
+          print('try other option')
+        }
+      }
       
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
@@ -60,18 +74,26 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
     }
     # run rnbeads preprecossing
     pheno <- relevant_targets[, c('description','tissue','cell_type','disease')]
-    rnb.raw.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
+    rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
     
     logger.start(fname=NA)
-    rnb.raw.set.greedy <- rnb.execute.greedycut(rnb.raw.set)
-    rnb.raw.set.greedy.snprem <- rnb.execute.snp.removal(rnb.raw.set)$dataset
-    #rnb.set.norm <- rnb.execute.normalization(rnb.raw.set.greedy.snprem, 
+    rnb.options(disk.dump.big.matrices=TRUE)
+    rnb.options(enforce.memory.management=TRUE)
+    #rnb.set <- rnb.execute.greedycut(rnb.set)
+    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+    #rnb.set <- rnb.execute.normalization(rnb.set, 
     #                                          method="bmiq", 
     #                                          bgcorr.method="methylumi.lumi")
-    #rnb.set.sexrem <- rnb.execute.sex.removal(rnb.set.norm)$dataset
-    rnb.set.sexrem <- rnb.raw.set.greedy.snprem
-    meth.beta <- meth(rnb.set.sexrem)
-    print(head(meth.beta, 2))
+    #rnb.set <- rnb.execute.sex.removal(rnb.set)$dataset
+    
+    betas.table <- meth(rnb.set, row.names=TRUE)
+    pvalue.high <- which(dpval(rnb.set)>0.05, arr.ind=TRUE)
+    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
+    destroy(rnb.set)
+    filename <- file.path(generated_GEO_folder, paste0(series_id, '_', type, '_', study, '.txt'))
+    write.table(betas.table, filename, sep='\t', col.names=NA, quote=FALSE)
+    #rnb.execute.export.csv(rnb.set.sexrem, NA)
+    
     stime <- (proc.time() - ptime1)[3]
     cat(" in", stime, "seconds\n")
   }
@@ -80,7 +102,6 @@ read_geo_l1_data <- function(series_id, relevant_targets) {
 
 work_on_targets <- function(targets) {
   print("work_on_targets called")
-  print(levels(factor(targets$series_id)))
   study_levels <- levels(factor(targets$disease))
   type_levels <- levels(factor(targets$tissue))
   
@@ -98,8 +119,10 @@ work_on_targets <- function(targets) {
         # when sample is from multiple serieses - use the first only
         series_id <- sub(",.*", "", series_id) 
         for(one_series_id in series_id) {
-          read_geo_l1_data(one_series_id, relevant_targets)
+          read_geo_l1_data(one_series_id, relevant_targets, type, study)
         }
+      } else {
+        cat('Skipping ', type, study, ' no relevant targets')
       }
       
     }
@@ -122,8 +145,9 @@ f8 <- "../../data/global/GEO/joined/GSE57767.txt"
 f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- head(joined_files, 4) # XXX
+#joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
+joined_files <- c(f8, f10, f11)
+#joined_files <- head(joined_files, 4) # XXX
 series.info <- do.call("rbind", lapply(joined_files, function(fn) 
   data.frame(
     Filename=fn, 
@@ -131,11 +155,9 @@ series.info <- do.call("rbind", lapply(joined_files, function(fn)
     )
   ))
 # get only relevant samples
-relevant.samples.idx <- as.numeric(series.info$relevant)
-relevant.samples.idx[is.na(relevant.samples.idx)] <- 0
-relevant.samples.idx <- relevant.samples.idx == 1
+relevant.samples.idx <- which(as.numeric(series.info$relevant)==1)
 
-pheno <- series.info[relevant.samples.idx, c('series_id', 'description','tissue','cell_type','disease')]
+pheno <- series.info[relevant.samples.idx, c('series_id', 'title', 'source_name_ch1', 'description','tissue','cell_type','disease')]
 num_samples <- length(series.info[,1])
 
 result <- chunked_group_by(pheno, list(pheno$disease, pheno$tissue), 3)
