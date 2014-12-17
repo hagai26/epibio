@@ -6,7 +6,7 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 
-read_geo_l1_data <- function(series_id, relevant_targets, type, study) {
+read_geo_l1_data <- function(series_id, targets, type, study) {
   cat('Reading ', series_id, ": ")
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
   series_id_files <- list.files(series_id_folder, pattern="*_small.txt$") # XXX
@@ -57,10 +57,10 @@ read_geo_l1_data <- function(series_id, relevant_targets, type, study) {
       colnames(signals) <- gsub(".Pval", "", colnames(signals))
       
       samples.all <- colnames(signals)[unmeth_ids]
-      relevant.samples.loc <- match(as.character(relevant_targets$description), samples.all)
+      relevant.samples.loc <- match(as.character(targets$description), samples.all)
       if(all(is.na(relevant.samples.loc))) {
         print('trying first word as sample name')
-        first_word <- gsub(" .*", '', relevant_targets$source_name_ch1)
+        first_word <- gsub(" .*", '', targets$source_name_ch1)
         relevant.samples.loc <- match(as.character(first_word), samples.all)
         if(all(is.na(relevant.samples.loc))) {
           print('try other option')
@@ -73,7 +73,7 @@ read_geo_l1_data <- function(series_id, relevant_targets, type, study) {
       p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
     }
     # run rnbeads preprecossing
-    pheno <- relevant_targets[, c('description','tissue','cell_type','disease')]
+    pheno <- targets[, c('description','tissue','cell_type','disease')]
     rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
     
     logger.start(fname=NA)
@@ -102,31 +102,20 @@ read_geo_l1_data <- function(series_id, relevant_targets, type, study) {
 
 work_on_targets <- function(targets) {
   print("work_on_targets called")
-  study_levels <- levels(factor(targets$disease))
-  type_levels <- levels(factor(targets$tissue))
-  
   ptime1 <- proc.time()
-  cat("Reading", nrow(targets), "samples")
+  series_id <- levels(factor(targets$series_id))
+  cat("Reading", nrow(targets), "samples", "from", length(series_id), "serieses")
   print("")
-  # work on these targets
-  for(type in type_levels) {
-    for(study in study_levels) {
-      is_relevant_targets <- targets$disease==study & targets$tissue==type
-      if(sum(is_relevant_targets) > 0) {
-        relevant_targets <- targets[is_relevant_targets,, drop = FALSE]
-        cat('currently reading:', type, study, "(", sum(is_relevant_targets), "samples) :")
-        series_id <- levels(factor(relevant_targets$series_id))
-        # when sample is from multiple serieses - use the first only
-        series_id <- sub(",.*", "", series_id) 
-        for(one_series_id in series_id) {
-          read_geo_l1_data(one_series_id, relevant_targets, type, study)
-        }
-      } else {
-        cat('Skipping ', type, study, ' no relevant targets')
-      }
-      
-    }
-  }
+  # when sample is from multiple serieses - use the first only
+  series_id <- sub(",.*", "", series_id) 
+  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, type, study)
+}
+
+read_joined_file <- function(filename) {
+  t <- read.table(filename, sep='\t', row.names=1, header=TRUE, fill=TRUE, 
+                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
+  df <- data.frame(Filename=filename, t)
+  return(df)
 }
 
 
@@ -148,24 +137,13 @@ f11 <- "../../data/global/GEO/joined/GSE29290.txt"
 #joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
 joined_files <- c(f8, f10, f11)
 #joined_files <- head(joined_files, 4) # XXX
-series.info <- do.call("rbind", lapply(joined_files, function(fn) 
-  data.frame(
-    Filename=fn, 
-    read.table(fn, sep='\t', row.names=1, header=TRUE, fill=TRUE, na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
-    )
-  ))
+series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
-relevant.samples.idx <- which(as.numeric(series.info$relevant)==1)
+relevant.samples.idx <- which(as.numeric(series.info$relevant) == 1)
+pheno <- series.info[relevant.samples.idx, c('series_id', 'tissue', 'cell_type', 'disease')]
+splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
-pheno <- series.info[relevant.samples.idx, c('series_id', 'title', 'source_name_ch1', 'description','tissue','cell_type','disease')]
-num_samples <- length(series.info[,1])
+write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 
-result <- chunked_group_by(pheno, list(pheno$disease, pheno$tissue), 3)
-print(head(result))
-
-all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
-all_kinds_filename <- file.path(generated_GEO_folder, 'GEO_all_kinds.csv')
-write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = all_kinds_filename, row.names=FALSE, quote=FALSE)
-
-ret <- lapply(result$grouped, FUN=work_on_targets)
+ret <- lapply(splited_targets, FUN=work_on_targets)
 print("DONE")

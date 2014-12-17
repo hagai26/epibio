@@ -37,7 +37,6 @@ work_on_targets <- function(targets, baseDir) {
   }
 }
 
-
 dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
@@ -46,12 +45,8 @@ targets$Basename <- file.path(idat_folder, paste(targets$Sentrix.ID, targets$Sen
 
 result <- chunked_group_by(targets, list(targets$Study, targets$Type), 2)
 print(head(result$grouped))
-all_kinds = data.frame(number = sapply(result$splited, FUN=nrow))
-print("Reading all kinds:")
-print(all_kinds)
-print("")
+write_nrow_per_group(result$splited, file.path(generated_TCGA_folder, 'TCGA_all_kinds.csv'))
 ret <- lapply(result$grouped, FUN=work_on_targets, NULL)
 
-all_kinds_filename <- file.path(generated_TCGA_folder, 'TCGA_all_kinds.csv')
-write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = all_kinds_filename, row.names=FALSE, quote=FALSE)
+
 print("DONE")
