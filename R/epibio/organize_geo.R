@@ -6,17 +6,15 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 read_l1_signal_file <- function(filename) {
-  t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
+  read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
                   nrows=200, 
                   check.names=FALSE, stringsAsFactors=FALSE)
-  t
 }
 
 read_joined_file <- function(filename) {
   t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
                   na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
-  df <- data.frame(Filename=filename, t)
-  df
+  data.frame(Filename=filename, t)
 }
 
 rnb_read_l1_betas <- function(targets, U, M, p.values) {
@@ -49,8 +47,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
   
   if(length(series_id_files) == 0) {
-    msg <- paste('no txt files inside', series_id_folder)
-    stop(msg)
+    stop(paste('no txt files inside', series_id_folder))
   } else {
     ptime1 <- proc.time()
     print(series_id_files)
@@ -137,7 +134,7 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- file.path(folder, list.files(folder, pattern="*.txt"))
-joined_files <- head(joined_files, 40)
+joined_files <- head(joined_files, 6)
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
