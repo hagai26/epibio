@@ -6,9 +6,12 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 read_l1_signal_file <- function(filename) {
-  read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
+  t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
                   nrows=200,
                   check.names=FALSE, stringsAsFactors=FALSE)
+  # remove columns which doesn't have labels on header (like in GSE32146)
+  good_cols <- colnames(t)[colnames(t) != ""]
+  t[good_cols]
 }
 
 read_joined_file <- function(filename) {
@@ -63,7 +66,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
         v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
         relevant.samples.loc <- which(v)
       } else {
-        stop('try other option')
+        stop('try other option 3')
       }
       
       # assign  unmethylated, methylated and pvalue matrices
@@ -83,8 +86,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       pval_ids = seq(3, colnum, 3)
       
       # remove suffixes from colnames
-      suffixes = c("[. ]Unmethylated[. ]Signal$", "[. ]Methylated[. ]Signal$", 
-                   "_Methylated signal$",
+      suffixes = c("[. ]Unmethylated[. ][Ss]ignal$", "[. _]Methylated[. ][Ss]ignal$", 
                    "[.]Signal_A$", "[.]Signal_B$", 
                    "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
                    "[. ]Detection[. ]Pval$", "[.]Pval$", "[.]Detection$")
@@ -95,11 +97,15 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
         first_word <- gsub(" .*", '', this_targets$source_name_ch1)
         relevant.samples.loc <- match(as.character(first_word), samples.all)
         if(all(is.na(relevant.samples.loc))) {
-          if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-            v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-            relevant.samples.loc <- which(v)
-          } else {
-            stop('try other option')
+          last_word <- gsub(".* ", '', this_targets$source_name_ch1)
+          relevant.samples.loc <- match(as.character(last_word), samples.all)
+          if(all(is.na(relevant.samples.loc))) {
+            if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+              v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+              relevant.samples.loc <- which(v)
+            } else {
+              stop('try other option 1')
+            }
           }
         }
       }
@@ -134,7 +140,7 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:13]
+joined_files <- joined_files[5:13]
 
 # remove these samples
 # skip GEOs which I don't know how to parse
