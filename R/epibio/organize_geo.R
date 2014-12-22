@@ -7,7 +7,7 @@ source("common.R")
 
 read_l1_signal_file <- function(filename) {
   read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
-                  nrows=200, 
+                  nrows=200,
                   check.names=FALSE, stringsAsFactors=FALSE)
 }
 
@@ -83,11 +83,11 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       pval_ids = seq(3, colnum, 3)
       
       # remove suffixes from colnames
-      suffixes = c("[.]Unmethylated[. ]Signal$", "[.]Methylated[. ]Signal$", 
+      suffixes = c("[. ]Unmethylated[. ]Signal$", "[. ]Methylated[. ]Signal$", 
                    "_Methylated signal$",
                    "[.]Signal_A$", "[.]Signal_B$", 
                    "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
-                   "[.]Detection[.]Pval$", "[.]Detection Pval", "[.]Pval$", "[.]Detection$")
+                   "[. ]Detection[. ]Pval$", "[.]Pval$", "[.]Detection$")
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
       samples.all <- colnames(signals)[unmeth_ids]
       relevant.samples.loc <- match(as.character(this_targets$description), samples.all)
@@ -120,7 +120,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                 sep='\t', col.names=NA, quote=FALSE)
     
     stime <- (proc.time() - ptime1)[3]
-    cat(" in", stime, "seconds\n")
+    cat("   in", stime, "seconds\n")
   }
 }
 
@@ -133,8 +133,16 @@ work_on_targets <- function(targets, all.series.info) {
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
-joined_files <- file.path(folder, list.files(folder, pattern="*.txt"))
-joined_files <- head(joined_files, 6)
+joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
+joined_files <- joined_files[1:13]
+
+# remove these samples
+# skip GEOs which I don't know how to parse
+ignore_list <- c("../../data/global/GEO/joined/GSE30338.txt")
+wait_list <- c() # skip GEOs which I still don't have
+joined_files <- joined_files[!(joined_files %in% c(ignore_list, wait_list))]
+print(joined_files)
+
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
