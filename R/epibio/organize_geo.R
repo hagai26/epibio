@@ -6,16 +6,19 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 read_l1_signal_file <- function(filename) {
-  t <- read.table(filename, nrows=300, 
+  t <- read.table(filename, nrows=200, 
              header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
              check.names=FALSE)
   return(t)
 }
 
 
-read_geo_l1_data <- function(series_id, all_targets, series.info) {
-  cat('Reading ', series_id, ": ")
-  targets <- subset(all_targets, all_targets$series_id == series_id)
+read_geo_l1_data <- function(series_id_orig, targets, all.series.info) {
+  cat('Reading ', series_id_orig, ": ")
+  # when sample is from multiple serieses - use the first only
+  series_id <- sub(",.*", "", series_id_orig)
+  this_targets = subset(targets, targets$series_id == series_id_orig)
+  
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
   series_id_files <- list.files(series_id_folder, pattern="*.txt$")
   if(length(series_id_files) == 0) {
@@ -55,23 +58,24 @@ read_geo_l1_data <- function(series_id, all_targets, series.info) {
       pval_ids = seq(3, colnum, 3)
       
       # remove suffixes from colnames
-      colnames(signals) <- gsub(".Signal_A", "", colnames(signals))
-      colnames(signals) <- gsub(".Signal_B", "", colnames(signals))
-      colnames(signals) <- gsub(".Unmethylated.Signal", "", colnames(signals))
-      colnames(signals) <- gsub(".Methylated.Signal", "", colnames(signals))
-      colnames(signals) <- gsub(".Detection.Pval", "", colnames(signals))
-      colnames(signals) <- gsub(".Pval", "", colnames(signals))
+      suffixes = c("_Unmethylated.Signal_A", "_Methylated.Signal_A",
+                   "_Methylated.Signal_B", "_Unmethylated.Signal_B", 
+                   ".Unmethylated.Signal", ".Methylated.Signal", "_Methylated signal",
+                   ".Signal_A", ".Signal_B", 
+                   "_Unmethylated.Detection", "_Methylated.Detection",
+                   ".Detection.Pval", ".Pval", ".Detection")
+      colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
       
       samples.all <- colnames(signals)[unmeth_ids]
-      relevant.samples.loc <- match(as.character(targets$description), samples.all)
+      relevant.samples.loc <- match(as.character(this_targets$description), samples.all)
       if(all(is.na(relevant.samples.loc))) {
-        first_word <- gsub(" .*", '', targets$source_name_ch1)
+        first_word <- gsub(" .*", '', this_targets$source_name_ch1)
         relevant.samples.loc <- match(as.character(first_word), samples.all)
         if(all(is.na(relevant.samples.loc))) {
-          fn <- levels(factor(targets$Filename))[[1]]
-          this_series.info <- subset(series.info, series.info$Filename == fn)
-          if(length(samples.all) == dim(this_series.info)[[1]]) {
-            relevant.samples.loc <- match(as.character(targets$description), this_series.info$description)
+          fn <- levels(factor(this_targets$Filename))[[1]]
+          this_all.series.info <- subset(all.series.info, all.series.info$Filename == fn)
+          if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+            relevant.samples.loc <- match(as.character(this_targets$description), this_all.series.info$description)
           } else {
             stop('try other option')
           }
@@ -111,15 +115,12 @@ read_geo_l1_data <- function(series_id, all_targets, series.info) {
 }
 
 
-work_on_targets <- function(all_targets, series.info) {
+work_on_targets <- function(targets, all.series.info) {
   print("work_on_targets called")
   ptime1 <- proc.time()
-  series_id <- levels(factor(all_targets$series_id))
-  cat("Reading", nrow(all_targets), "samples", "from", length(series_id), "serieses")
-  print("")
-  # when sample is from multiple serieses - use the first only
-  series_id <- sub(",.*", "", series_id) 
-  ret <- lapply(series_id, FUN=read_geo_l1_data, all_targets, series.info)
+  series_id <- levels(factor(targets$series_id))
+  cat("Reading", nrow(targets), "samples", "from", length(series_id), "serieses\n")
+  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info)
 }
 
 read_joined_file <- function(filename) {
@@ -146,13 +147,14 @@ f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
 joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
+#joined_files <- c(f8)
+all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
-relevant.samples.idx <- which(as.numeric(series.info$relevant) == 1)
-pheno <- series.info[relevant.samples.idx, ]
+relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
+pheno <- all.series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
-ret <- lapply(splited_targets, FUN=work_on_targets, series.info)
+ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info)
 
 write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")

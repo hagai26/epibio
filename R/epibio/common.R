@@ -19,3 +19,14 @@ write_nrow_per_group <- function(splited_targets, filepath) {
   all_kinds = data.frame(number = sapply(splited_targets, FUN=nrow))
   write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = filepath, row.names=FALSE, quote=FALSE)
 }
+
+mgsub <- function(pattern, replacement, x, ...) {
+  if (length(pattern) != length(replacement)) {
+    stop("mgsub: pattern and replacement do not have the same length.")
+  }
+  result <- x
+  for (i in 1:length(pattern)) {
+    result <- gsub(pattern[i], replacement[i], result, ...)
+  }
+  result
+}
