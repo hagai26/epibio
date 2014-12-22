@@ -9,14 +9,32 @@ read_l1_signal_file <- function(filename) {
   t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
                   nrows=200, 
                   check.names=FALSE, stringsAsFactors=FALSE)
-  return(t)
+  t
 }
 
 read_joined_file <- function(filename) {
   t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
                   na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
   df <- data.frame(Filename=filename, t)
-  return(df)
+  df
+}
+
+rnb_read_l1_betas <- function(targets, U, M, p.values) {
+  pheno <- targets[, c('description','tissue','cell_type','disease')]
+  rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
+  
+  logger.start(fname=NA)
+  rnb.options(disk.dump.big.matrices=TRUE)
+  rnb.options(enforce.memory.management=TRUE)
+  rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+  
+  betas.table <- meth(rnb.set, row.names=TRUE)
+  if(!is.null(p.values)) {
+    pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)
+    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
+  }
+  destroy(rnb.set)  
+  betas.table
 }
 
 
@@ -24,25 +42,32 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   cat('Reading ', series_id_orig, ": ")
   # when sample is from multiple serieses - use the first only
   series_id <- sub(",.*", "", series_id_orig)
-  this_targets = subset(targets, targets$series_id == series_id_orig)
-  
+  this_targets = subset(targets, targets$series_id == series_id_orig)  
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
   series_id_files <- list.files(series_id_folder, pattern="*.txt$")
+  filename_first_level <- levels(factor(this_targets$Filename))[[1]]
+  this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
+  
   if(length(series_id_files) == 0) {
-    print('not found')
+    msg <- paste('no txt files inside', series_id_folder)
+    stop(msg)
   } else {
     ptime1 <- proc.time()
     print(series_id_files)
     series_id_fp <- file.path(series_id_folder, series_id_files)
-    print(series_id_fp)
     if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
       # works for GSE62992
       # => two files of raw signals, signal A and signal B, no pvals      
       signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
       colnum <- length(colnames(signals[[1]]))
-      samples.all <- gsub(".Signal_A","", colnames(signals[[1]]))
-      #relevant.samples.loc <- match(as.character(rownames(relevant_targets)), samples.all)
-      # should fix the description vs samples names
+      samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
+      
+      if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+        v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+        relevant.samples.loc <- which(v)
+      } else {
+        stop('try other option')
+      }
       
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[[1]])
@@ -51,7 +76,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       colnames(M) <- samples.all
       p.values <- NULL
     } else {
-      # works for GSE32079, GSE29290, GSE57767
+      # works for GSE32079, GSE29290, GSE57767, GSE61653
       # => one raw file with 3 columns for each sample
       signals <- read_l1_signal_file(series_id_fp)
       # locate relevant samples
@@ -73,8 +98,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
         first_word <- gsub(" .*", '', this_targets$source_name_ch1)
         relevant.samples.loc <- match(as.character(first_word), samples.all)
         if(all(is.na(relevant.samples.loc))) {
-          fn <- levels(factor(this_targets$Filename))[[1]]
-          this_all.series.info <- subset(all.series.info, all.series.info$Filename == fn)
           if(length(samples.all) == dim(this_all.series.info)[[1]]) {
             v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
             relevant.samples.loc <- which(v)
@@ -95,27 +118,14 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                                         stringsAsFactors=FALSE)
       p.values <- data.matrix(signals_pval)[,relevant.samples.loc]
     }
-    # run rnbeads preprecossing
-    pheno <- this_targets[, c('description','tissue','cell_type','disease')]
-    rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
-    
-    logger.start(fname=NA)
-    rnb.options(disk.dump.big.matrices=TRUE)
-    rnb.options(enforce.memory.management=TRUE)
-    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
-    
-    betas.table <- meth(rnb.set, row.names=TRUE)
-    pvalue.high <- which(dpval(rnb.set)>0.05, arr.ind=TRUE)
-    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
-    destroy(rnb.set)
-    filename <- file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt'))
-    write.table(betas.table, filename, sep='\t', col.names=NA, quote=FALSE)
+    betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
+    write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
+                sep='\t', col.names=NA, quote=FALSE)
     
     stime <- (proc.time() - ptime1)[3]
     cat(" in", stime, "seconds\n")
   }
 }
-
 
 work_on_targets <- function(targets, all.series.info) {
   series_id <- levels(factor(targets$series_id))
@@ -124,24 +134,10 @@ work_on_targets <- function(targets, all.series.info) {
   ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name)
 }
 
-
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- file.path(folder, list.files(folder, pattern="*.txt"))
-
-f1 <- "../../data/global/GEO/joined/GSE32079.txt"
-f2 <- "../../data/global/GEO/joined/GSE32148.txt"
-f3 <- "../../data/global/GEO/joined/GSE62992.txt"
-f4 <- "../../data/global/GEO/joined/GSE62640.txt"
-f5 <- "../../data/global/GEO/joined/GSE61653.txt"
-f6 <- "../../data/global/GEO/joined/GSE61446.txt"
-f7 <- "../../data/global/GEO/joined/GSE57894.txt"
-f8 <- "../../data/global/GEO/joined/GSE57767.txt"
-f9 <- "../../data/global/GEO/joined/GSE32146.txt"
-f10 <- "../../data/global/GEO/joined/GSE30870.txt"
-f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-#joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- c(f8, f10)
+joined_files <- head(joined_files, 40)
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
