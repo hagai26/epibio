@@ -58,14 +58,12 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info) {
       pval_ids = seq(3, colnum, 3)
       
       # remove suffixes from colnames
-      suffixes = c("_Unmethylated.Signal_A", "_Methylated.Signal_A",
-                   "_Methylated.Signal_B", "_Unmethylated.Signal_B", 
-                   ".Unmethylated.Signal", ".Methylated.Signal", "_Methylated signal",
-                   ".Signal_A", ".Signal_B", 
-                   "_Unmethylated.Detection", "_Methylated.Detection",
-                   ".Detection.Pval", ".Pval", ".Detection")
+      suffixes = c("[.]Unmethylated[.]Signal$", "[.]Methylated[.]Signal$", 
+                   "_Methylated signal$",
+                   "[.]Signal_A$", "[.]Signal_B$", 
+                   "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
+                   "[.]Detection[.]Pval$", "[.]Detection Pval", "[.]Pval$", "[.]Detection$")
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
-      
       samples.all <- colnames(signals)[unmeth_ids]
       relevant.samples.loc <- match(as.character(this_targets$description), samples.all)
       if(all(is.na(relevant.samples.loc))) {
@@ -85,10 +83,15 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info) {
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
       M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
-      p.values <- data.matrix(signals[,pval_ids])[,relevant.samples.loc]
+      signals_pval <- signals[,pval_ids]
+      # convert the decimal comma into a dot (as in GSE29290)
+      signals_pval <- data.frame(lapply(signals_pval, 
+                                        function(x) gsub(",", ".", x, fixed = TRUE)), 
+                                        stringsAsFactors=FALSE)
+      p.values <- data.matrix(signals_pval)[,relevant.samples.loc]
     }
     # run rnbeads preprecossing
-    pheno <- targets[, c('description','tissue','cell_type','disease')]
+    pheno <- this_targets[, c('description','tissue','cell_type','disease')]
     rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
     
     logger.start(fname=NA)
@@ -116,8 +119,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info) {
 
 
 work_on_targets <- function(targets, all.series.info) {
-  print("work_on_targets called")
-  ptime1 <- proc.time()
   series_id <- levels(factor(targets$series_id))
   cat("Reading", nrow(targets), "samples", "from", length(series_id), "serieses\n")
   ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info)
@@ -146,8 +147,8 @@ f8 <- "../../data/global/GEO/joined/GSE57767.txt"
 f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-#joined_files <- c(f8)
+#joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
+joined_files <- c(f11)
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
