@@ -15,11 +15,6 @@ chunked_group_by <- function(targets, group_by_list, chunk_size) {
   return(result)
 }
 
-get_basename_no_ext <- function(filepath) {
-  return(strsplit(basename(filename), "\\.")[[1]][[1]])
-}
-
-
 write_nrow_per_group <- function(splited_targets, filepath) {
   all_kinds = data.frame(number = sapply(splited_targets, FUN=nrow))
   write.csv(cbind(kind=rownames(all_kinds), all_kinds), file = filepath, row.names=FALSE, quote=FALSE)

@@ -5,11 +5,19 @@ source("config.R")
 source("common.R")
 #source("geo_l1_reader.R")
 
+read_l1_signal_file <- function(filename) {
+  t <- read.table(filename, nrows=300, 
+             header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
+             check.names=FALSE)
+  return(t)
+}
 
-read_geo_l1_data <- function(series_id, targets, type, study) {
+
+read_geo_l1_data <- function(series_id, all_targets, series.info) {
   cat('Reading ', series_id, ": ")
+  targets <- subset(all_targets, all_targets$series_id == series_id)
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*_small.txt$") # XXX
+  series_id_files <- list.files(series_id_folder, pattern="*.txt$")
   if(length(series_id_files) == 0) {
     print('not found')
   } else {
@@ -20,7 +28,7 @@ read_geo_l1_data <- function(series_id, targets, type, study) {
       # two files of raw signals, signal A and signal B, no pvals
       series_id_fp <- file.path(series_id_folder, series_id_files)
       print(series_id_fp)
-      signals <- lapply(series_id_fp, function(x) read.table(x, nrows=-1, header=TRUE, row.names=1, skip=0, sep='\t', dec = "."))
+      signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
       colnum <- length(colnames(signals[[1]]))
       samples.all <- gsub(".Signal_A","", colnames(signals[[1]]))
       #relevant.samples.loc <- match(as.character(rownames(relevant_targets)), samples.all)
@@ -38,9 +46,7 @@ read_geo_l1_data <- function(series_id, targets, type, study) {
       # one raw file with 3 columns for each sample
       series_id_fp <- file.path(series_id_folder, series_id_files[[1]])
       print(series_id_fp)
-      signals <- read.table(series_id_fp, nrows=-1, 
-                            header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
-                            check.names=FALSE)
+      signals <- read_l1_signal_file(series_id_fp)
       
       # locate relevant samples
       colnum <- length(colnames(signals))
@@ -59,11 +65,16 @@ read_geo_l1_data <- function(series_id, targets, type, study) {
       samples.all <- colnames(signals)[unmeth_ids]
       relevant.samples.loc <- match(as.character(targets$description), samples.all)
       if(all(is.na(relevant.samples.loc))) {
-        print('trying first word as sample name')
         first_word <- gsub(" .*", '', targets$source_name_ch1)
         relevant.samples.loc <- match(as.character(first_word), samples.all)
         if(all(is.na(relevant.samples.loc))) {
-          print('try other option')
+          fn <- levels(factor(targets$Filename))[[1]]
+          this_series.info <- subset(series.info, series.info$Filename == fn)
+          if(length(samples.all) == dim(this_series.info)[[1]]) {
+            relevant.samples.loc <- match(as.character(targets$description), this_series.info$description)
+          } else {
+            stop('try other option')
+          }
         }
       }
       
@@ -90,7 +101,7 @@ read_geo_l1_data <- function(series_id, targets, type, study) {
     pvalue.high <- which(dpval(rnb.set)>0.05, arr.ind=TRUE)
     betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
     destroy(rnb.set)
-    filename <- file.path(generated_GEO_folder, paste0(series_id, '_', type, '_', study, '.txt'))
+    filename <- file.path(generated_GEO_folder, paste0(series_id, '_', "type", '_', "study", '.txt'))
     write.table(betas.table, filename, sep='\t', col.names=NA, quote=FALSE)
     #rnb.execute.export.csv(rnb.set.sexrem, NA)
     
@@ -100,15 +111,15 @@ read_geo_l1_data <- function(series_id, targets, type, study) {
 }
 
 
-work_on_targets <- function(targets) {
+work_on_targets <- function(all_targets, series.info) {
   print("work_on_targets called")
   ptime1 <- proc.time()
-  series_id <- levels(factor(targets$series_id))
-  cat("Reading", nrow(targets), "samples", "from", length(series_id), "serieses")
+  series_id <- levels(factor(all_targets$series_id))
+  cat("Reading", nrow(all_targets), "samples", "from", length(series_id), "serieses")
   print("")
   # when sample is from multiple serieses - use the first only
   series_id <- sub(",.*", "", series_id) 
-  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, type, study)
+  ret <- lapply(series_id, FUN=read_geo_l1_data, all_targets, series.info)
 }
 
 read_joined_file <- function(filename) {
@@ -134,16 +145,14 @@ f8 <- "../../data/global/GEO/joined/GSE57767.txt"
 f9 <- "../../data/global/GEO/joined/GSE32146.txt"
 f10 <- "../../data/global/GEO/joined/GSE30870.txt"
 f11 <- "../../data/global/GEO/joined/GSE29290.txt"
-#joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
-joined_files <- c(f8, f10, f11)
-#joined_files <- head(joined_files, 4) # XXX
+joined_files <- c(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11)
 series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(series.info$relevant) == 1)
-pheno <- series.info[relevant.samples.idx, c('series_id', 'tissue', 'cell_type', 'disease')]
+pheno <- series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
-write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
+ret <- lapply(splited_targets, FUN=work_on_targets, series.info)
 
-ret <- lapply(splited_targets, FUN=work_on_targets)
+write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")

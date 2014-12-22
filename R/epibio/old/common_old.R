@@ -54,3 +54,8 @@ mydat <- data.frame(y,x1,x2)
 #    all_kinds = rbind(all_kinds, newrow)
 #  }  
 #}
+
+get_basename_no_ext <- function(filepath) {
+  return(strsplit(basename(filename), "\\.")[[1]][[1]])
+}
+
