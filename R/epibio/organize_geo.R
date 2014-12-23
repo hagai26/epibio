@@ -6,9 +6,16 @@ source("common.R")
 #source("geo_l1_reader.R")
 
 read_l1_signal_file <- function(filename) {
+  nrows = 200
   t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
-                  nrows=200,
+                  nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE)
+  if(length(t) == 0) {
+    # try different sep
+    t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep=',', dec = ".",
+                    nrows=nrows,
+                    check.names=FALSE, stringsAsFactors=FALSE)
+  }
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
   t[good_cols]
@@ -17,7 +24,13 @@ read_l1_signal_file <- function(filename) {
 read_joined_file <- function(filename) {
   t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
                   na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
-  data.frame(Filename=filename, t)
+  if(length(rownames(t)) > 0) {
+    df <- data.frame(Filename=filename, t)
+  } else {
+    # on case that t is empty
+    df <- data.frame(t)
+  }
+  df
 }
 
 rnb_read_l1_betas <- function(targets, U, M, p.values) {
@@ -54,7 +67,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id <- sub(",.*", "", series_id_orig)
   this_targets = subset(targets, targets$series_id == series_id_orig)  
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*.txt$")
+  series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv)$")
   filename_first_level <- levels(factor(this_targets$Filename))[[1]]
   this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
   
@@ -103,30 +116,36 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       
       # remove suffixes from colnames
       suffixes = c("[. ]Unmethylated[. ][Ss]ignal$", "[. _]Methylated[. ][Ss]ignal$", 
+                   "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
                    "[.]Signal_A$", "[.]Signal_B$", 
                    "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
-                   "[. ]Detection[. ]*Pval$", "[.]Pval$", "[.]Detection$")
+                   "_[ ]?pValue$",
+                   "[. ]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                   "_ M$")
+      orig <- colnames(signals)
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
+      print (colnames(signals))
       samples.all <- colnames(signals)[unmeth_ids]
-      relevant.samples.loc <- match(as.character(this_targets$description), samples.all)
+      
+      try_match_list <- list(this_targets$description, 
+                         # first word
+                         gsub(" .*", '', this_targets$source_name_ch1), gsub(" .*", '', this_targets$description), 
+                         # last word
+                         gsub(".* ", '', this_targets$source_name_ch1)
+      )
+      
+      for(try_match in try_match_list) {
+        relevant.samples.loc <- match(as.character(try_match), samples.all)  
+        if(!all(is.na(relevant.samples.loc))) {
+          break;
+        }
+      }
       if(all(is.na(relevant.samples.loc))) {
-        first_word <- gsub(" .*", '', this_targets$source_name_ch1)
-        relevant.samples.loc <- match(as.character(first_word), samples.all)
-        if(all(is.na(relevant.samples.loc))) {
-          last_word <- gsub(".* ", '', this_targets$source_name_ch1)
-          relevant.samples.loc <- match(as.character(last_word), samples.all)
-          if(all(is.na(relevant.samples.loc))) {
-            first_word <- gsub(";.*", "", this_targets$description)
-            relevant.samples.loc <- match(as.character(first_word), samples.all)
-            if(all(is.na(relevant.samples.loc))) {
-              if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-                v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-                relevant.samples.loc <- which(v)
-              } else {
-                stop('try other option 1')
-              }
-            }
-          }
+        if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+          v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+          relevant.samples.loc <- which(v)
+        } else {
+          stop('try other option 1')
         }
       }
       
@@ -160,18 +179,25 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:20]
+joined_files <- joined_files[1:26]
 
-# skip serieses
-bad_list <- c("GSE30338") # GEOs which I don't know how to parse
-wait_list <- c() # GEOs which I still don't have
+# == skip serieses ==
+# GEOs which I don't know how to parse
+bad_list <- c("GSE30338", "GSE39279", "GSE39560", "GSE37965", "GSE62929", "GSE38266")
+# GEOs which I still don't have
+wait_list <- c()
+# working GEOs
 working_list <- c("GSE62992", "GSE57767", "GSE61653", "GSE29290",
-                  "GSE32146", "GSE32079", "GSE35069", "GSE32283")
+                  "GSE32146", "GSE32079", "GSE35069", "GSE32283",
+                  "GSE36278")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 print(joined_files)
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
+# Remove serieses with idats
+all.series.info <- subset(all.series.info, is.na(supplementary_file))
+
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
@@ -190,3 +216,5 @@ print("DONE")
 #   Sample_1	Sample_2	Sample_3	Sample_4	Sample_5	Sample_6	Sample_7	Sample_8
 
 # GSE32283_Glioblastoma.Brain.txt has lots of NAs
+
+# GSE38266 has hard columns names - should figure how to resolve them against joiner table
