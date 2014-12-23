@@ -27,7 +27,16 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   logger.start(fname=NA)
   rnb.options(disk.dump.big.matrices=TRUE)
   rnb.options(enforce.memory.management=TRUE)
-  rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+  
+  tryCatch({
+    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+  }, error = function(err) {
+    # TODO - on GSE36278 this causes stops with error:
+    # Error in checkSlotAssignment(object, name, value) : 
+    # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
+    # currently, we ignore this error and doesn't call snp.removal
+    print(err)
+  })
   
   betas.table <- meth(rnb.set, row.names=TRUE)
   if(!is.null(p.values)) {
@@ -57,7 +66,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     series_id_fp <- file.path(series_id_folder, series_id_files)
     if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
       # works for GSE62992
-      # => two files of raw signals, signal A and signal B, no pvals      
+      # => two files of raw signals: signal A and signal B, no pvals      
       signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
       colnum <- length(colnames(signals[[1]]))
       samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
@@ -78,7 +87,14 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     } else {
       # works for GSE32079, GSE29290, GSE57767, GSE61653
       # => one raw file with 3 columns for each sample
-      signals <- read_l1_signal_file(series_id_fp)
+      
+      # GSE36278 has two raw files
+      if(length(series_id_fp) == 2) {
+        signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file))
+      } else {
+        signals <- read_l1_signal_file(series_id_fp)  
+      }
+      
       # locate relevant samples
       colnum <- length(colnames(signals))
       unmeth_ids = seq(1, colnum-2, 3)
@@ -89,7 +105,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       suffixes = c("[. ]Unmethylated[. ][Ss]ignal$", "[. _]Methylated[. ][Ss]ignal$", 
                    "[.]Signal_A$", "[.]Signal_B$", 
                    "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
-                   "[. ]Detection[. ]Pval$", "[.]Pval$", "[.]Detection$")
+                   "[. ]Detection[. ]*Pval$", "[.]Pval$", "[.]Detection$")
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
       samples.all <- colnames(signals)[unmeth_ids]
       relevant.samples.loc <- match(as.character(this_targets$description), samples.all)
@@ -100,26 +116,30 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
           last_word <- gsub(".* ", '', this_targets$source_name_ch1)
           relevant.samples.loc <- match(as.character(last_word), samples.all)
           if(all(is.na(relevant.samples.loc))) {
-            if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-              v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-              relevant.samples.loc <- which(v)
-            } else {
-              stop('try other option 1')
+            first_word <- gsub(";.*", "", this_targets$description)
+            relevant.samples.loc <- match(as.character(first_word), samples.all)
+            if(all(is.na(relevant.samples.loc))) {
+              if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+                v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+                relevant.samples.loc <- which(v)
+              } else {
+                stop('try other option 1')
+              }
             }
           }
         }
       }
       
       # assign  unmethylated, methylated and pvalue matrices
-      U <- data.matrix(signals[,unmeth_ids])[,relevant.samples.loc]
-      M <- data.matrix(signals[,meth_ids])[,relevant.samples.loc]
-      signals_pval <- signals[,pval_ids]
+      U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
+      M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
+      signals_pval <- signals[,pval_ids, drop = FALSE]
       # convert the decimal comma into a dot (as in GSE29290)
-      signals_pval <- data.frame(lapply(signals_pval, 
-                                        function(x) gsub(",", ".", x, fixed = TRUE)), 
-                                        row.names=rownames(signals_pval),
-                                        stringsAsFactors=FALSE)
-      p.values <- data.matrix(signals_pval)[,relevant.samples.loc]
+      #signals_pval <- data.frame(lapply(signals_pval, 
+      #                                  function(x) gsub(",", ".", x, fixed = TRUE)), 
+      #                                  row.names=rownames(signals_pval),
+      #                                  stringsAsFactors=FALSE)
+      p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
     }
     betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
     write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
@@ -140,13 +160,15 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[5:13]
+joined_files <- joined_files[1:20]
 
-# remove these samples
-# skip GEOs which I don't know how to parse
-ignore_list <- c("../../data/global/GEO/joined/GSE30338.txt")
-wait_list <- c() # skip GEOs which I still don't have
-joined_files <- joined_files[!(joined_files %in% c(ignore_list, wait_list))]
+# skip serieses
+bad_list <- c("GSE30338") # GEOs which I don't know how to parse
+wait_list <- c() # GEOs which I still don't have
+working_list <- c("GSE62992", "GSE57767", "GSE61653", "GSE29290",
+                  "GSE32146", "GSE32079", "GSE35069", "GSE32283")
+ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
+joined_files <- joined_files[!(joined_files %in% ignore_list)]
 print(joined_files)
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
@@ -159,3 +181,12 @@ ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info)
 
 write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")
+
+# = TODO =
+
+# why GSE35069 output doesn't have tissue name: GSE35069_Healthy..txt
+
+# GSE29290 have same samples in GSE29290_Healthy.Breast.txt and GSE29290_Breast cancer.Breast.txt:
+#   Sample_1	Sample_2	Sample_3	Sample_4	Sample_5	Sample_6	Sample_7	Sample_8
+
+# GSE32283_Glioblastoma.Brain.txt has lots of NAs
