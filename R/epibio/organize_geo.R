@@ -3,10 +3,22 @@ library(RnBeads)
 
 source("config.R")
 source("common.R")
-#source("geo_l1_reader.R")
+
+
+read_joined_file <- function(filename) {
+  t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
+                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
+  if(length(rownames(t)) > 0) {
+    df <- data.frame(Filename=filename, t)
+  } else {
+    # on case that t is empty
+    df <- data.frame(t)
+  }
+  df
+}
 
 read_l1_signal_file <- function(filename) {
-  nrows = 200
+  nrows = 180
   t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
                   nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE)
@@ -19,18 +31,6 @@ read_l1_signal_file <- function(filename) {
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
   t[good_cols]
-}
-
-read_joined_file <- function(filename) {
-  t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
-                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
-  if(length(rownames(t)) > 0) {
-    df <- data.frame(Filename=filename, t)
-  } else {
-    # on case that t is empty
-    df <- data.frame(t)
-  }
-  df
 }
 
 rnb_read_l1_betas <- function(targets, U, M, p.values) {
@@ -129,7 +129,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       
       try_match_list <- list(this_targets$description, 
                          # first word
-                         gsub(" .*", '', this_targets$source_name_ch1), gsub(" .*", '', this_targets$description), 
+                         gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
                          # last word
                          gsub(".* ", '', this_targets$source_name_ch1)
       )
@@ -179,20 +179,19 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:26]
+joined_files <- joined_files[1:40]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse
-bad_list <- c("GSE30338", "GSE39279", "GSE39560", "GSE37965", "GSE62929", "GSE38266")
+bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", "GSE39560")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
-working_list <- c("GSE62992", "GSE57767", "GSE61653", "GSE29290",
-                  "GSE32146", "GSE32079", "GSE35069", "GSE32283",
-                  "GSE36278")
+working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283",
+                  "GSE36278", "GSE29290", "GSE32146", "GSE37362",
+                  "GSE38268", "GSE40853", "GSE39958")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
-print(joined_files)
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # Remove serieses with idats
@@ -218,3 +217,7 @@ print("DONE")
 # GSE32283_Glioblastoma.Brain.txt has lots of NAs
 
 # GSE38266 has hard columns names - should figure how to resolve them against joiner table
+
+# GSE32146 last columns doesn't have name: 509 Unmethylated Signal, 509 Methylated Signal, Detection Pval
+
+# GSE40360 gets: Error in read.table(filename, header = TRUE, row.names = 1, skip = 0,  : more columns than column names
