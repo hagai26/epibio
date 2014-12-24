@@ -19,7 +19,14 @@ read_joined_file <- function(filename) {
 
 read_l1_signal_file <- function(filename) {
   nrows = 180
-  t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep='\t', dec = ".",
+
+  # skip comments starts with: [#"]
+  lines <- readLines(filename, n=20)
+  comment_lines <- grepl('^[#"].*', lines)
+  empty_lines <- grepl('^\\s*$', lines)
+  skip <- which.min(comment_lines | empty_lines) - 1
+  
+  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep='\t', dec = ".",
                   nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE)
   if(length(t) == 0) {
@@ -67,7 +74,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id <- sub(",.*", "", series_id_orig)
   this_targets = subset(targets, targets$series_id == series_id_orig)  
   series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv)$")
+  series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv|tsv)$")
   filename_first_level <- levels(factor(this_targets$Filename))[[1]]
   this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
   
@@ -131,7 +138,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                          # first word
                          gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
                          # last word
-                         gsub(".* ", '', this_targets$source_name_ch1)
+                         gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title)
       )
       
       for(try_match in try_match_list) {
@@ -179,17 +186,18 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:40]
+joined_files <- joined_files[1:50]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse
-bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", "GSE39560")
+bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", 
+              "GSE40360", "GSE39560", "GSE40279")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283",
                   "GSE36278", "GSE29290", "GSE32146", "GSE37362",
-                  "GSE38268", "GSE40853", "GSE39958")
+                  "GSE38268", "GSE40853", "GSE39958", "GSE41114")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -221,3 +229,6 @@ print("DONE")
 # GSE32146 last columns doesn't have name: 509 Unmethylated Signal, 509 Methylated Signal, Detection Pval
 
 # GSE40360 gets: Error in read.table(filename, header = TRUE, row.names = 1, skip = 0,  : more columns than column names
+
+# GSE40279 has different column names (4 per sample):
+# "5815284007_R01C01.AVG_Beta"  "5815284007_R01C01.Intensity" "5815284007_R01C01.SignalA" "5815284007_R01C01.SignalB"
