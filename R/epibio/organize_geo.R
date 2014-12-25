@@ -51,9 +51,16 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   tryCatch({
     rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
   }, error = function(err) {
-    # TODO - on GSE36278 this causes stops with error:
+    # TODO
+    
+    # on GSE36278 this causes stops with error:
     # Error in checkSlotAssignment(object, name, value) : 
     # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
+    
+    # on GSE42118:
+    # <simpleError in checkSlotAssignment(object, name, value): 
+    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
+    
     # currently, we ignore this error and doesn't call snp.removal
     print(err)
   })
@@ -84,6 +91,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     ptime1 <- proc.time()
     print(series_id_files)
     series_id_fp <- file.path(series_id_folder, series_id_files)
+    p.values <- NULL
     if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
       # works for GSE62992
       # => two files of raw signals: signal A and signal B, no pvals      
@@ -103,7 +111,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       colnames(U) <- samples.all
       M <- data.matrix(signals[[2]])
       colnames(M) <- samples.all
-      p.values <- NULL
     } else {
       # works for GSE32079, GSE29290, GSE57767, GSE61653
       # => one raw file with 3 columns for each sample
@@ -120,16 +127,25 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       unmeth_ids = seq(1, colnum-2, 3)
       meth_ids = seq(2, colnum-1, 3)
       pval_ids = seq(3, colnum, 3)
-      
+
       # remove suffixes from colnames
-      suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
-                   "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
-                   "[.]Signal_A$", "[.]Signal_B$", 
-                   "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
-                   "_[ ]?pValue$",
-                   "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
-                   "_detection_pvalue$",
-                   "_ M$")
+      meth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
+                               "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
+                               "[.]Signal_A$", "[.]Signal_B$", 
+                               "_Unmethylated[.]Detection$", "_Methylated[.]Detection$")
+      pvalue_suffixes = c("_[ ]?pValue$",
+                          "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                          "_detection_pvalue$")
+      other_suffixes = c("_ M$")
+      suffixes = c(meth_suffixes, pvalue_suffixes, other_suffixes)
+      not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
+      if (all(not_pvalue_col)) {
+        # no pvalue column (as in GSE42118)
+        unmeth_ids <- seq(1, colnum-1, 2)
+        meth_ids <- seq(2, colnum, 2)
+        pval_ids <- NULL
+      }
+
       orig <- colnames(signals)
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
       print (colnames(signals))
@@ -160,13 +176,13 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
       M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
-      signals_pval <- signals[,pval_ids, drop = FALSE]
-      # convert the decimal comma into a dot (as in GSE29290)
-      #signals_pval <- data.frame(lapply(signals_pval, 
-      #                                  function(x) gsub(",", ".", x, fixed = TRUE)), 
-      #                                  row.names=rownames(signals_pval),
-      #                                  stringsAsFactors=FALSE)
-      p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+      if(!is.null(pval_ids)) {
+        signals_pval <- signals[,pval_ids, drop = FALSE]
+        # convert the decimal comma into a dot (as in GSE29290)
+        signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
+                                   row.names=rownames(signals_pval), stringsAsFactors=FALSE)
+        p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+      }
     }
     betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
     write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
@@ -187,20 +203,22 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:90]
+joined_files <- joined_files[1:85]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse
-bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", 
-              "GSE40360", "GSE39560", "GSE40279", "GSE41826",
-              "GSE41169", "GSE43976", "GSE49377", "GSE48461", "GSE42882")
+bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", 
+              "GSE39560", "GSE40279", "GSE41826", "GSE41169", "GSE43976", 
+              "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573")
 # GEOs which I still don't have
-wait_list <- c()
+wait_list <- c("GSE49031", "GSE46306", "GSE42752", "GSE48684", "GSE48325", 
+               "GSE45187", "GSE44667", "GSE45353", "GSE47627")
 # working GEOs
-working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283",
-                  "GSE36278", "GSE29290", "GSE32146", "GSE37362",
-                  "GSE38268", "GSE40853", "GSE39958", "GSE41114",
-                  "GSE42372", "GSE41273")
+working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
+                  "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
+                  "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
+                  "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
+                  "GSE42118", "GSE42119", "GSE43414")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
