@@ -122,12 +122,13 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       pval_ids = seq(3, colnum, 3)
       
       # remove suffixes from colnames
-      suffixes = c("[. ]Unmethylated[. ][Ss]ignal$", "[. _]Methylated[. ][Ss]ignal$", 
+      suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
                    "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
                    "[.]Signal_A$", "[.]Signal_B$", 
                    "_Unmethylated[.]Detection$", "_Methylated[.]Detection$",
                    "_[ ]?pValue$",
-                   "[. ]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                   "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                   "_detection_pvalue$",
                    "_ M$")
       orig <- colnames(signals)
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
@@ -186,18 +187,20 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:50]
+joined_files <- joined_files[1:90]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse
 bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", 
-              "GSE40360", "GSE39560", "GSE40279")
+              "GSE40360", "GSE39560", "GSE40279", "GSE41826",
+              "GSE41169", "GSE43976", "GSE49377", "GSE48461", "GSE42882")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283",
                   "GSE36278", "GSE29290", "GSE32146", "GSE37362",
-                  "GSE38268", "GSE40853", "GSE39958", "GSE41114")
+                  "GSE38268", "GSE40853", "GSE39958", "GSE41114",
+                  "GSE42372", "GSE41273")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
