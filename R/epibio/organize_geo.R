@@ -21,7 +21,7 @@ read_l1_signal_file <- function(filename) {
   nrows = 180
 
   # skip comments starts with: [#"]
-  lines <- readLines(filename, n=20)
+  lines <- readLines(filename, n=30)
   comment_lines <- grepl('^[#"].*', lines)
   empty_lines <- grepl('^\\s*$', lines)
   skip <- which.min(comment_lines | empty_lines) - 1
@@ -127,6 +127,13 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       unmeth_ids = seq(1, colnum-2, 3)
       meth_ids = seq(2, colnum-1, 3)
       pval_ids = seq(3, colnum, 3)
+      
+      # on GSE47627, pvalue is the first column
+      if(all(grepl(".Detection.Pval", colnames(signals)[unmeth_ids]))) {
+        pval_ids = seq(1, colnum-2, 3)
+        unmeth_ids = seq(2, colnum-1, 3)
+        meth_ids = seq(3, colnum, 3)
+      }
 
       # remove suffixes from colnames
       meth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
@@ -138,6 +145,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                           "_detection_pvalue$")
       other_suffixes = c("_ M$")
       suffixes = c(meth_suffixes, pvalue_suffixes, other_suffixes)
+      
       not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
       if (all(not_pvalue_col)) {
         # no pvalue column (as in GSE42118)
@@ -155,7 +163,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                          # first word
                          gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
                          # last word
-                         gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title)
+                         gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title), gsub(".*[ ;\t]", '', this_targets$description)
       )
       
       for(try_match in try_match_list) {
@@ -203,22 +211,23 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:85]
+joined_files <- joined_files[1:100]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse
 bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", 
               "GSE39560", "GSE40279", "GSE41826", "GSE41169", "GSE43976", 
-              "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573")
+              "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
+              "GSE47627")
 # GEOs which I still don't have
-wait_list <- c("GSE49031", "GSE46306", "GSE42752", "GSE48684", "GSE48325", 
-               "GSE45187", "GSE44667", "GSE45353", "GSE47627")
+wait_list <- c("GSE49031", "GSE46306", "GSE48684", "GSE44667", "GSE45353")
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
                   "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
-                  "GSE42118", "GSE42119", "GSE43414")
+                  "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
+                  "GSE45187", "GSE48325")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -253,3 +262,8 @@ print("DONE")
 
 # GSE40279 has different column names (4 per sample):
 # "5815284007_R01C01.AVG_Beta"  "5815284007_R01C01.Intensity" "5815284007_R01C01.SignalA" "5815284007_R01C01.SignalB"
+
+# GSE47627 has two samples: 
+#  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
+#  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
+# which have raw data on GEO site to download
