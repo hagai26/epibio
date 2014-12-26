@@ -220,14 +220,14 @@ bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360",
               "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
               "GSE47627")
 # GEOs which I still don't have
-wait_list <- c("GSE49031", "GSE46306", "GSE48684", "GSE44667", "GSE45353")
+wait_list <- c()
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
                   "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
-                  "GSE45187", "GSE48325")
+                  "GSE45187", "GSE48325", "GSE49031", "GSE49656")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
