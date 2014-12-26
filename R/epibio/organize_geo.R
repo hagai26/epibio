@@ -235,7 +235,7 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:100]
+joined_files <- joined_files[1:130]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse:
@@ -246,7 +246,9 @@ bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360",
               "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
               "GSE47627", "GSE46306", "GSE48684", "GSE31803")
 # GEOs which I still don't have
-wait_list <- c()
+wait_list <- c("GSE49393", "GSE52576", "GSE50774", "GSE50759", "GSE53162",
+               "GSE52826", "GSE50874", "GSE52731", "GSE52731", "GSE52401",
+               "GSE50798", "GSE53740")
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -254,7 +256,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
-                  "GSE31803", "GSE49542", "GSE44667", "GSE45353")
+                  "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
+                  "GSE50498")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
