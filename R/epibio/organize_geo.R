@@ -1,5 +1,6 @@
 
 library(RnBeads)
+library(stringr)
 
 source("config.R")
 source("common.R")
@@ -25,16 +26,28 @@ read_l1_signal_file <- function(filename) {
   comment_lines <- grepl('^[#"].*', lines)
   empty_lines <- grepl('^\\s*$', lines)
   skip <- which.min(comment_lines | empty_lines) - 1
+  lines <- lines[skip+1:length(lines)]
   
-  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep='\t', dec = ".",
+  # choose correct sep
+  MIN_COLS = 3
+  sep <- '\t'
+  sep_count <- str_count(lines, sep)
+  if(mean(sep_count) < MIN_COLS) {
+    sep <- ','
+    sep_count <- str_count(lines, sep)
+    if(mean(sep_count) < MIN_COLS) {
+      stop("Can't figure out correct sep")
+    }
+  }
+  
+  # skip comments which doesn't look like comments by checking for sep count inside them
+  cols_count <- sapply(strsplit(lines, sep), function(x) sum(x!=""))
+  more_skip <- which.max(cols_count > MIN_COLS) - 1
+  skip <- skip + more_skip
+  
+  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec = ".",
                   nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE)
-  if(length(t) == 0) {
-    # try different sep
-    t <- read.table(filename, header=TRUE, row.names=1, skip=0, sep=',', dec = ".",
-                    nrows=nrows,
-                    check.names=FALSE, stringsAsFactors=FALSE)
-  }
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
   t[good_cols]
@@ -61,6 +74,10 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
     # <simpleError in checkSlotAssignment(object, name, value): 
     # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
     
+    # on GSE44667:
+    # <simpleError in checkSlotAssignment(object, name, value): 
+    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
+    
     # currently, we ignore this error and doesn't call snp.removal
     print(err)
   })
@@ -77,128 +94,135 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
 
 read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   cat('Reading ', series_id_orig, ": ")
-  # when sample is from multiple serieses - use the first only
-  series_id <- sub(",.*", "", series_id_orig)
+  # handle samples which comes from multiple serieses
+  series_id_vec <- unlist(strsplit(series_id_orig, ","))
+  
+  series_id <- NULL
+  for(series_id_tmp in series_id_vec) {
+    series_id_folder <- file.path(big_data_folder, "GEO", series_id_tmp)
+    series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv|tsv)$")
+    if(length(series_id_files) > 0) {
+      series_id <- series_id_tmp
+      break
+    }
+  }
+  if(is.null(series_id)) {
+    stop(paste('no data files found for', series_id_orig))
+  }
+  
+  ptime1 <- proc.time()
+  print(series_id_files)
   this_targets = subset(targets, targets$series_id == series_id_orig)  
-  series_id_folder <- file.path(big_data_folder, "GEO", series_id)
-  series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv|tsv)$")
   filename_first_level <- levels(factor(this_targets$Filename))[[1]]
   this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
-  
-  if(length(series_id_files) == 0) {
-    stop(paste('no txt files inside', series_id_folder))
+  series_id_fp <- file.path(series_id_folder, series_id_files)
+  p.values <- NULL
+  if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
+    # works for GSE62992
+    # => two files of raw signals: signal A and signal B, no pvals      
+    signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
+    colnum <- length(colnames(signals[[1]]))
+    samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
+    
+    if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+      v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+      relevant.samples.loc <- which(v)
+    } else {
+      stop('try other option 3')
+    }
+    
+    # assign  unmethylated, methylated and pvalue matrices
+    U <- data.matrix(signals[[1]])
+    colnames(U) <- samples.all
+    M <- data.matrix(signals[[2]])
+    colnames(M) <- samples.all
   } else {
-    ptime1 <- proc.time()
-    print(series_id_files)
-    series_id_fp <- file.path(series_id_folder, series_id_files)
-    p.values <- NULL
-    if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
-      # works for GSE62992
-      # => two files of raw signals: signal A and signal B, no pvals      
-      signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
-      colnum <- length(colnames(signals[[1]]))
-      samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
-      
+    # works for GSE32079, GSE29290, GSE57767, GSE61653
+    # => one raw file with 3 columns for each sample
+    
+    # GSE36278 has two raw files
+    if(length(series_id_fp) == 2) {
+      signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file))
+    } else {
+      signals <- read_l1_signal_file(series_id_fp)  
+    }
+    
+    # locate relevant samples
+    colnum <- length(colnames(signals))
+    unmeth_ids = seq(1, colnum-2, 3)
+    meth_ids = seq(2, colnum-1, 3)
+    pval_ids = seq(3, colnum, 3)
+    
+    # on GSE47627, pvalue is the first column
+    if(all(grepl(".Detection.Pval", colnames(signals)[unmeth_ids]))) {
+      pval_ids = seq(1, colnum-2, 3)
+      unmeth_ids = seq(2, colnum-1, 3)
+      meth_ids = seq(3, colnum, 3)
+    }
+
+    # remove suffixes from colnames
+    meth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
+                             "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
+                             "[.]Signal_A$", "[.]Signal_B$", 
+                             "_Unmethylated[.]Detection$", "_Methylated[.]Detection$")
+    pvalue_suffixes = c("_[ ]?pValue$",
+                        "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                        "_detection_pvalue$")
+    other_suffixes = c("_ M$")
+    suffixes = c(meth_suffixes, pvalue_suffixes, other_suffixes)
+    
+    not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
+    if (all(not_pvalue_col)) {
+      # no pvalue column (as in GSE42118)
+      unmeth_ids <- seq(1, colnum-1, 2)
+      meth_ids <- seq(2, colnum, 2)
+      pval_ids <- NULL
+    }
+
+    orig <- colnames(signals)
+    colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
+    print (colnames(signals))
+    samples.all <- colnames(signals)[unmeth_ids]
+    
+    try_match_list <- list(this_targets$description, 
+                       # first word
+                       gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
+                       # last word
+                       gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title), gsub(".*[ ;\t]", '', this_targets$description)
+    )
+    
+    for(try_match in try_match_list) {
+      relevant.samples.loc <- match(as.character(try_match), samples.all)  
+      if(!all(is.na(relevant.samples.loc))) {
+        break;
+      }
+    }
+    if(all(is.na(relevant.samples.loc))) {
       if(length(samples.all) == dim(this_all.series.info)[[1]]) {
         v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
         relevant.samples.loc <- which(v)
       } else {
-        stop('try other option 3')
-      }
-      
-      # assign  unmethylated, methylated and pvalue matrices
-      U <- data.matrix(signals[[1]])
-      colnames(U) <- samples.all
-      M <- data.matrix(signals[[2]])
-      colnames(M) <- samples.all
-    } else {
-      # works for GSE32079, GSE29290, GSE57767, GSE61653
-      # => one raw file with 3 columns for each sample
-      
-      # GSE36278 has two raw files
-      if(length(series_id_fp) == 2) {
-        signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file))
-      } else {
-        signals <- read_l1_signal_file(series_id_fp)  
-      }
-      
-      # locate relevant samples
-      colnum <- length(colnames(signals))
-      unmeth_ids = seq(1, colnum-2, 3)
-      meth_ids = seq(2, colnum-1, 3)
-      pval_ids = seq(3, colnum, 3)
-      
-      # on GSE47627, pvalue is the first column
-      if(all(grepl(".Detection.Pval", colnames(signals)[unmeth_ids]))) {
-        pval_ids = seq(1, colnum-2, 3)
-        unmeth_ids = seq(2, colnum-1, 3)
-        meth_ids = seq(3, colnum, 3)
-      }
-
-      # remove suffixes from colnames
-      meth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
-                               "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
-                               "[.]Signal_A$", "[.]Signal_B$", 
-                               "_Unmethylated[.]Detection$", "_Methylated[.]Detection$")
-      pvalue_suffixes = c("_[ ]?pValue$",
-                          "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
-                          "_detection_pvalue$")
-      other_suffixes = c("_ M$")
-      suffixes = c(meth_suffixes, pvalue_suffixes, other_suffixes)
-      
-      not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
-      if (all(not_pvalue_col)) {
-        # no pvalue column (as in GSE42118)
-        unmeth_ids <- seq(1, colnum-1, 2)
-        meth_ids <- seq(2, colnum, 2)
-        pval_ids <- NULL
-      }
-
-      orig <- colnames(signals)
-      colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
-      print (colnames(signals))
-      samples.all <- colnames(signals)[unmeth_ids]
-      
-      try_match_list <- list(this_targets$description, 
-                         # first word
-                         gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
-                         # last word
-                         gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title), gsub(".*[ ;\t]", '', this_targets$description)
-      )
-      
-      for(try_match in try_match_list) {
-        relevant.samples.loc <- match(as.character(try_match), samples.all)  
-        if(!all(is.na(relevant.samples.loc))) {
-          break;
-        }
-      }
-      if(all(is.na(relevant.samples.loc))) {
-        if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-          v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-          relevant.samples.loc <- which(v)
-        } else {
-          stop('try other option 1')
-        }
-      }
-      
-      # assign  unmethylated, methylated and pvalue matrices
-      U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
-      M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
-      if(!is.null(pval_ids)) {
-        signals_pval <- signals[,pval_ids, drop = FALSE]
-        # convert the decimal comma into a dot (as in GSE29290)
-        signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
-                                   row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-        p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+        stop('try other option 1')
       }
     }
-    betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
-    write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
-                sep='\t', col.names=NA, quote=FALSE)
     
-    stime <- (proc.time() - ptime1)[3]
-    cat("   in", stime, "seconds\n")
+    # assign  unmethylated, methylated and pvalue matrices
+    U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
+    M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
+    if(!is.null(pval_ids)) {
+      signals_pval <- signals[,pval_ids, drop = FALSE]
+      # convert the decimal comma into a dot (as in GSE29290)
+      signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
+                                 row.names=rownames(signals_pval), stringsAsFactors=FALSE)
+      p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+    }
   }
+  betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
+  write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
+              sep='\t', col.names=NA, quote=FALSE)
+  
+  stime <- (proc.time() - ptime1)[3]
+  cat("   in", stime, "seconds\n")
 }
 
 work_on_targets <- function(targets, all.series.info) {
@@ -214,11 +238,13 @@ joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
 joined_files <- joined_files[1:100]
 
 # == skip serieses ==
-# GEOs which I don't know how to parse
+# GEOs which I don't know how to parse:
+# - no l1 signals txt file
+# - different parsing on l1 txt file
 bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", 
               "GSE39560", "GSE40279", "GSE41826", "GSE41169", "GSE43976", 
               "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
-              "GSE47627")
+              "GSE47627", "GSE46306", "GSE48684", "GSE31803")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
@@ -227,7 +253,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
-                  "GSE45187", "GSE48325", "GSE49031", "GSE49656")
+                  "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
+                  "GSE31803", "GSE49542", "GSE44667", "GSE45353")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -267,3 +294,8 @@ print("DONE")
 #  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
 #  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
 # which have raw data on GEO site to download
+
+# GSE46306
+# GSE48684 (which also has two different parsing style files)
+# has five columns: SignalA, SignalB, Intensity, AVG_Beta & Detection Pval
+# moreover, it has first column of numeric indexing: 1, 2, 3 ...
