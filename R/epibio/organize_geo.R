@@ -19,7 +19,7 @@ read_joined_file <- function(filename) {
 }
 
 read_l1_signal_file <- function(filename) {
-  nrows = 180
+  nrows = 250
 
   # skip comments starts with: [#"]
   lines <- readLines(filename, n=30)
@@ -29,21 +29,31 @@ read_l1_signal_file <- function(filename) {
   lines <- lines[skip+1:length(lines)]
   
   # choose correct sep
-  MIN_COLS = 3
-  sep <- '\t'
-  sep_count <- str_count(lines, sep)
-  if(mean(sep_count) < MIN_COLS) {
-    sep <- ','
-    sep_count <- str_count(lines, sep)
-    if(mean(sep_count) < MIN_COLS) {
-      stop("Can't figure out correct sep")
+  sep <- NULL
+  MIN_COLS = 4
+  sep_list <- c('\t', ',', ' ')
+  for(sep_it in sep_list) {
+    sep_count <- str_count(lines, sep_it)
+    if(mean(sep_count) >= MIN_COLS) {
+      sep <- sep_it
+      break
     }
+  }
+  if(is.null(sep)) {
+    stop("Can't figure out correct sep")
   }
   
   # skip comments which doesn't look like comments by checking for sep count inside them
   cols_count <- sapply(strsplit(lines, sep), function(x) sum(x!=""))
   more_skip <- which.max(cols_count > MIN_COLS) - 1
   skip <- skip + more_skip
+  lines <- lines[skip+1:length(lines)]
+  
+  # handle GSE50759 - which has first row with only: "unmeth" "meth"   "pval" column names
+  first_row_names <- Filter(function(x) x!="", unique(strsplit(lines[[1]], sep)[[1]]))
+  if(length(first_row_names) < MIN_COLS) {
+    skip <- skip + 1
+  }
   
   t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec = ".",
                   nrows=nrows,
@@ -152,6 +162,30 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     unmeth_ids = seq(1, colnum-2, 3)
     meth_ids = seq(2, colnum-1, 3)
     pval_ids = seq(3, colnum, 3)
+
+    # remove suffixes from colnames
+    unmeth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
+                        "[.]Signal_A$", 
+                        "_Unmethylated[.]Detection$")
+    meth_suffixes = c("[. _][Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
+                      "[.]Signal_B$", 
+                      "_Methylated[.]Detection$")
+    pvalue_suffixes = c("_[ ]?pValue$",
+                        "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
+                        "_detection_pvalue$")
+    other_suffixes = c("_ M$")
+    suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
+    
+    # TODO - use this:
+    # grepl(paste(meth_suffixes, collapse="|"), orig)
+    
+    
+    # GSE53162 which has two rownames columns
+    if(colnames(signals)[[1]] == "ID_Ref") {
+      rownames(signals) <- signals[, 1]
+      signals <- signals[,-c(1)]
+      
+    }
     
     # on GSE47627, pvalue is the first column
     if(all(grepl(".Detection.Pval", colnames(signals)[unmeth_ids]))) {
@@ -159,24 +193,21 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       unmeth_ids = seq(2, colnum-1, 3)
       meth_ids = seq(3, colnum, 3)
     }
-
-    # remove suffixes from colnames
-    meth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[. _][Mm]ethylated[. _][Ss]ignal$", 
-                             "[_ ]{1,2}Unmethylated$", "[_ ]{1,2}Methylated$",
-                             "[.]Signal_A$", "[.]Signal_B$", 
-                             "_Unmethylated[.]Detection$", "_Methylated[.]Detection$")
-    pvalue_suffixes = c("_[ ]?pValue$",
-                        "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
-                        "_detection_pvalue$")
-    other_suffixes = c("_ M$")
-    suffixes = c(meth_suffixes, pvalue_suffixes, other_suffixes)
-    
     not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
     if (all(not_pvalue_col)) {
       # no pvalue column (as in GSE42118)
       unmeth_ids <- seq(1, colnum-1, 2)
       meth_ids <- seq(2, colnum, 2)
       pval_ids <- NULL
+    }
+    
+    # GSE52576 - 5 columns for each sample
+    c <- diff(which(grepl("AVG_Beta", colnames(signals))))
+    skip_5 <- all(c==5)
+    if(skip_5) {
+      unmeth_ids <- seq(2, colnum-3, 5)
+      meth_ids <- seq(3, colnum-2, 5)
+      pval_ids <- seq(4, colnum-1, 5)
     }
 
     orig <- colnames(signals)
@@ -246,9 +277,7 @@ bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360",
               "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
               "GSE47627", "GSE46306", "GSE48684", "GSE31803")
 # GEOs which I still don't have
-wait_list <- c("GSE49393", "GSE52576", "GSE50774", "GSE50759", "GSE53162",
-               "GSE52826", "GSE50874", "GSE52731", "GSE52731", "GSE52401",
-               "GSE50798", "GSE53740")
+wait_list <- c()
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -257,7 +286,7 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
-                  "GSE50498")
+                  "GSE50498", "GSE50774", "GSE52576", "GSE50759")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
