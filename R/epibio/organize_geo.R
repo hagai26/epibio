@@ -136,7 +136,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   other_suffixes = c("_ M$")
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
   
-  
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
   if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
     # works for GSE62992
@@ -170,22 +169,25 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       signals <- read_l1_signal_file(series_id_fp)
     }
     
-    # locate relevant samples
-    if(colnames(signals)[[1]] == "ID_Ref") {
-      # GSE53162 which has two rownames columns
-      rownames(signals) <- signals[, 1]
-      signals <- signals[,-c(1)]
-    } else if (colnames(signals)[[1]] == "TargetID" 
-               && colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
-      # GSE50874
-      rownames(signals) <- signals[, 1]
-      signals <- signals[,-c(1,2,3)]
-      
+    if(grepl("ID_REF$|TargetID$", colnames(signals)[[1]], ignore.case = TRUE)) {
+      if (colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
+        # GSE50874
+        rownames(signals) <- signals[, 1]
+        signals <- signals[,-c(1,2,3)]
+      } else {
+        # GSE53162 which has two rownames columns
+        rownames(signals) <- signals[, 1]
+        signals <- signals[,-c(1)]
+      }
     }
     
     # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874)
     signals <- signals[!grepl("[.]AVG_Beta|[.]Intensity", colnames(signals))]
+    # locate relevant samples
     colnum <- length(colnames(signals))
+    if(colnum == 0) {
+      stop('signals is empty')
+    }
     orig <- colnames(signals)
     
     unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
@@ -249,20 +251,19 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:130]
+joined_files <- joined_files[1:150]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse:
 # - no l1 signals txt file
 # - different parsing on l1 txt file
-no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE31803", "GSE45529", 
-                "GSE41169")
+no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924")
 bad_list <- c(no_l1_list, 
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
-              "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573", 
-              "GSE46306", "GSE48684")
+              "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
+              "GSE55598")
 # GEOs which I still don't have
-wait_list <- c()
+wait_list <- c("GSE54880")
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -271,9 +272,10 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
-                  "GSE50498", "GSE50774", "GSE50759", "GSE53162", "GSE52826", 
+                  "GSE50498", "GSE50774", "GSE50759", "GSE52826", "GSE53128",
                   "GSE52576", "GSE50874", "GSE52731", "GSE52401", "GSE50798", 
-                  "GSE49393", "GSE47627")
+                  "GSE49393", "GSE47627", "GSE53740", "GSE52113", "GSE53162",
+                  "GSE46306", "GSE48684")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
