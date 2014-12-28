@@ -160,7 +160,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     M <- data.matrix(meth_signals)
     colnames(M) <- samples.all
   } else {
-    # works for GSE32079, GSE29290, GSE57767, GSE61653
+    # works for GSE32079, GSE29290, GSE57767, GSE61653, ..
     # => one raw file with 3 columns for each sample
     
     # GSE36278 has two raw files
@@ -171,9 +171,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     }
     
     # locate relevant samples
-
-    # remove suffixes from colnames
-
     if(colnames(signals)[[1]] == "ID_Ref") {
       # GSE53162 which has two rownames columns
       rownames(signals) <- signals[, 1]
@@ -186,8 +183,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
       
     }
     
-    # GSE52576 - has 5 columns per sample: AVG_Beta, Intensity
-    # GSE50874 - has 4 columns per sample: AVG_Beta
+    # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874)
     signals <- signals[!grepl("[.]AVG_Beta|[.]Intensity", colnames(signals))]
     colnum <- length(colnames(signals))
     orig <- colnames(signals)
@@ -195,8 +191,9 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
     meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
     pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
-    # check GSE47627, GSE42118
+    # TODO - check GSE47627, GSE42118
 
+    # remove suffixes from colnames
     colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
     print (colnames(signals))
     samples.all <- colnames(signals)[unmeth_ids]
@@ -235,8 +232,8 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     }
   }
   betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
-  write.table(betas.table, file.path(generated_GEO_folder, paste0(series_id, '_', name, '.txt')), 
-              sep='\t', col.names=NA, quote=FALSE)
+  fn <- file.path(generated_GEO_folder, paste0(series_id, '_', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
+  write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
   
   stime <- (proc.time() - ptime1)[3]
   cat("   in", stime, "seconds\n")
