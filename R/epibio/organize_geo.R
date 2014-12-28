@@ -123,17 +123,20 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id_fp <- file.path(series_id_folder, series_id_files)
   p.values <- NULL
   
-  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _]?[Ss]ignal$", "[_ .]{1,2}Unmethylated$",
+  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _]?[Ss]ignal$", 
+                      "[_ .]{1,2}Unmethylated$",
+                      "_Unmethylated[.]Detection$",
                       "[._: ]Signal[_]?A$", 
-                      "_Unmethylated[.]Detection$")
-  meth_suffixes = c("[. _]?[Mm]ethylated[. _]?[Ss]ignal$", "[_ .]{1,2}Methylated$",
+                      ".UM$")
+  meth_suffixes = c("[. _]?[Mm]ethylated[. _]?[Ss]ignal$", 
+                    "[_ .]{1,2}Methylated$",
+                    "_Methylated[.]Detection$",
                     "[._: ]Signal[_]?B$", 
-                    "_Methylated[.]Detection$")
+                    "_ M$", ".M$")
   pvalue_suffixes = c("_[ ]?pValue$",
                       "[. _:]?Detection[. _]?Pval(.\\d+)?$", "[.]Pval$", "[.]Detection$",
                       "_detection_pvalue$")
-  other_suffixes = c("_ M$")
-  suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
+  suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
   if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
@@ -263,7 +266,7 @@ no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924")
 bad_list <- c(no_l1_list, 
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-              "GSE55598", "GSE55438")
+              "GSE55598", "GSE55438", "GSE56044")
 # GEOs which I still don't have
 too_big <- c("GSE53816", "GSE54882", "GSE58218")
 wait_list <- c(too_big)
@@ -279,7 +282,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE52576", "GSE50874", "GSE52731", "GSE52401", "GSE50798", 
                   "GSE49393", "GSE47627", "GSE53740", "GSE52113", "GSE53162",
                   "GSE46306", "GSE48684", "GSE54399", "GSE54503", "GSE54415",
-                  "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767")
+                  "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767",
+                  "GSE55712", "GSE57831")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -319,3 +323,5 @@ print("DONE")
 #  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
 #  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
 # which have raw data on GEO site to download
+
+# GSE56044 has samples with same names
