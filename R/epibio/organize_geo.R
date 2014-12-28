@@ -80,7 +80,7 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
     # Error in checkSlotAssignment(object, name, value) : 
     # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
     
-    # on GSE42118 (and GSE52576, GSE44667):
+    # on GSE42118 (and GSE52576, GSE44667, GSE53740):
     # <simpleError in checkSlotAssignment(object, name, value): 
     # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
     
@@ -124,10 +124,10 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id_fp <- file.path(series_id_folder, series_id_files)
   p.values <- NULL
   
-  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
+  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _]?[Ss]ignal$", "[_ ]{1,2}Unmethylated$",
                       "[.]Signal_A$", 
                       "_Unmethylated[.]Detection$")
-  meth_suffixes = c("[. _]?[Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
+  meth_suffixes = c("[. _]?[Mm]ethylated[. _]?[Ss]ignal$", "[_ ]{1,2}Methylated$",
                     "[.]Signal_B$", 
                     "_Methylated[.]Detection$")
   pvalue_suffixes = c("_[ ]?pValue$",
@@ -258,10 +258,12 @@ joined_files <- joined_files[1:130]
 # GEOs which I don't know how to parse:
 # - no l1 signals txt file
 # - different parsing on l1 txt file
-bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", 
-              "GSE39560", "GSE40279", "GSE41826", "GSE41169", "GSE43976", 
-              "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
-              "GSE46306", "GSE48684", "GSE31803")
+no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE31803", "GSE45529", 
+                "GSE41169")
+bad_list <- c(no_l1_list, 
+              "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
+              "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573", 
+              "GSE46306", "GSE48684")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
@@ -273,7 +275,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
                   "GSE50498", "GSE50774", "GSE50759", "GSE53162", "GSE52826", 
-                  "GSE52576", "GSE50874", "GSE52731", "GSE52401")
+                  "GSE52576", "GSE50874", "GSE52731", "GSE52401", "GSE50798", 
+                  "GSE49393", "GSE47627")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
