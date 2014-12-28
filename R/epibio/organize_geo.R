@@ -80,11 +80,7 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
     # Error in checkSlotAssignment(object, name, value) : 
     # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
     
-    # on GSE42118:
-    # <simpleError in checkSlotAssignment(object, name, value): 
-    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
-    
-    # on GSE44667:
+    # on GSE42118 (and GSE52576, GSE44667):
     # <simpleError in checkSlotAssignment(object, name, value): 
     # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
     
@@ -127,9 +123,10 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
   series_id_fp <- file.path(series_id_folder, series_id_files)
   p.values <- NULL
-  if(length(grep("Signal_A.NA", series_id_files)) > 0 ) {
+  
+  if(length(grep("Signal_A.NA|_unmeth", series_id_files)) > 0 ) {
     # works for GSE62992
-    # => two files of raw signals: signal A and signal B, no pvals      
+    # => two files of raw signals: signal A and signal B, no pvals
     signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
     colnum <- length(colnames(signals[[1]]))
     samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
@@ -154,20 +151,16 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     if(length(series_id_fp) == 2) {
       signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file))
     } else {
-      signals <- read_l1_signal_file(series_id_fp)  
+      signals <- read_l1_signal_file(series_id_fp)
     }
     
     # locate relevant samples
-    colnum <- length(colnames(signals))
-    unmeth_ids = seq(1, colnum-2, 3)
-    meth_ids = seq(2, colnum-1, 3)
-    pval_ids = seq(3, colnum, 3)
 
     # remove suffixes from colnames
-    unmeth_suffixes = c("[. _][Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
+    unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
                         "[.]Signal_A$", 
                         "_Unmethylated[.]Detection$")
-    meth_suffixes = c("[. _][Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
+    meth_suffixes = c("[. _]?[Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
                       "[.]Signal_B$", 
                       "_Methylated[.]Detection$")
     pvalue_suffixes = c("_[ ]?pValue$",
@@ -175,42 +168,30 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                         "_detection_pvalue$")
     other_suffixes = c("_ M$")
     suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
-    
-    # TODO - use this:
-    # grepl(paste(meth_suffixes, collapse="|"), orig)
-    
-    
-    # GSE53162 which has two rownames columns
+
     if(colnames(signals)[[1]] == "ID_Ref") {
+      # GSE53162 which has two rownames columns
       rownames(signals) <- signals[, 1]
       signals <- signals[,-c(1)]
+    } else if (colnames(signals)[[1]] == "TargetID" 
+               && colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
+      # GSE50874
+      rownames(signals) <- signals[, 1]
+      signals <- signals[,-c(1,2,3)]
       
     }
     
-    # on GSE47627, pvalue is the first column
-    if(all(grepl(".Detection.Pval", colnames(signals)[unmeth_ids]))) {
-      pval_ids = seq(1, colnum-2, 3)
-      unmeth_ids = seq(2, colnum-1, 3)
-      meth_ids = seq(3, colnum, 3)
-    }
-    not_pvalue_col <- grepl(meth_suffixes[[1]], colnames(signals)[pval_ids]) | grepl(meth_suffixes[[2]], colnames(signals)[pval_ids])
-    if (all(not_pvalue_col)) {
-      # no pvalue column (as in GSE42118)
-      unmeth_ids <- seq(1, colnum-1, 2)
-      meth_ids <- seq(2, colnum, 2)
-      pval_ids <- NULL
-    }
-    
-    # GSE52576 - 5 columns for each sample
-    c <- diff(which(grepl("AVG_Beta", colnames(signals))))
-    skip_5 <- all(c==5)
-    if(skip_5) {
-      unmeth_ids <- seq(2, colnum-3, 5)
-      meth_ids <- seq(3, colnum-2, 5)
-      pval_ids <- seq(4, colnum-1, 5)
-    }
-
+    # GSE52576 - has 5 columns per sample: AVG_Beta, Intensity
+    # GSE50874 - has 4 columns per sample: AVG_Beta
+    signals <- signals[!grepl("[.]AVG_Beta|[.]Intensity", colnames(signals))]
+    colnum <- length(colnames(signals))
     orig <- colnames(signals)
+    
+    unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
+    meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
+    pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
+    # check GSE47627, GSE42118
+
     colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
     print (colnames(signals))
     samples.all <- colnames(signals)[unmeth_ids]
@@ -275,7 +256,7 @@ joined_files <- joined_files[1:130]
 bad_list <- c("GSE30338", "GSE37754", "GSE37965", "GSE39279", "GSE40360", 
               "GSE39560", "GSE40279", "GSE41826", "GSE41169", "GSE43976", 
               "GSE49377", "GSE48461", "GSE42882", "GSE45529", "GSE46573", 
-              "GSE47627", "GSE46306", "GSE48684", "GSE31803")
+              "GSE46306", "GSE48684", "GSE31803")
 # GEOs which I still don't have
 wait_list <- c()
 # working GEOs
@@ -286,7 +267,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
-                  "GSE50498", "GSE50774", "GSE52576", "GSE50759")
+                  "GSE50498", "GSE50774", "GSE50759", "GSE53162",
+                  "GSE52826", "GSE52576", "GSE50874")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
