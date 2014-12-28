@@ -54,10 +54,12 @@ read_l1_signal_file <- function(filename) {
   if(length(first_row_names) < MIN_COLS) {
     skip <- skip + 1
   }
-  
+
+  # turn off the interpretation of comments
+  # because there are samples names with # sometimes (as in GSE58280)
   t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec = ".",
                   nrows=nrows,
-                  check.names=FALSE, stringsAsFactors=FALSE)
+                  check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
   t[good_cols]
@@ -134,7 +136,8 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
                     "[._: ]Signal[_]?B$", 
                     "_ M$", ".M$")
   pvalue_suffixes = c("_[ ]?pValue$",
-                      "[. _:]?Detection[. _]?Pval(.\\d+)?$", "[.]Pval$", "[.]Detection$",
+                      "[. _:]?Detection[. _]?P[Vv]al(.\\d+)?$", 
+                      "[.]Pval$", "[.]Detection$",
                       "_detection_pvalue$")
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
@@ -256,20 +259,22 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:168]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse:
 # - no l1 signals txt file
 # - different parsing on l1 txt file
 no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924")
-bad_list <- c(no_l1_list, 
+not_released_list <- c("GSE62003")
+bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-              "GSE55598", "GSE55438", "GSE56044")
+              "GSE55598", "GSE55438", "GSE56044", "GSE61044")
 # GEOs which I still don't have
-too_big <- c("GSE53816", "GSE54882", "GSE58218")
-wait_list <- c(too_big)
+too_big <- c("GSE53816", "GSE54882", "GSE58218", "GSE59685", "GSE61151")
+wait_list <- c(too_big, "GSE59157", "GSE58651", "GSE61257", "GSE60753",
+               "GSE61258", "GSE61259", "GSE61151", "GSE61431", 
+               "GSE61380", "GSE62640", "GSE62003")
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -283,7 +288,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE49393", "GSE47627", "GSE53740", "GSE52113", "GSE53162",
                   "GSE46306", "GSE48684", "GSE54399", "GSE54503", "GSE54415",
                   "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767",
-                  "GSE55712", "GSE57831")
+                  "GSE55712", "GSE57831", "GSE55734", "GSE56420", "GSE53840",
+                  "GSE58280", "GSE61653", "GSE63499", "GSE62992")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
