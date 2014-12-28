@@ -97,7 +97,6 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
-
 read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   cat('Reading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
@@ -125,13 +124,13 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   p.values <- NULL
   
   unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _]?[Ss]ignal$", "[_ ]{1,2}Unmethylated$",
-                      "[.]Signal_A$", 
+                      "[._: ]Signal[_]?A$", 
                       "_Unmethylated[.]Detection$")
   meth_suffixes = c("[. _]?[Mm]ethylated[. _]?[Ss]ignal$", "[_ ]{1,2}Methylated$",
-                    "[.]Signal_B$", 
+                    "[._: ]Signal[_]?B$", 
                     "_Methylated[.]Detection$")
   pvalue_suffixes = c("_[ ]?pValue$",
-                      "[. _]?Detection[. _]?Pval(.\\d+)?$", "[.]Pval$", "[.]Detection$",
+                      "[. _:]?Detection[. _]?Pval(.\\d+)?$", "[.]Pval$", "[.]Detection$",
                       "_detection_pvalue$")
   other_suffixes = c("_ M$")
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
@@ -227,10 +226,12 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
     if(!is.null(pval_ids)) {
       signals_pval <- signals[,pval_ids, drop = FALSE]
-      # convert the decimal comma into a dot (as in GSE29290)
-      signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
+      if(length(signals_pval) > 0) {
+        # convert the decimal comma into a dot (as in GSE29290)
+        signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
                                  row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-      p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+        p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+      }
     }
   }
   betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
@@ -261,9 +262,9 @@ no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924")
 bad_list <- c(no_l1_list, 
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-              "GSE55598")
+              "GSE55598", "GSE55438")
 # GEOs which I still don't have
-wait_list <- c("GSE54880")
+wait_list <- c("GSE53816")
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -275,7 +276,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE50498", "GSE50774", "GSE50759", "GSE52826", "GSE53128",
                   "GSE52576", "GSE50874", "GSE52731", "GSE52401", "GSE50798", 
                   "GSE49393", "GSE47627", "GSE53740", "GSE52113", "GSE53162",
-                  "GSE46306", "GSE48684")
+                  "GSE46306", "GSE48684", "GSE54399", "GSE54503", "GSE54415",
+                  "GSE54880", "GSE55571")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -290,7 +292,7 @@ splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
 ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info)
 
-write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
+#write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")
 
 # = TODO =
