@@ -169,6 +169,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     }
     
     if(grepl("ID_REF$|TargetID$", colnames(signals)[[1]], ignore.case = TRUE)) {
+      # GSE46306, GSE48684
       if (colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
         # GSE50874
         rownames(signals) <- signals[, 1]
@@ -252,7 +253,7 @@ work_on_targets <- function(targets, all.series.info) {
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
 folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
-joined_files <- joined_files[1:154]
+joined_files <- joined_files[1:168]
 
 # == skip serieses ==
 # GEOs which I don't know how to parse:
@@ -264,8 +265,8 @@ bad_list <- c(no_l1_list,
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438")
 # GEOs which I still don't have
-too_big <- c("GSE53816", "GSE54882")
-wait_list <- c(too_big, "GSE53840")
+too_big <- c("GSE53816", "GSE54882", "GSE58218")
+wait_list <- c(too_big)
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -278,7 +279,7 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE52576", "GSE50874", "GSE52731", "GSE52401", "GSE50798", 
                   "GSE49393", "GSE47627", "GSE53740", "GSE52113", "GSE53162",
                   "GSE46306", "GSE48684", "GSE54399", "GSE54503", "GSE54415",
-                  "GSE54880", "GSE55571", "GSE54776", "GSE54670")
+                  "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
@@ -318,8 +319,3 @@ print("DONE")
 #  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
 #  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
 # which have raw data on GEO site to download
-
-# GSE46306
-# GSE48684 (which also has two different parsing style files)
-# has five columns: SignalA, SignalB, Intensity, AVG_Beta & Detection Pval
-# moreover, it has first column of numeric indexing: 1, 2, 3 ...
