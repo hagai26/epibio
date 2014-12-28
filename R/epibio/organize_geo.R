@@ -124,12 +124,28 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id_fp <- file.path(series_id_folder, series_id_files)
   p.values <- NULL
   
-  if(length(grep("Signal_A.NA|_unmeth", series_id_files)) > 0 ) {
+  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
+                      "[.]Signal_A$", 
+                      "_Unmethylated[.]Detection$")
+  meth_suffixes = c("[. _]?[Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
+                    "[.]Signal_B$", 
+                    "_Methylated[.]Detection$")
+  pvalue_suffixes = c("_[ ]?pValue$",
+                      "[. _]?Detection[. _]?Pval(.\\d+)?$", "[.]Pval$", "[.]Detection$",
+                      "_detection_pvalue$")
+  other_suffixes = c("_ M$")
+  suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
+  
+  
+  unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
+  if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
-    signals <- lapply(series_id_fp, FUN=read_l1_signal_file)
-    colnum <- length(colnames(signals[[1]]))
-    samples.all <- gsub("[.]Signal_A","", colnames(signals[[1]]))
+    unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files])
+    meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files])
+    
+    colnum <- length(colnames(unmeth_signals))
+    samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
     
     if(length(samples.all) == dim(this_all.series.info)[[1]]) {
       v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
@@ -139,9 +155,9 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     }
     
     # assign  unmethylated, methylated and pvalue matrices
-    U <- data.matrix(signals[[1]])
+    U <- data.matrix(unmeth_signals)
     colnames(U) <- samples.all
-    M <- data.matrix(signals[[2]])
+    M <- data.matrix(meth_signals)
     colnames(M) <- samples.all
   } else {
     # works for GSE32079, GSE29290, GSE57767, GSE61653
@@ -157,17 +173,6 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     # locate relevant samples
 
     # remove suffixes from colnames
-    unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _][Ss]ignal$", "[_ ]{1,2}Unmethylated$",
-                        "[.]Signal_A$", 
-                        "_Unmethylated[.]Detection$")
-    meth_suffixes = c("[. _]?[Mm]ethylated[. _][Ss]ignal$", "[_ ]{1,2}Methylated$",
-                      "[.]Signal_B$", 
-                      "_Methylated[.]Detection$")
-    pvalue_suffixes = c("_[ ]?pValue$",
-                        "[. _]Detection[. ]?Pval$", "[.]Pval$", "[.]Detection$",
-                        "_detection_pvalue$")
-    other_suffixes = c("_ M$")
-    suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes, other_suffixes)
 
     if(colnames(signals)[[1]] == "ID_Ref") {
       # GSE53162 which has two rownames columns
@@ -267,8 +272,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
-                  "GSE50498", "GSE50774", "GSE50759", "GSE53162",
-                  "GSE52826", "GSE52576", "GSE50874")
+                  "GSE50498", "GSE50774", "GSE50759", "GSE53162", "GSE52826", 
+                  "GSE52576", "GSE50874", "GSE52731", "GSE52401")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
