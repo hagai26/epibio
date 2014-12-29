@@ -131,18 +131,18 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   series_id_fp <- file.path(series_id_folder, series_id_files)
   p.values <- NULL
   
-  unmeth_suffixes = c("[. _]?[Uu]nmethylated[. _]?[Ss]ignal$", 
-                      "[_ .]{1,2}Unmethylated$",
+  unmeth_suffixes = c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
+                      "[_ .]{1,2}[Uu]nmethylated$",
                       "_Unmethylated[.]Detection$",
                       "[._: ]Signal[_]?A$", 
                       ".UM$")
-  meth_suffixes = c("[. _]?[Mm]ethylated[. _]?[Ss]ignal$", 
-                    "[_ .]{1,2}Methylated$",
+  meth_suffixes = c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
+                    "[_ .]{1,2}[Mm]ethylated$",
                     "_Methylated[.]Detection$",
                     "[._: ]Signal[_]?B$", 
                     "_ M$", ".M$")
   pvalue_suffixes = c("_[ ]?pValue$",
-                      "[. _:]?Detection[. _]?P[Vv]al(.\\d+)?$", 
+                      "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
                       "[.]Pval$", "[.]Detection$",
                       "_detection_pvalue$")
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
@@ -278,7 +278,7 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE55598", "GSE55438", "GSE56044", "GSE61044")
 # GEOs which I still don't have
 too_big <- c("GSE53816", "GSE54882", "GSE58218", "GSE59685", "GSE61151")
-wait_list <- c(too_big, "GSE61431", "GSE61380")
+wait_list <- c(too_big)
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
                   "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
@@ -294,7 +294,8 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767",
                   "GSE55712", "GSE57831", "GSE55734", "GSE56420", "GSE53840",
                   "GSE58280", "GSE61653", "GSE63499", "GSE62992", "GSE61256",
-                  "GSE61257")
+                  "GSE61257", "GSE61431", "GSE60753", "GSE61256", "GSE61259",
+                  "GSE59157", "GSE61258", "GSE58651", "GSE62640")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 
