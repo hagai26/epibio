@@ -18,7 +18,9 @@ read_joined_file <- function(filename) {
 
 read_l1_signal_file <- function(filename, nrows) {
   # skip comments starts with: [#"]
-  lines <- readLines(filename, n=30)
+  con <- gzfile(filename)
+  lines <- readLines(con, n=30)
+  close(con)
   comment_lines <- grepl('^[#"].*', lines)
   empty_lines <- grepl('^\\s*$', lines)
   skip <- which.min(comment_lines | empty_lines) - 1
@@ -59,7 +61,7 @@ read_l1_signal_file <- function(filename, nrows) {
 
   # turn off the interpretation of comments
   # because there are samples names with # sometimes (as in GSE58280)
-  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec='.', nrows=nrows,
+  t <- read.table(gzfile(filename), header=TRUE, row.names=1, skip=skip, sep=sep, dec='.', nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]

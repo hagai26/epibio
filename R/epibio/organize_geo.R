@@ -40,15 +40,15 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
-read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
+read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo_data_folder) {
   cat('Reading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
   
   series_id <- NULL
   for(series_id_tmp in series_id_vec) {
-    series_id_folder <- file.path(big_data_folder, "GEO", series_id_tmp)
-    series_id_files <- list.files(series_id_folder, pattern="*.(txt|csv|tsv)$")
+    series_id_folder <- file.path(geo_data_folder, series_id_tmp)
+    series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
     if(length(series_id_files) > 0) {
       series_id <- series_id_tmp
       break
@@ -156,7 +156,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     )
     
     for(try_match in try_match_list) {
-      relevant.samples.loc <- match(as.character(try_match), samples.all)  
+      relevant.samples.loc <- match(samples.all, as.character(try_match))
       if(!all(is.na(relevant.samples.loc))) {
         break;
       }
@@ -169,6 +169,8 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
         stop('try other option 1')
       }
     }
+    # Remove NA's
+    relevant.samples.loc[!is.na(relevant.samples.loc)]
     
     # assign  unmethylated, methylated and pvalue matrices
     U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
@@ -191,16 +193,16 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   cat("   in", stime, "seconds\n")
 }
 
-work_on_targets <- function(targets, all.series.info) {
+work_on_targets <- function(targets, all.series.info, geo_data_folder) {
   series_id <- levels(factor(targets$series_id))
   name <- paste0(levels(factor(targets$disease)), ".", levels(factor(targets$tissue)))
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
-  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name)
+  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name, geo_data_folder)
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
-folder <- file.path(data_folder, "global/GEO/joined")
-joined_files <- list.files(folder, full.names = TRUE, pattern="*.txt")
+joined_folder <- file.path(data_folder, "global/GEO/joined")
+joined_files <- list.files(joined_folder, full.names = TRUE, pattern="*.txt")
 
 # == skip serieses ==
 # GEOs which I don't know how to parse:
@@ -233,8 +235,13 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE60753", "GSE61256", "GSE61259", "GSE61257", "GSE61431",
                   "GSE61258", "GSE58651")
 working_not_skip <- c("GSE38268", "GSE62640")
-ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
+ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
+
+only_vec <- c("GSE30338", "GSE32079", "GSE32146", "GSE29290")
+only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
+joined_files <- joined_files[(joined_files %in% only_list)]
+print(joined_files)
 #joined_files <- head(joined_files, 4) # XXX
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
@@ -246,7 +253,8 @@ relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
-ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info)
+geo_data_folder <- file.path(data_folder, 'external_disk', 'GEO')
+ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info, geo_data_folder)
 
 #write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")
@@ -278,5 +286,4 @@ print("DONE")
 
 # GSE61380 has spaces inside its header names which is the sep as well.
 # this makes the header with length 298 and data with length of 100
-
 
