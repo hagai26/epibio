@@ -1,74 +1,10 @@
 
 library(RnBeads)
-library(stringr)
 
 source("config.R")
 source("common.R")
+source("geo_utils.R")
 
-
-read_joined_file <- function(filename) {
-  t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
-                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
-  if(length(rownames(t)) > 0) {
-    df <- data.frame(Filename=filename, t)
-  } else {
-    # on case that t is empty
-    df <- data.frame(t)
-  }
-  df
-}
-
-read_l1_signal_file <- function(filename) {
-  nrows = 250
-
-  # skip comments starts with: [#"]
-  lines <- readLines(filename, n=30)
-  comment_lines <- grepl('^[#"].*', lines)
-  empty_lines <- grepl('^\\s*$', lines)
-  skip <- which.min(comment_lines | empty_lines) - 1
-  lines <- lines[skip+1:length(lines)]
-  
-  # choose correct sep
-  sep <- NULL
-  MIN_COLS = 4
-  sep_list <- c('\t', ',', ' ')
-  for(sep_it in sep_list) {
-    sep_count <- str_count(lines, sep_it)
-    if(mean(sep_count) >= MIN_COLS) {
-      sep <- sep_it
-      break
-    }
-  }
-  if(is.null(sep)) {
-    stop("Can't figure out correct sep")
-  }
-  
-  # skip comments which doesn't look like comments by checking for sep count inside them
-  cols_count <- sapply(strsplit(lines, sep), function(x) sum(x!=""))
-  more_skip <- which.max(cols_count > MIN_COLS) - 1
-  skip <- skip + more_skip
-  lines <- lines[skip+1:length(lines)]
-  
-  # handle GSE50759 - which has first row with only: "unmeth" "meth"   "pval" column names
-  first_row_names <- Filter(function(x) x!="", unique(strsplit(lines[[1]], sep)[[1]]))
-  if(length(first_row_names) < MIN_COLS) {
-    skip <- skip + 1
-  }
-  
-  id_ref_on_other_line <- grepl(paste0("^ID_REF", sep), lines[[2 + skip]])
-  if(id_ref_on_other_line) {
-    skip <- skip + 1
-  }
-  
-
-  # turn off the interpretation of comments
-  # because there are samples names with # sometimes (as in GSE58280)
-  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec='.', nrows=nrows,
-                  check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
-  # remove columns which doesn't have labels on header (like in GSE32146)
-  good_cols <- colnames(t)[colnames(t) != ""]
-  t[good_cols]
-}
 
 rnb_read_l1_betas <- function(targets, U, M, p.values) {
   pheno <- targets[, c('description','tissue','cell_type','disease')]
@@ -143,15 +79,16 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
   pvalue_suffixes = c("_[ ]?pValue$",
                       "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
                       "[.]Pval$", "[.]Detection$",
-                      "_detection_pvalue$")
+                      "[_ ]detection[_ ]p[-]?value[s]?$")
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
+  nrows = 250
   if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
-    unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files])
-    meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files])
+    unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files], nrows)
+    meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files], nrows)
     
     colnum <- length(colnames(unmeth_signals))
     samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
@@ -174,9 +111,9 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name) {
     
     # GSE36278 has two raw files
     if(length(series_id_fp) == 2) {
-      signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file))
+      signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file, nrows))
     } else {
-      signals <- read_l1_signal_file(series_id_fp)
+      signals <- read_l1_signal_file(series_id_fp, nrows)
     }
     
     if(grepl("ID_REF$|TargetID$", colnames(signals)[[1]], ignore.case = TRUE)) {
@@ -280,7 +217,7 @@ too_big <- c("GSE53816", "GSE54882", "GSE58218", "GSE59685", "GSE61151")
 wait_list <- c(too_big)
 # working GEOs
 working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278", 
-                  "GSE29290", "GSE32146", "GSE37362", "GSE38268", "GSE40853", 
+                  "GSE29290", "GSE32146", "GSE37362", "GSE40853", "GSE59157",
                   "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
                   "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
@@ -293,10 +230,12 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE54880", "GSE55571", "GSE54776", "GSE54670", "GSE57767",
                   "GSE55712", "GSE57831", "GSE55734", "GSE56420", "GSE53840",
                   "GSE58280", "GSE61653", "GSE63499", "GSE62992", "GSE61256",
-                  "GSE61257", "GSE61431", "GSE60753", "GSE61256", "GSE61259",
-                  "GSE59157", "GSE61258", "GSE58651", "GSE62640")
+                  "GSE60753", "GSE61256", "GSE61259", "GSE61257", "GSE61431",
+                  "GSE61258", "GSE58651")
+working_not_skip <- c("GSE38268", "GSE62640")
 ignore_list <- paste0("../../data/global/GEO/joined/", c(bad_list, wait_list, working_list), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
+#joined_files <- head(joined_files, 4) # XXX
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # Remove serieses with idats
