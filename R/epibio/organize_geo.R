@@ -63,8 +63,7 @@ read_l1_signal_file <- function(filename) {
 
   # turn off the interpretation of comments
   # because there are samples names with # sometimes (as in GSE58280)
-  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec = ".",
-                  nrows=nrows,
+  t <- read.table(filename, header=TRUE, row.names=1, skip=skip, sep=sep, dec='.', nrows=nrows,
                   check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
@@ -275,7 +274,7 @@ not_released_list <- c("GSE62003")
 bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-              "GSE55598", "GSE55438", "GSE56044", "GSE61044")
+              "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380")
 # GEOs which I still don't have
 too_big <- c("GSE53816", "GSE54882", "GSE58218", "GSE59685", "GSE61151")
 wait_list <- c(too_big)
@@ -337,3 +336,8 @@ print("DONE")
 # which have raw data on GEO site to download
 
 # GSE56044 has samples with same names
+
+# GSE61380 has spaces inside its header names which is the sep as well.
+# this makes the header with length 298 and data with length of 100
+
+
