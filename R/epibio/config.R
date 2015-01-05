@@ -10,3 +10,5 @@ samples_filename <- file.path(idat_folder, "samples.csv")
 
 big_data_folder <- file.path(data_folder, "big")
 small_data_folder <- file.path(data_folder, "small")
+
+external_disk_data_path <- file.path(data_folder, 'external_disk')

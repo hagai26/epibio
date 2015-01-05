@@ -86,7 +86,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
-  nrows = 250
+  nrows = 500
   if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
@@ -204,6 +204,7 @@ work_on_targets <- function(targets, all.series.info, geo_data_folder) {
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
+
 joined_folder <- file.path(data_folder, "global/GEO/joined")
 joined_files <- list.files(joined_folder, full.names = TRUE, pattern="*.txt")
 
@@ -240,7 +241,7 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
 working_not_skip <- c("GSE38268", "GSE62640")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
-only_vec <- c("GSE32146")
+only_vec <- c("GSE32146", "GSE29290", "GSE30338", "GSE32079")
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 joined_files <- joined_files[(joined_files %in% only_list)]
@@ -256,7 +257,7 @@ relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
-geo_data_folder <- file.path(data_folder, 'external_disk', 'GEO')
+geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info, geo_data_folder)
 
 #write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
