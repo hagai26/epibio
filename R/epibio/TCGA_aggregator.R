@@ -40,6 +40,8 @@ work_on_targets <- function(targets, baseDir) {
 dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 # targets
+idat_folder <- file.path(data_folder, "small", "TCGA_L1", "450K_idat")
+samples_filename <- file.path(idat_folder, "samples.csv")
 targets <- read.csv(samples_filename, stringsAsFactors = FALSE)
 targets$Basename <- file.path(idat_folder, paste(targets$Sentrix.ID, targets$Sentrix.position, sep="_"))
 

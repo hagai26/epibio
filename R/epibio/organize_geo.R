@@ -40,8 +40,8 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
-read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo_data_folder) {
-  cat('Reading ', series_id_orig, ": ")
+read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo_data_folder, generated_GEO_folder) {
+  cat('\tReading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
   
@@ -148,7 +148,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
 
     # remove suffixes from colnames
     colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
-    print (colnames(signals))
+    #print (colnames(signals))
     samples.all <- colnames(signals)[unmeth_ids]
     
     try_match_list <- list(this_targets$description, 
@@ -189,7 +189,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
     }
   }
   betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
-  fn <- file.path(generated_GEO_folder, paste0(series_id, '_', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
+  fn <- file.path(generated_GEO_folder, paste0(series_id, '__', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
   write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
   
   stime <- (proc.time() - ptime1)[3]
@@ -200,7 +200,7 @@ work_on_targets <- function(targets, all.series.info, geo_data_folder) {
   series_id <- levels(factor(targets$series_id))
   name <- paste0(levels(factor(targets$disease)), ".", levels(factor(targets$tissue)))
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
-  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name, geo_data_folder)
+  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name, geo_data_folder, generated_GEO_folder)
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
