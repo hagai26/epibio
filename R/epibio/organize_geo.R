@@ -49,6 +49,9 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
   for(series_id_tmp in series_id_vec) {
     series_id_folder <- file.path(geo_data_folder, series_id_tmp)
     series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
+    # filter non relevant files
+    non_relevant_patterns <- c("_processed_")
+    series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, collapse="|"), series_id_files)]
     if(length(series_id_files) > 0) {
       series_id <- series_id_tmp
       break
@@ -237,7 +240,7 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
 working_not_skip <- c("GSE38268", "GSE62640")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
-only_vec <- c("GSE30338", "GSE32079", "GSE32146", "GSE29290")
+only_vec <- c("GSE32146")
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 joined_files <- joined_files[(joined_files %in% only_list)]

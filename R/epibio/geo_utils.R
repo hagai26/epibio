@@ -57,7 +57,6 @@ read_l1_signal_file <- function(filename, nrows) {
   if(id_ref_on_other_line) {
     skip <- skip + 1
   }
-  
 
   # turn off the interpretation of comments
   # because there are samples names with # sometimes (as in GSE58280)
