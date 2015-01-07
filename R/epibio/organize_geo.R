@@ -9,38 +9,11 @@ source("geo_utils.R")
 rnb_read_l1_betas <- function(targets, U, M, p.values) {
   pheno <- targets[, c('description','tissue','cell_type','disease')]
   rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
-  
-  logger.start(fname=NA)
-  rnb.options(disk.dump.big.matrices=TRUE)
-  rnb.options(enforce.memory.management=TRUE)
-  
-  tryCatch({
-    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
-  }, error = function(err) {
-    # TODO
-    
-    # on GSE36278 this causes stops with error:
-    # Error in checkSlotAssignment(object, name, value) : 
-    # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
-    
-    # on GSE42118 (and GSE52576, GSE44667, GSE53740):
-    # <simpleError in checkSlotAssignment(object, name, value): 
-    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
-    
-    # currently, we ignore this error and doesn't call snp.removal
-    print(err)
-  })
-  
-  betas.table <- meth(rnb.set, row.names=TRUE)
-  if(!is.null(p.values)) {
-    pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)
-    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
-  }
-  destroy(rnb.set)  
+  betas.table <- process_rnb_set_to_betas(rnb.set, !is.null(p.values))
   betas.table
 }
 
-read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo_data_folder, generated_GEO_folder) {
+read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder) {
   cat('\tReading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
@@ -189,8 +162,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
     }
   }
   betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
-  fn <- file.path(generated_GEO_folder, paste0(series_id, '__', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
-  write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
+  write_beta_values_table(generated_GEO_folder, series_id, study, type, betas.table)
   
   stime <- (proc.time() - ptime1)[3]
   cat("   in", stime, "seconds\n")
@@ -198,9 +170,11 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, name, geo
 
 work_on_targets <- function(targets, all.series.info, geo_data_folder) {
   series_id <- levels(factor(targets$series_id))
-  name <- paste0(levels(factor(targets$disease)), ".", levels(factor(targets$tissue)))
+  study <- levels(factor(targets$disease))[[1]]
+  type <- levels(factor(targets$tissue))[[1]]
+  name <- create_name(study, type)
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
-  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, name, geo_data_folder, generated_GEO_folder)
+  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder)
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)

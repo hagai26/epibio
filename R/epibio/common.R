@@ -30,3 +30,49 @@ mgsub <- function(pattern, replacement, x, ...) {
   }
   result
 }
+
+
+process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
+  logger.start(fname=NA)
+  rnb.options(disk.dump.big.matrices=TRUE)
+  rnb.options(enforce.memory.management=TRUE)
+  
+  tryCatch({
+    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+  }, error = function(err) {
+    # TODO
+    
+    # on GSE36278 this causes stops with error:
+    # Error in checkSlotAssignment(object, name, value) : 
+    # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
+    
+    # on GSE42118 (and GSE52576, GSE44667, GSE53740):
+    # <simpleError in checkSlotAssignment(object, name, value): 
+    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
+    
+    # currently, we ignore this error and doesn't call snp.removal
+    print(err)
+  })
+  
+  
+  #rnb.set <- rnb.execute.normalization(rnb.set, 
+  #                                     method="bmiq",bgcorr.method="methylumi.lumi")
+  betas.table <- meth(rnb.set, row.names=TRUE)
+  if(has_pvalues) {
+    pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)
+    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
+  }
+  destroy(rnb.set)  
+  betas.table
+}
+
+create_name <- function(study, type) {
+  name <- paste0(study, ".", type)  
+  name
+}
+
+write_beta_values_table <- function(folder, fn_prefix, study, type, betas.table) {
+  name <- create_name(study, type)  
+  fn <- file.path(folder, paste0(fn_prefix, '__', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
+  write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
+}
