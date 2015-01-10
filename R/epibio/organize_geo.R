@@ -59,8 +59,8 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
-  nrows = 500
-  if(length(series_id_files) > 1 && length(unmeth_files) > 0 ) {
+  nrows = 500 # XXX (should be -1 on production)
+  if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
     unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files], nrows)
@@ -126,9 +126,12 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
     
     try_match_list <- list(this_targets$description, 
                        # first word
-                       gsub("[ ;].*", '', this_targets$source_name_ch1), gsub("[ ;].*", '', this_targets$description), 
+                       gsub("[ ;].*", '', this_targets$source_name_ch1), 
+                       gsub("[ ;].*", '', this_targets$description), 
                        # last word
-                       gsub(".* ", '', this_targets$source_name_ch1), gsub(".* ", '', this_targets$title), gsub(".*[ ;\t]", '', this_targets$description)
+                       gsub(".* ", '', this_targets$source_name_ch1), 
+                       gsub(".* ", '', this_targets$title), 
+                       gsub(".*[ ;\t]", '', this_targets$description)
     )
     
     for(try_match in try_match_list) {
@@ -211,13 +214,12 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE55712", "GSE57831", "GSE55734", "GSE56420", "GSE53840",
                   "GSE58280", "GSE61653", "GSE63499", "GSE62992", "GSE61256",
                   "GSE60753", "GSE61256", "GSE61259", "GSE61257", "GSE61431",
-                  "GSE61258", "GSE58651")
-working_not_skip <- c("GSE38268", "GSE62640")
+                  "GSE61258", "GSE58651", "GSE38268", "GSE62640")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
-#only_vec <- c("GSE32146", "GSE29290", "GSE30338", "GSE32079")
-#only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
-#joined_files <- joined_files[(joined_files %in% only_list)]
+only_vec <- list.files(geo_data_folder)
+only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
+joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 print(joined_files)
 
