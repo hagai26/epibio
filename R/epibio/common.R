@@ -67,12 +67,14 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
 }
 
 create_name <- function(study, type) {
-  name <- paste0(study, ".", type)  
+  name <- paste0(study, ".", type)
+  rep_pat <- c(" ", "/", ":")
+  name <- mgsub(rep_pat, rep(c("_"), length(rep_pat)), name , fixed=TRUE)
   name
 }
 
 write_beta_values_table <- function(folder, fn_prefix, study, type, betas.table) {
   name <- create_name(study, type)  
-  fn <- file.path(folder, paste0(fn_prefix, '__', mgsub(c(" ", "/"), rep(c("_"), 2), name , fixed=TRUE), '.txt'))
+  fn <- file.path(folder, paste0(fn_prefix, '___', name, '.txt'))
   write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
 }

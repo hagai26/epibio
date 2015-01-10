@@ -1,0 +1,29 @@
+GEO
+
+# why GSE35069 output doesn't have tissue name: GSE35069_Healthy..txt
+
+# GSE29290 have same samples in GSE29290_Healthy.Breast.txt and GSE29290_Breast cancer.Breast.txt:
+#   Sample_1	Sample_2	Sample_3	Sample_4	Sample_5	Sample_6	Sample_7	Sample_8
+
+# GSE32283_Glioblastoma.Brain.txt has lots of NAs
+
+# GSE38266 has hard columns names - should figure how to resolve them against joiner table
+
+# GSE32146 last columns doesn't have name: 509 Unmethylated Signal, 509 Methylated Signal, Detection Pval
+
+# GSE40360 gets: Error in read.table(filename, header = TRUE, row.names = 1, skip = 0,  : more columns than column names
+
+# GSE40279 has different column names (4 per sample):
+# "5815284007_R01C01.AVG_Beta"  "5815284007_R01C01.Intensity" "5815284007_R01C01.SignalA" "5815284007_R01C01.SignalB"
+
+# GSE47627 has two samples: 
+#  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
+#  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
+# which have raw data on GEO site to download
+
+# GSE56044 has samples with same names
+
+# GSE61380 has spaces inside its header names which is the sep as well.
+# this makes the header with length 298 and data with length of 100
+
+

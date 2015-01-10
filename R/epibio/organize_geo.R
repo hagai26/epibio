@@ -169,9 +169,9 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
 }
 
 work_on_targets <- function(targets, all.series.info, geo_data_folder) {
-  series_id <- levels(factor(targets$series_id))
   study <- levels(factor(targets$disease))[[1]]
   type <- levels(factor(targets$tissue))[[1]]
+  series_id <- levels(factor(targets$series_id))
   name <- create_name(study, type)
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
   ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder)
@@ -215,12 +215,11 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
 working_not_skip <- c("GSE38268", "GSE62640")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
-only_vec <- c("GSE32146", "GSE29290", "GSE30338", "GSE32079")
-only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
+#only_vec <- c("GSE32146", "GSE29290", "GSE30338", "GSE32079")
+#only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
+#joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
-joined_files <- joined_files[(joined_files %in% only_list)]
 print(joined_files)
-#joined_files <- head(joined_files, 4) # XXX
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # Remove serieses with idats
@@ -234,34 +233,4 @@ splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info, geo_data_folder)
 
-#write_nrow_per_group(splited_targets, file.path(generated_GEO_folder, 'GEO_all_kinds.csv'))
 print("DONE")
-
-# = TODO =
-
-# why GSE35069 output doesn't have tissue name: GSE35069_Healthy..txt
-
-# GSE29290 have same samples in GSE29290_Healthy.Breast.txt and GSE29290_Breast cancer.Breast.txt:
-#   Sample_1	Sample_2	Sample_3	Sample_4	Sample_5	Sample_6	Sample_7	Sample_8
-
-# GSE32283_Glioblastoma.Brain.txt has lots of NAs
-
-# GSE38266 has hard columns names - should figure how to resolve them against joiner table
-
-# GSE32146 last columns doesn't have name: 509 Unmethylated Signal, 509 Methylated Signal, Detection Pval
-
-# GSE40360 gets: Error in read.table(filename, header = TRUE, row.names = 1, skip = 0,  : more columns than column names
-
-# GSE40279 has different column names (4 per sample):
-# "5815284007_R01C01.AVG_Beta"  "5815284007_R01C01.Intensity" "5815284007_R01C01.SignalA" "5815284007_R01C01.SignalB"
-
-# GSE47627 has two samples: 
-#  GSM1180517   B cells [CD19_Fer] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180517)
-#  GSM1180518 	B cells [CD19_Javi] (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1180518)
-# which have raw data on GEO site to download
-
-# GSE56044 has samples with same names
-
-# GSE61380 has spaces inside its header names which is the sep as well.
-# this makes the header with length 298 and data with length of 100
-
