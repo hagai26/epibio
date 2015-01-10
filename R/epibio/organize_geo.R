@@ -13,7 +13,8 @@ rnb_read_l1_betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
-read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder) {
+read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, type, 
+                             geo_data_folder, generated_GEO_folder) {
   cat('\tReading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
@@ -59,7 +60,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
-  nrows = 500 # XXX (should be -1 on production)
+  nrows = 2000 # XXX (should be -1 on production)
   if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
@@ -221,6 +222,7 @@ only_vec <- list.files(geo_data_folder)
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
+joined_files <- head(joined_files, 10) # XXX
 print(joined_files)
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))

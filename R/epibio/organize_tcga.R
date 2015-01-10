@@ -36,4 +36,7 @@ dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 tcga_folder <- file.path(external_disk_data_path, 'TCGA')
 tcga_inside_folders <- list.files(tcga_folder)
+tcga_inside_folders <- head(tcga_inside_folders, 5) #XXX
 lapply(tcga_inside_folders, FUN=work_on_tcga_folder, tcga_folder)
+
+print("DONE")
