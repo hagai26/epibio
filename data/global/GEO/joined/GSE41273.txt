@@ -1,0 +1,63 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1013175	12582.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013176	11028.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013177	11046.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013178	11094.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013179	11108.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013180	11194.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013181	11242.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013182	11252.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013183	11289.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013184	11303.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013185	11378.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013186	11383.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013187	11429.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013188	11498.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013189	11641.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013190	11004.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013191	11052.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013192	11057.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013193	11075.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013194	11089.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013195	11156.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013196	11197.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013197	11201.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013198	11216.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013199	11285.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013200	11299.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013201	11325.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013202	11415.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013203	11417.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013204	11428.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013205	11452.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013206	11459.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013207	11484.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013208	11511.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013209	11546.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013210	11557.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013211	11599.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013212	11018.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013213	11245.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013214	11270.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013215	11597.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013216	11077.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013217	11218.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013218	11251.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013219	11296.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013220	11298.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013221	11312.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013222	11318.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013223	11366.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013224	11381.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013225	13358.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013226	11561.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013227	11696.s1	GSE41273	"Peripheral blood, control"	"gender: male;	tissue: blood;	phenotype: Control"	None	Standard DNA extraction protocol	NA		1	Whole blood		Healthy
+GSM1013228	XX_FX2	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013229	XX_FX1	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013230	XX_FX3	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013231	XX_FX5	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013232	XX_FX4	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013233	XX_FX6	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013234	XX_FX_BLOOD_1	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013235	XX_FX_BLOOD_4_77	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X
+GSM1013236	XX_FX_BLOOD_11_63	GSE41273	"Peripheral blood, Case"	"gender: male;	tissue: blood;	phenotype: Case"	None	Standard DNA extraction protocol	NA		0	Whole blood		Fragile X

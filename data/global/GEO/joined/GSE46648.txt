@@ -1,0 +1,7 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1133590	CD14_Monocyte_individual1	GSE46648	peripheral blood isolated CD14+ cells (monocytes)	"gender: Female;	age: 28;	cell type: CD14+ monocytes"	no treatment	Proteinase K extraction	CD14+ Monocyte		1		CD14+ Monocytes	Healthy
+GSM1133591	CD14_Monocyte_individual2	GSE46648	peripheral blood isolated CD14+ cells (monocytes)	"gender: Female;	age: 27;	cell type: CD14+ monocytes"	no treatment	Proteinase K extraction	CD14+ Monocyte		1		CD14+ Monocytes	Healthy
+GSM1133592	CD14_Monocyte_individual3	GSE46648	peripheral blood isolated CD14+ cells (monocytes)	"gender: Female;	age: 29;	cell type: CD14+ monocytes"	no treatment	Proteinase K extraction	CD14+ Monocyte		1		CD14+ Monocytes	Healthy
+GSM1133593	Osteoclast_individual1	GSE46648	Monocyte derived osteoclasts	"gender: Female;	age: 28;	cell type: Monocyte-derived osteoclasts"	no treatment	Proteinase K extraction	Osteoclast		1		Monocyte-derived osteoclasts (culture)	Healthy
+GSM1133594	Osteoclast_individual2	GSE46648	Monocyte derived osteoclasts	"gender: Female;	age: 27;	cell type: Monocyte-derived osteoclasts"	no treatment	Proteinase K extraction	Osteoclast		1		Monocyte-derived osteoclasts (culture)	Healthy
+GSM1133595	Osteoclast_individual3	GSE46648	Monocyte derived osteoclasts	"gender: Female;	age: 29;	cell type: Monocyte-derived osteoclasts"	no treatment	Proteinase K extraction	Osteoclast		1		Monocyte-derived osteoclasts (culture)	Healthy

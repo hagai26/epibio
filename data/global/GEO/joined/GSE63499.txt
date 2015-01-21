@@ -1,0 +1,61 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1551109	1004.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1004.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551113	1008.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1008.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551117	1012.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1012.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551121	1017.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1017.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551125	1018.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1018.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551131	1026.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1026.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551135	1029.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1029.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551139	1030.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1030.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551143	1031.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1031.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551147	1038.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1038.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551151	1039.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1039.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551155	1040.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1040.B.16		1		CD16+	Healthy with folate supplementation
+GSM1551106	1003.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1003.B.16		1		CD16+	Obese with folate supplementation
+GSM1551128	1025.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1025.B.16		1		CD16+	Obese with folate supplementation
+GSM1551158	1045.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1045.B.16		1		CD16+	Obese with folate supplementation
+GSM1551160	1047.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1047.B.16		1		CD16+	Obese with folate supplementation
+GSM1551162	1049.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1049.B.16		1		CD16+	Obese with folate supplementation
+GSM1551164	1050.BL.CD16	GSE63499	CD16+	"timepoint: Baseline;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1050.B.16		1		CD16+	Obese with folate supplementation
+GSM1551110	1004.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1004.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551114	1008.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1008.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551118	1012.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1012.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551122	1017.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1017.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551126	1018.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1018.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551132	1026.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1026.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551136	1029.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1029.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551140	1030.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1030.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551144	1031.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1031.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551148	1038.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1038.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551152	1039.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1039.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551156	1040.BL.WB	GSE63499	Whole Blood	"timepoint: Baseline;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1040.B.W		1	Whole blood		Healthy with folate supplementation
+GSM1551107	1004.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1004.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551111	1008.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1008.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551115	1012.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1012.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551119	1017.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1017.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551123	1018.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1018.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551129	1026.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1026.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551133	1029.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1029.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551137	1030.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1030.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551141	1031.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1031.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551145	1038.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1038.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551149	1039.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1039.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551153	1040.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1040.8.16		1		CD16+	Healthy with folate supplementation
+GSM1551105	1003.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1003.8.16		1		CD16+	Obese with folate supplementation
+GSM1551127	1025.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1025.8.16		1		CD16+	Obese with folate supplementation
+GSM1551157	1045.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1045.8.16		1		CD16+	Obese with folate supplementation
+GSM1551159	1047.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1047.8.16		1		CD16+	Obese with folate supplementation
+GSM1551161	1049.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1049.8.16		1		CD16+	Obese with folate supplementation
+GSM1551163	1050.8wk.CD16	GSE63499	CD16+	"timepoint: Week 8;	celltype: CD16+;	obesity: Obese"	NA	Invitrogen Puregene Genomic DNA kit	1050.8.16		1		CD16+	Obese with folate supplementation
+GSM1551108	1004.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1004.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551112	1008.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1008.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551116	1012.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1012.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551120	1017.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1017.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551124	1018.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1018.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551130	1026.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1026.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551134	1029.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1029.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551138	1030.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1030.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551142	1031.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1031.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551146	1038.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1038.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551150	1039.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1039.8.W		1	Whole blood		Healthy with folate supplementation
+GSM1551154	1040.8wk.WB	GSE63499	Whole Blood	"timepoint: Week 8;	celltype: Whole Blood;	obesity: Normal Weight"	NA	Invitrogen Puregene Genomic DNA kit	1040.8.W		1	Whole blood		Healthy with folate supplementation

@@ -1,0 +1,10 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1195075	E06_113_SB	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-mc"	None	Standard DNA extraction protocol	Sample name: E06_113_SB		0			
+GSM1195076	E06_113_TAB_1	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_113_TAB_1		0			
+GSM1195077	E06_113_TAB_2	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_113_TAB_2		0			
+GSM1195078	E06_114_SB	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-mc"	None	Standard DNA extraction protocol	Sample name: E06_114_SB		0			
+GSM1195079	E06_114_TAB_1	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_114_TAB_1		0			
+GSM1195080	E06_114_TAB_2	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_114_TAB_2		0			
+GSM1195081	E06_45_SB	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-mc"	None	Standard DNA extraction protocol	Sample name: E06_45_SB		0			
+GSM1195082	E06_45_TAB_1	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_45_TAB_1		0			
+GSM1195083	E06_45_TAB_2	GSE49177	"Homo sapiens, Brain"	"tissue: Brain;	methylation type: 5-hmc"	None	Standard DNA extraction protocol	Sample name: E06_45_TAB_2		0			

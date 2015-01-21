@@ -1,0 +1,6 @@
+"gsm"	"title"	"series_id"	"source_name_ch1"	"characteristics_ch1"	"treatment_protocol_ch1"	"extract_protocol_ch1"	"description"	"supplementary_file"	"relevant"	"tissue"	"cell_type"	"disease"
+"GSM1207161"	"SUM159"	"GSE46073,GSE49794"	"breast cancer cell line"	"cell line: SUM159;	cell type: breast cancer;	subtype: Basal-like cells"	NA	"standard procedure"	"HumanMethylation450_1"	""	""	""	""	""
+"GSM1207162"	"T47D"	"GSE46073,GSE49794"	"breast cancer cell line"	"cell line: T47D;	cell type: breast cancer;	subtype: Luminal cells"	NA	"standard procedure"	"HumanMethylation450_2"	""	""	""	""	""
+"GSM1207163"	"MCF7"	"GSE46073,GSE49794"	"breast cancer cell line"	"cell line: MCF7;	cell type: breast cancer;	subtype: Luminal cells"	NA	"standard procedure"	"HumanMethylation450_3"	""	""	""	""	""
+"GSM1207164"	"MDAMB231"	"GSE46073,GSE49794"	"breast cancer cell line"	"cell line: MDAMB231;	cell type: breast cancer;	subtype: Basal-like cells"	NA	"standard procedure"	"HumanMethylation450_4"	""	""	""	""	""
+"GSM1207165"	"HCC2157"	"GSE46073,GSE49794"	"breast cancer cell line"	"cell line: HCC2157;	cell type: breast cancer;	subtype: Basal-like cells"	NA	"standard procedure"	"HumanMethylation450_5"	""	""	""	""	""
