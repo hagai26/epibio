@@ -1,0 +1,8 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1339338	myoblasts before myogenic stimuli	GSE55571	myoblasts	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		0			
+GSM1339339	myoblasts 3 days after myogenic stimuli	GSE55571	myoblasts	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		0			
+GSM1339340	myoblasts 8 days after myogenic stimuli	GSE55571	myoblasts	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		0			
+GSM1339341	myoblasts 15 days after myogenic stimuli	GSE55571	myoblasts	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		0			
+GSM1339342	human mesenchymal stem cells	GSE55571	mesenchymal stem cells	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		0			
+GSM1339343	skeletal muscle tissue from healthy individual 1	GSE55571	skeletal muscle	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		1	Skeletal muscle		Healthy
+GSM1339344	skeletal muscle tissue from healthy individual 2	GSE55571	skeletal muscle	"gender: male;	health status: healthy"	NA	DNA extracted by Phenol:Chloroform:Isoamylalcohol (Sigma)	NA		1	Skeletal muscle		Healthy

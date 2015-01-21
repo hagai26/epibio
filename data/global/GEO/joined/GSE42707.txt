@@ -1,0 +1,2 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1048217	450k	"GSE42310,GSE42707"	HES-2	cell line: embryonic stem cell line HES-2	N/A	DNA was purified using Dneasy Blood and Tissue Kit (Qiagen) and Bisulfite converted using the EpiTect Bisulfite Kit (Qiagen)	"SAMPLE 1;	embryonic stem cell line"		0			

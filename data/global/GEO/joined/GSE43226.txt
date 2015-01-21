@@ -1,0 +1,2 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1058988	Lymphoblast cell line	GSE43226	Human lymphoblast cell line	"cell line: JWL;	cell type: Human lymphoblast"	NA	"tail lysis buffer, proteinase K digestion, phenol chloroform extraction, ethanol precipitation"	NA		0			

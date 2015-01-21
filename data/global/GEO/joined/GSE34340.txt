@@ -1,0 +1,7 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM847569	LNCAP_1	"GSE34340,GSE34403"	LNCaP cells	"tissue: prostate;	cell line: LNCaP"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R01C02		0			
+GSM847570	LNCAP_2	"GSE34340,GSE34403"	LNCaP cells	"tissue: prostate;	cell line: LNCaP"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R02C02		0			
+GSM847571	LNCAP_3	"GSE34340,GSE34403"	LNCaP cells	"tissue: prostate;	cell line: LNCaP"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R03C02		0			
+GSM847572	PREC_1	"GSE34340,GSE34403"	PrEC cells	"tissue: prostate;	cell line: PrEC"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R04C02		0			
+GSM847573	PREC_2	"GSE34340,GSE34403"	PrEC cells	"tissue: prostate;	cell line: PrEC"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R05C02		0			
+GSM847574	PREC_3	"GSE34340,GSE34403"	PrEC cells	"tissue: prostate;	cell line: PrEC"	Native DNA was used	DNA was extracted using the QIAamp Mini Kit (Qiagen) following manufacturers instructions.	Sample name: 6264509024_R06C02		0			

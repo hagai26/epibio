@@ -1,0 +1,41 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM765860	CDH+103	GSE30870	Nonagenarians	"age: 103 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: CD4+ cells"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765861	CDH+NewBorn	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: CD4+ cells"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765862	OLD16	GSE30870	Nonagenarians	"age: 97 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765863	OLD17	GSE30870	Nonagenarians	"age: 95 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765864	OLD18	GSE30870	Nonagenarians	"age: 97 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765865	OLD19	GSE30870	Nonagenarians	"age: 97 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765866	OLD21	GSE30870	Nonagenarians	"age: 98 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765867	OLD23	GSE30870	Nonagenarians	"age: 96 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765868	OLD24	GSE30870	Nonagenarians	"age: 100 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765869	A29NEW	GSE30870	Nonagenarians	"age: 90 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765870	A30NEW	GSE30870	Nonagenarians	"age: 91 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765871	A31NEW	GSE30870	Nonagenarians	"age: 92 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765872	A32NEW	GSE30870	Nonagenarians	"age: 89 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765873	A33NEW	GSE30870	Nonagenarians	"age: 90 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765874	A34NEW	GSE30870	Nonagenarians	"age: 89 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765875	A26NEW	GSE30870	Nonagenarians	"age: 90 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765876	A27NEW	GSE30870	Nonagenarians	"age: 91 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765877	A35NEW	GSE30870	Nonagenarians	"age: 89 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765878	A36NEW	GSE30870	Nonagenarians	"age: 89 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765879	A37NEW	GSE30870	Nonagenarians	"age: 90 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765880	A38NEW	GSE30870	Nonagenarians	"age: 90 years;	disease status: healthy sample;	tissue: Whole blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765881	CB10	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765882	CB76	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765883	CB20	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765884	CB13	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765885	CB15	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765886	CB8	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765887	CB9	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765888	CB23	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765889	CB82	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765890	CB17	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765891	CB35	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765892	CB7	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765893	CB5	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765894	CB12	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765895	CB18	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765896	CB37	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765897	CB36	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765898	CB70	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			
+GSM765899	CB40	GSE30870	Newborns	"age: Newborn;	disease status: healthy sample;	tissue: Cord blood;	cell type: PBMNC"	NA	Total DNA was isolated by standard procedures	NA		NA			

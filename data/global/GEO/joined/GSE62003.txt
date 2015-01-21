@@ -1,0 +1,71 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1518179	96973.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 77"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518183	95947.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518190	75004.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 75"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518194	71133.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518198	69827.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518202	66749.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 84"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518206	50190.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 71"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518209	48652.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518213	47229.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 77"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518217	54343.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 79"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518221	40910.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518225	39487.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518229	33284.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518233	26171.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518237	24632.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518241	8464.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 81"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518245	2382.1	GSE62003	normal_cognitive_function_TP1	"tissue: Whole blood;	Sex: Male;	age: 67"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518180	96973.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 77"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518184	95947.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518187	94524.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 70"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518191	75004.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 75"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518195	71133.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518199	69827.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518203	66749.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 84"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518207	50190.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 71"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518210	48652.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518214	47229.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 77"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518218	54343.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 79"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518222	40910.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518226	39487.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518230	33284.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518234	26171.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518238	24632.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518242	8464.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 81"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518246	2382.2	GSE62003	normal_cognitive_function_TP2	"tissue: Whole blood;	Sex: Male;	age: 67"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		
+GSM1518185	17122.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518188	10918.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 69"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518192	95032.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518196	13648.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518200	32093.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518204	7951.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 88"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518211	73576.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518215	63904.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 76"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518219	60033.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518223	92308.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518227	40507.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 75"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518231	80182.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518235	91507.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Female;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518239	69595.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518243	12335.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 82"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518247	47626.1	GSE62003	pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518182	73979.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 76"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518186	17122.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518189	10918.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 69"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518193	95032.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518197	13648.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518201	32093.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 72"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518205	7951.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 88"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518208	84163.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 71"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518212	73576.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518216	63904.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 76"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518220	60033.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518224	92308.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518228	40507.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 75"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518232	80182.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 78"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518236	91507.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Female;	age: 73"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518240	69595.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 74"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518244	12335.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 82"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518248	47626.2	GSE62003	pre-symptomatic_AD_TP2	"tissue: Whole blood;	Sex: Male;	age: 68"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D
+GSM1518181	73979.1	GSE62003	pre-symptomatic_pre-symptomatic_AD_TP1	"tissue: Whole blood;	Sex: Male;	age: 76"	NA	Phenol chloroform DNA extraction	NA		1	Whole blood		Pre-symptomatic AD + T2D

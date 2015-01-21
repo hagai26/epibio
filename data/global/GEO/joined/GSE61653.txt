@@ -1,0 +1,129 @@
+gsm	title	series_id	source_name_ch1	characteristics_ch1	treatment_protocol_ch1	extract_protocol_ch1	description	supplementary_file	relevant	tissue	cell_type	disease
+GSM1509941	SID [B10072]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509942	SID [B10073]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509943	SID [B10132]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509944	SID [B10175]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509945	SID [B10284]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509946	SID [B10307]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509947	SID [B10388]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509948	SID [B10585]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509949	SID [B5965]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509950	SID [B5996]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509951	SID [B6033]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509952	SID [B6111]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509953	SID [B6828]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509954	SID [B7005]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509955	SID [B7144]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509956	SID [B7228]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509957	SID [B7326]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509958	SID [B7683]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509959	SID [B7759]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509960	SID [B7811]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509961	SID [B7858]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509962	SID [B7862]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509963	SID [B7941]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509964	SID [B8073]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509965	SID [B8158]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509966	SID [B8240]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509967	SID [B8269]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509968	SID [B8453]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509969	SID [B8467]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509970	SID [B8489]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509971	SID [B8497]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509972	SID [B8543]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509973	SID [B8697]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509974	SID [B8710]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509975	SID [B8722]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509976	SID [B8834]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509977	SID [B8845]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509978	SID [B8874]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509979	SID [B8883]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509980	SID [B8928]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509981	SID [B8962]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509982	SID [B8977]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509983	SID [B8993]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509984	SID [B9048]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509985	SID [B9076]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509986	SID [B9116]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509987	SID [B9139]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509988	SID [B9157]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509989	SID [B9167]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509990	SID [B9169]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509991	SID [B9215]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509992	SID [B9233]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509993	SID [B9304]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509994	SID [B9318]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509995	SID [B9377]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509996	SID [B9403]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509997	SID [B9433]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509998	SID [B9465]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1509999	SID [B9552]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510000	SID [B9599]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510001	SID [B9603]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510002	SID [B9622]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510003	SID [B9646]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510004	SID [B9938]	GSE61653	Blood	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Whole blood		Healthy
+GSM1510005	SID [S10072]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510006	SID [S10073]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510007	SID [S10132]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510008	SID [S10175]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510009	SID [S10284]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510010	SID [S10307]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510011	SID [S10388]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510012	SID [S10585]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510013	SID [S5965]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510014	SID [S5996]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510015	SID [S6033]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510016	SID [S6111]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510017	SID [S6828]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510018	SID [S7005]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510019	SID [S7144]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510020	SID [S7228]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510021	SID [S7326]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510022	SID [S7683]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510023	SID [S7759]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510024	SID [S7811]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510025	SID [S7858]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510026	SID [S7862]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510027	SID [S7941]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510028	SID [S8073]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510029	SID [S8158]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510030	SID [S8240]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510031	SID [S8269]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510032	SID [S8453]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510033	SID [S8467]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510034	SID [S8489]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510035	SID [S8497]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510036	SID [S8543]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510037	SID [S8697]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510038	SID [S8710]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510039	SID [S8722]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510040	SID [S8834]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510041	SID [S8845]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510042	SID [S8874]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510043	SID [S8883]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510044	SID [S8928]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510045	SID [S8962]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510046	SID [S8977]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510047	SID [S8993]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510048	SID [S9048]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510049	SID [S9076]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510050	SID [S9116]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510051	SID [S9139]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510052	SID [S9157]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510053	SID [S9167]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510054	SID [S9169]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510055	SID [S9215]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510056	SID [S9233]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510057	SID [S9304]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510058	SID [S9318]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510059	SID [S9377]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510060	SID [S9403]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510061	SID [S9433]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510062	SID [S9465]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510063	SID [S9552]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510064	SID [S9599]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510065	SID [S9603]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510066	SID [S9622]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510067	SID [S9646]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
+GSM1510068	SID [S9938]	GSE61653	Saliva	race: African American	NA	Invitrogen Puregene Genomic DNA kit	HumanMethylation450 BeadChip - standard protocol		1	Saliva		Healthy
