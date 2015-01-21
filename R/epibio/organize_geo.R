@@ -218,11 +218,13 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE61258", "GSE58651", "GSE38268", "GSE62640")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
+geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 joined_files <- head(joined_files, 10) # XXX
+print("joined_files:")
 print(joined_files)
 
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
