@@ -246,7 +246,7 @@ only_vec <- list.files(geo_data_folder)
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
-joined_files <- head(joined_files, 26) # XXX
+#joined_files <- head(joined_files, 26) # XXX
 print("joined_files:")
 print(joined_files)
 
