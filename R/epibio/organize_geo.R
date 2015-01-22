@@ -72,7 +72,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
   
   unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
-  nrows = 4000 # XXX (should be -1 on production)
+  nrows = 10000 # XXX (should be -1 on production)
   if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
     # works for GSE62992
     # => two files of raw signals: signal A and signal B, no pvals
@@ -242,7 +242,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
-only_vec <- c("GSE49031") # XXX
+#only_vec <- c("GSE49031") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
