@@ -26,4 +26,9 @@ GEO
 # GSE61380 has spaces inside its header names which is the sep as well.
 # this makes the header with length 298 and data with length of 100
 
-
+# GSE42752 -
+# Some samples are missing:
+#need these samples:
+#	"42" "43" "44" "45" "46" "47" "48" "49" "50" "51" "52" "53" "54" "55" "56" "57" "58" "59" "60" "61" "62" "63"
+# but in the gz file there is only:
+# 32, 35, 36, 57, 58, 68, 71, 72, 74, 83...

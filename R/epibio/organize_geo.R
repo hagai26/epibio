@@ -216,7 +216,8 @@ not_released_list <- c("GSE62003")
 bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-              "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380")
+              "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
+              "GSE42752")
 # GEOs which I still don't have
 too_big <- c("GSE53816", "GSE54882", "GSE58218", "GSE59685", "GSE61151")
 wait_list <- c(too_big)
@@ -225,7 +226,7 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE29290", "GSE32146", "GSE37362", "GSE40853", "GSE59157",
                   "GSE39958", "GSE41114", "GSE42372", "GSE41273", "GSE43091", 
                   "GSE44661", "GSE43293", "GSE43298", "GSE46394", "GSE44684",
-                  "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE42752",
+                  "GSE42118", "GSE42119", "GSE43414", "GSE47512", "GSE62640",
                   "GSE45187", "GSE48325", "GSE49031", "GSE49656", "GSE49576", 
                   "GSE31803", "GSE49542", "GSE44667", "GSE45353", "GSE51758",
                   "GSE50498", "GSE50774", "GSE50759", "GSE52826", "GSE53128",
@@ -236,12 +237,12 @@ working_list <- c("GSE32079", "GSE38266", "GSE35069", "GSE32283", "GSE36278",
                   "GSE55712", "GSE57831", "GSE55734", "GSE56420", "GSE53840",
                   "GSE58280", "GSE61653", "GSE63499", "GSE62992", "GSE61256",
                   "GSE60753", "GSE61256", "GSE61259", "GSE61257", "GSE61431",
-                  "GSE61258", "GSE58651", "GSE38268", "GSE62640")
+                  "GSE61258", "GSE58651", "GSE38268")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE32146") # XXX
+#only_vec <- c("GSE42752") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
