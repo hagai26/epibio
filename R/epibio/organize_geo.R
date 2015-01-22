@@ -6,14 +6,21 @@ source("common.R")
 source("geo_utils.R")
 
 
-rnb_read_l1_betas <- function(targets, U, M, p.values) {
+#' Build new RnbeadsRawset
+rnbReadL1Betas <- function(targets, U, M, p.values) {
   pheno <- targets[, c('description','tissue','cell_type','disease')]
-  rnb.set <- new('RnBeadRawSet', pheno, U=U, M=M, p.values=p.values, useff=FALSE)
+  rnb.set <- RnBeadRawSet(pheno, U=U, M=M, p.values=p.values, useff=FALSE)
   betas.table <- process_rnb_set_to_betas(rnb.set, !is.null(p.values))
   betas.table
 }
 
-read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, type, 
+#' Read GEO L1 data of given series id
+#' 
+#' @param series_id_orig
+#' @param targets
+#' 
+#' @return nothing
+readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type, 
                              geo_data_folder, generated_GEO_folder) {
   cat('\tReading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
@@ -150,7 +157,7 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
       }
     }
     # Remove NA's
-    relevant.samples.loc[!is.na(relevant.samples.loc)]
+    relevant.samples.loc <- relevant.samples.loc[!is.na(relevant.samples.loc)]
     
     # assign  unmethylated, methylated and pvalue matrices
     U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
@@ -165,20 +172,26 @@ read_geo_l1_data <- function(series_id_orig, targets, all.series.info, study, ty
       }
     }
   }
-  betas.table <- rnb_read_l1_betas(this_targets, U, M, p.values)
-  write_beta_values_table(generated_GEO_folder, series_id, study, type, betas.table)
+  if (nrow(this_targets) > 1) {
+    betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
+    write_beta_values_table(generated_GEO_folder, series_id, study, type, betas.table)
+  } else {
+    # Error in checkSlotAssignment(object, name, value) : 
+    # assignment of an object of class “numeric” is not valid for slot ‘meth.sites’ in an object of class “RnBeadSet”; is(value, "matrixOrff") is not TRUE
+    print("Got only one target - rnbeads raises error on these cases - should fix it - TODO")
+  }
   
   stime <- (proc.time() - ptime1)[3]
   cat("   in", stime, "seconds\n")
 }
 
-work_on_targets <- function(targets, all.series.info, geo_data_folder) {
+workOnTargets <- function(targets, all.series.info, geo_data_folder) {
   study <- levels(factor(targets$disease))[[1]]
   type <- levels(factor(targets$tissue))[[1]]
   series_id <- levels(factor(targets$series_id))
   name <- create_name(study, type)
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
-  ret <- lapply(series_id, FUN=read_geo_l1_data, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder)
+  ret <- lapply(series_id, FUN=readGeoL1Data, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder)
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
@@ -220,10 +233,11 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
+#only_vec <- c("GSE36278") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
-joined_files <- head(joined_files, 10) # XXX
+joined_files <- head(joined_files, 12) # XXX
 print("joined_files:")
 print(joined_files)
 
@@ -237,6 +251,6 @@ pheno <- all.series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
-ret <- lapply(splited_targets, FUN=work_on_targets, all.series.info, geo_data_folder)
+ret <- lapply(splited_targets, FUN=workOnTargets, all.series.info, geo_data_folder)
 
 print("DONE")
