@@ -18,6 +18,11 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
 #' 
 #' @param series_id_orig
 #' @param targets
+#' @param all.series.info
+#' @param study
+#' @param type
+#' @param geo_data_folder
+#' @param generated_GEO_folder
 #' 
 #' @return nothing
 readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type, 
@@ -142,12 +147,13 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
                        gsub(".*[ ;\t]", '', this_targets$description)
     )
     
-    for(try_match in try_match_list) {
-      relevant.samples.loc <- match(samples.all, as.character(try_match))
-      if(!all(is.na(relevant.samples.loc))) {
-        break;
-      }
-    }
+    match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
+    # Remove NA's
+    match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
+    # find most match locations
+    most_match_index <- which.max(sapply(match_all_no_na, FUN=length))
+    relevant.samples.loc <- match_all_no_na[[most_match_index]]
+
     if(all(is.na(relevant.samples.loc))) {
       if(length(samples.all) == dim(this_all.series.info)[[1]]) {
         v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
@@ -156,8 +162,6 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
         stop('try other option 1')
       }
     }
-    # Remove NA's
-    relevant.samples.loc <- relevant.samples.loc[!is.na(relevant.samples.loc)]
     
     # assign  unmethylated, methylated and pvalue matrices
     U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
@@ -173,6 +177,10 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     }
   }
   if (nrow(this_targets) > 1) {
+    if(dim(this_targets)[[1]] != dim(U)[[2]]) {
+      print('different dim!')
+    }
+    
     betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
     write_beta_values_table(generated_GEO_folder, series_id, study, type, betas.table)
   } else {
@@ -233,7 +241,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE36278") # XXX
+only_vec <- c("GSE32146") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
