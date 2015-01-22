@@ -1,0 +1,4 @@
+setenv PATH /cs/icore/joshua.moss/dor/hagaic/R/my_r/bin:${PATH}
+setenv R_LIBS /a/hms-00/h/icore/joshua.moss/dor/hagaic/R/my_r_libs
+setenv R_LIBS_SITE /a/hms-00/h/icore/joshua.moss/dor/hagaic/R/my_r_site_library
+
