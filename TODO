@@ -32,3 +32,8 @@ GEO
 #	"42" "43" "44" "45" "46" "47" "48" "49" "50" "51" "52" "53" "54" "55" "56" "57" "58" "59" "60" "61" "62" "63"
 # but in the gz file there is only:
 # 32, 35, 36, 57, 58, 68, 71, 72, 74, 83...
+
+# GSE48684
+# some samples don't have names inside joined file
+# BAD - GSM1183508          adenoma                 NA        1 Colorectal mucosa        NA Colorectal adenoma
+# GOOD - GSM1235135   adenoma;\t16748                 NA        1 Colorectal mucosa        NA Colorectal adenoma
