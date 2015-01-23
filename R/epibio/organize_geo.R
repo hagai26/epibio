@@ -1,5 +1,6 @@
 
 library(RnBeads)
+library(doParallel)
 
 source("config.R")
 source("common.R")
@@ -36,7 +37,11 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     series_id_folder <- file.path(geo_data_folder, series_id_tmp)
     series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
     # filter non relevant files
-    non_relevant_patterns <- c("_[Pp]rocessed[._]", "_average_beta[.]", "_geo_all_cohorts[.]")
+    non_relevant_patterns <- c(
+                        "_[Pp]rocessed[._]", 
+                        "_average_beta[.]", "_beta[.]",
+                        "_geo_all_cohorts[.]",
+                        "_dasen[.]", "_NewGSMs[.]")
     series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, collapse="|"), series_id_files)]
     if(length(series_id_files) > 0) {
       series_id <- series_id_tmp
@@ -267,8 +272,12 @@ all.series.info <- subset(all.series.info, is.na(supplementary_file))
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
-
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
-ret <- lapply(splited_targets, FUN=workOnTargets, all.series.info, geo_data_folder)
 
+logger.start(fname=NA)
+num.cores <- 2
+parallel.setup(num.cores)
+ret <- lapply(splited_targets, FUN=workOnTargets, all.series.info, geo_data_folder)
+parallel.disable()
+logger.completed()
 print("DONE")

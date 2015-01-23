@@ -33,7 +33,6 @@ mgsub <- function(pattern, replacement, x, ...) {
 
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-  logger.start(fname=NA)
   rnb.options(disk.dump.big.matrices=TRUE)
   rnb.options(enforce.memory.management=TRUE)
   
