@@ -54,7 +54,6 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
     print(err)
   })
   
-  
   #rnb.set <- rnb.execute.normalization(rnb.set, 
   #                                     method="bmiq",bgcorr.method="methylumi.lumi")
   betas.table <- meth(rnb.set, row.names=TRUE)
@@ -75,6 +74,7 @@ create_name <- function(study, type) {
 
 write_beta_values_table <- function(folder, fn_prefix, study, type, betas.table) {
   name <- create_name(study, type)  
-  fn <- file.path(folder, paste0(fn_prefix, '___', name, '.txt'))
-  write.table(betas.table, fn, sep='\t', col.names=NA, quote=FALSE)
+  fn <- file.path(folder, paste0(fn_prefix, '___', name, '.txt.gz'))
+  fd <- gzfile(fn)
+  write.table(betas.table, fd, sep='\t', col.names=NA, quote=FALSE)
 }

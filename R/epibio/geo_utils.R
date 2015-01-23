@@ -48,9 +48,12 @@ read_l1_signal_file <- function(filename, nrows) {
   lines <- lines[skip+1:length(lines)]
   
   # handle GSE50759 - which has first row with only: "unmeth" "meth"   "pval" column names
-  first_row_names <- Filter(function(x) x!="", unique(strsplit(lines[[1]], sep)[[1]]))
-  if(length(first_row_names) < MIN_COLS) {
+  first_row_names <- Filter(function(x) x != "", strsplit(lines[[1]], sep)[[1]])
+  first_row_names_unique <- unique(first_row_names)
+  colnames_suffixes = NULL
+  if(length(first_row_names_unique) < MIN_COLS && "meth" %in% first_row_names_unique) {
     skip <- skip + 1
+    colnames_suffixes <- paste0(".", first_row_names)
   }
   
   id_ref_on_other_line <- grepl(paste0("^ID_REF", sep), lines[[2 + skip]])
@@ -64,5 +67,10 @@ read_l1_signal_file <- function(filename, nrows) {
                   check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
-  t[good_cols]
+  out_table <- t[good_cols]
+  
+  if(!is.null(colnames_suffixes)) {
+    colnames(out_table) <- paste0(colnames(out_table), colnames_suffixes)
+  }
+  out_table
 }
