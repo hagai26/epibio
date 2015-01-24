@@ -63,18 +63,18 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     series_id_fp <- file.path(series_id_folder, series_id_files)
     p.values <- NULL
     
-    unmeth_suffixes = c("[. _-][Uu]nmethylated[. _-]?[Ss]ignal$", 
+    unmeth_suffixes = c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
                         "[_ .]{1,2}[Uu]nmethylated$",
                         "_Unmethylated[.]Detection$",
                         "[._: ]Signal[_]?A$", 
                         "[.]UM$",
-                        "[.]unmeth")
-    meth_suffixes = c("[. _-][Mm]ethylated[. _-]?[Ss]ignal$", 
+                        "[.]unmeth$")
+    meth_suffixes = c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
                       "[_ .]{1,2}[Mm]ethylated$",
                       "_Methylated[.]Detection$",
                       "[._: ]Signal[_]?B$", 
                       "_ M$", "[.]M$",
-                      "[.]meth",
+                      "[.]meth$",
                       # GSE58218 is strange
                       "[^h]ylated Signal")
     pvalue_suffixes = c("_[ ]?pValue$",
@@ -132,20 +132,19 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
       # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874)
       signals <- signals[!grepl("[.]AVG_Beta|[.]Intensity", colnames(signals))]
       # locate relevant samples
-      colnum <- length(colnames(signals))
-      if(colnum == 0) {
+      if(length(colnames(signals)) == 0) {
         stop('signals is empty')
       }
       orig <- colnames(signals)
-      
       unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
+      # remove all unmeth expressions (because meth expressions are included in unmeth sometimes)
+      orig <- gsub(paste(unmeth_suffixes, collapse="|"), "", orig)
       meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
       pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
       # TODO - check GSE47627, GSE42118
-      
       if(sum(unmeth_ids) != sum(meth_ids)) {
         print(sprintf("%d %d", sum(unmeth_ids), sum(meth_ids)))
-        stop("problem with unmeth_ids and meth_ids")
+        stop("different unmeth_ids and meth_ids!")
       }
   
       # remove suffixes from colnames
@@ -245,7 +244,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE59685") # XXX
+#only_vec <- c("GSE52826") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
