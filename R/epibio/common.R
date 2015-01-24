@@ -71,9 +71,13 @@ create_name <- function(study, type) {
   name
 }
 
-write_beta_values_table <- function(folder, fn_prefix, study, type, betas.table) {
+get_output_filename <- function(folder, fn_prefix, study, type) {
   name <- create_name(study, type)  
   fn <- file.path(folder, paste0(fn_prefix, '___', name, '.txt.gz'))
-  fd <- gzfile(fn)
+  fn
+}
+
+write_beta_values_table <- function(output_filename, betas.table) {
+  fd <- gzfile(output_filename)
   write.table(betas.table, fd, sep='\t', col.names=NA, quote=FALSE)
 }
