@@ -37,3 +37,11 @@ GEO
 # some samples don't have names inside joined file
 # BAD - GSM1183508          adenoma                 NA        1 Colorectal mucosa        NA Colorectal adenoma
 # GOOD - GSM1235135   adenoma;\t16748                 NA        1 Colorectal mucosa        NA Colorectal adenoma
+
+# GSE49542
+# has duplicate sample names in the signals file
+# maybe its replicates
+
+# GSE42372
+# GSE42372_signal_intensities is normalized to internal control
+# GSE42372_RAW_data.txt is unnormalized and might should be used

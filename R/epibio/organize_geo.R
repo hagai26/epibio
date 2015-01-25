@@ -176,7 +176,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   
       if(all(is.na(relevant.samples.loc))) {
         if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-          v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+          v <- (this_targets$description %in% this_all.series.info$description) & 
+                (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
           relevant.samples.loc <- which(v)
         } else {
           stop('try other option 1')
@@ -238,13 +239,13 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
-              "GSE42752", "GSE48684")
+              "GSE42752", "GSE48684", "GSE49542", "GSE42372")
 wait_list <- c()
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE52826") # XXX
+#only_vec <- c("GSE42372") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
@@ -265,6 +266,10 @@ geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 logger.start(fname=NA)
 num.cores <- 2
 parallel.setup(num.cores)
-ret <- lapply(splited_targets, FUN=workOnTargets, all.series.info, geo_data_folder)
+for (i in seq_along(splited_targets)) {
+  print(sprintf('working on %d/%d', i, length(splited_targets)))
+  workOnTargets(splited_targets[[i]], all.series.info, geo_data_folder)
+}
+
 parallel.disable()
 print("DONE")
