@@ -15,6 +15,51 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
+get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
+  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; .]+)")[,c(2)]      
+  title_last_word <- gsub(".* ", '', this_targets$title)
+  # sometimes its numbers and they add S to each number (as in GSE53816)
+  title_last_word2 <- paste0('S', title_last_word)
+  try_match_list <- list(
+    this_targets$description, 
+    this_targets$source_name_ch1,
+    # first word
+    gsub("[ ;].*", '', this_targets$source_name_ch1), 
+    gsub("[ ;].*", '', this_targets$description), 
+    # last word
+    gsub(".* ", '', this_targets$source_name_ch1), 
+    title_last_word, 
+    title_last_word2,
+    gsub(".*[ ;\t]", '', this_targets$description),
+    # middle one barcode
+    barcode_match
+  )
+  
+  match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
+  match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
+  # find most match locations
+  most_match_index <- which.max(sapply(match_all_no_na, FUN=length))
+  relevant.samples.loc <- match_all[[most_match_index]]
+  
+  if(all(is.na(relevant.samples.loc))) {
+    if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+      relevant_samples <- (this_all.series.info$description %in% this_targets$description) & 
+                    (this_all.series.info$source_name_ch1 %in% this_targets$source_name_ch1) &
+                    (this_all.series.info$title %in% this_targets$title) &
+                    (this_all.series.info$extract_protocol_ch1 %in% this_targets$extract_protocol_ch1)
+    } else {
+      stop('get_relevant_samples failed')
+    }
+  } else {
+    relevant_samples <- !is.na(relevant.samples.loc)
+    # each sample should be only once
+    # Remove NA's
+    relevant.samples.loc_no_na <- relevant.samples.loc[relevant_samples]
+    stopifnot(length(unique(relevant.samples.loc_no_na)) == length(relevant.samples.loc_no_na))
+  }
+  relevant_samples
+}
+
 #' Read GEO L1 data of given series id
 #' 
 #' @param series_id_orig
@@ -97,19 +142,13 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
       colnum <- length(colnames(unmeth_signals))
       # remove unrelevant stuff from colnames
       samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
-      if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-        v <- (this_targets$description %in% this_all.series.info$description) & 
-          (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-        relevant.samples.loc <- which(v)
-      } else {
-        stop('try other option 3')
-      }
-      
+      relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
+      relevant_samples.all <- samples.all[relevant_samples, drop = FALSE]
       # assign unmethylated and methylated
-      U <- data.matrix(unmeth_signals)
-      colnames(U) <- samples.all
-      M <- data.matrix(meth_signals)
-      colnames(M) <- samples.all
+      U <- data.matrix(unmeth_signals)[,relevant_samples, drop = FALSE]
+      colnames(U) <- relevant_samples.all
+      M <- data.matrix(meth_signals)[,relevant_samples, drop = FALSE]
+      colnames(M) <- relevant_samples.all
     } else {
       # raw files with 3 columns for each sample
       # GSE36278 has two raw files for different samples
@@ -166,54 +205,17 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
       #print (colnames(signals))
       samples.all <- colnames(signals)[unmeth_ids]
       
-      barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; .]+)")[,c(2)]      
-      title_last_word <- gsub(".* ", '', this_targets$title)
-      # sometimes its numbers and they add S to each number (as in GSE53816)
-      title_last_word2 <- paste0('S', title_last_word)
-      try_match_list <- list(
-                          this_targets$description, 
-                          this_targets$source_name_ch1,
-                          # first word
-                          gsub("[ ;].*", '', this_targets$source_name_ch1), 
-                          gsub("[ ;].*", '', this_targets$description), 
-                          # last word
-                          gsub(".* ", '', this_targets$source_name_ch1), 
-                          title_last_word, 
-                          title_last_word2,
-                          gsub(".*[ ;\t]", '', this_targets$description),
-                          # middle one barcode
-                          barcode_match
-      )
-      
-      match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
-      # Remove NA's
-      match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
-      # find most match locations
-      most_match_index <- which.max(sapply(match_all_no_na, FUN=length))
-      relevant.samples.loc <- match_all_no_na[[most_match_index]]
-  
-      if(all(is.na(relevant.samples.loc))) {
-        if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-          v <- (this_targets$description %in% this_all.series.info$description) & 
-                (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
-          relevant.samples.loc <- which(v)
-        } else {
-          stop('try other option 1')
-        }
-      }
-      # each sample should be only once
-      stopifnot(length(unique(relevant.samples.loc)) == length(relevant.samples.loc))
-      
+      relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
       # assign  unmethylated, methylated and pvalue matrices
-      U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
-      M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
+      U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+      M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
       if(!is.null(pval_ids)) {
         signals_pval <- signals[,pval_ids, drop = FALSE]
         if(length(signals_pval) > 0) {
           # convert the decimal comma into a dot (as in GSE29290)
           signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
                                    row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-          p.values <- data.matrix(signals_pval)[,relevant.samples.loc, drop = FALSE]
+          p.values <- data.matrix(signals_pval)[,relevant_samples, drop = FALSE]
         }
       }
     }
@@ -264,7 +266,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE50498") # XXX
+only_vec <- c("GSE35069") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
@@ -276,7 +278,6 @@ print(joined_files)
 all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 # Remove serieses with idats
 all.series.info <- subset(all.series.info, is.na(supplementary_file))
-
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
