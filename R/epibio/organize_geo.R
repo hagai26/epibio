@@ -42,7 +42,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
                         "_average_beta[.]", "_betas?[.]",
                         "_geo_all_cohorts[.]",
                         "_dasen[.]", "_NewGSMs[.]")
-    series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, collapse="|"), series_id_files)]
+    series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, collapse="|"), 
+                                              series_id_files)]
     if(length(series_id_files) > 0) {
       series_id <- series_id_tmp
       break
@@ -59,7 +60,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     print(series_id_files)
     this_targets = subset(targets, targets$series_id == series_id_orig)  
     filename_first_level <- levels(factor(this_targets$Filename))[[1]]
-    this_all.series.info <- subset(all.series.info, all.series.info$Filename == filename_first_level)
+    this_all.series.info <- subset(all.series.info, 
+                                   all.series.info$Filename == filename_first_level)
     series_id_fp <- file.path(series_id_folder, series_id_files)
     p.values <- NULL
     
@@ -85,24 +87,25 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
     
     nrows = 5000 # XXX (should be -1 on production)
-    unmeth_files <- grep("Signal_A.NA|_unmeth", series_id_files)
+    unmeth_files <- grep("Signal_A.NA|_unmeth|_Non_Methyl_", series_id_files)
     if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
-      # works for GSE62992
+      # works for GSE62992, GSE50498
       # => two files of raw signals: signal A and signal B, no pvals
       unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files], nrows)
       meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files], nrows)
       
       colnum <- length(colnames(unmeth_signals))
+      # remove unrelevant stuff from colnames
       samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
-      
       if(length(samples.all) == dim(this_all.series.info)[[1]]) {
-        v <- (this_targets$description %in% this_all.series.info$description) & (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
+        v <- (this_targets$description %in% this_all.series.info$description) & 
+          (this_targets$source_name_ch1 %in% this_all.series.info$source_name_ch1)
         relevant.samples.loc <- which(v)
       } else {
         stop('try other option 3')
       }
       
-      # assign  unmethylated, methylated and pvalue matrices
+      # assign unmethylated and methylated
       U <- data.matrix(unmeth_signals)
       colnames(U) <- samples.all
       M <- data.matrix(meth_signals)
@@ -129,17 +132,28 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
         }
       }
       
-      # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874)
-      signals <- signals[!grepl("[.]AVG_Beta|[.]Intensity", colnames(signals))]
+      # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874, GSE53816)
+      signals <- signals[!grepl("[._]AVG_Beta|[.]Intensity", colnames(signals))]
+      
+      # if there are two reps we use only the first (as in GSE53816)
+      old_ncol <- ncol(signals)
+      signals <- signals[!grepl("-rep2", colnames(signals))]
+      if(ncol(signals) != old_ncol) {
+        # remove the rep1 prefix from colnames
+        colnames(signals) <- gsub('-rep1', '', colnames(signals))
+      }
+      
       # locate relevant samples
       if(length(colnames(signals)) == 0) {
         stop('signals is empty')
       }
       orig <- colnames(signals)
       unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
+      stopifnot(sum(unmeth_ids) > 0)
       # remove all unmeth expressions (because meth expressions are included in unmeth sometimes)
       orig <- gsub(paste(unmeth_suffixes, collapse="|"), "", orig)
       meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
+      stopifnot(sum(meth_ids) > 0)
       pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
       # TODO - check GSE47627, GSE42118
       if(sum(unmeth_ids) != sum(meth_ids)) {
@@ -153,6 +167,9 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
       samples.all <- colnames(signals)[unmeth_ids]
       
       barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; .]+)")[,c(2)]      
+      title_last_word <- gsub(".* ", '', this_targets$title)
+      # sometimes its numbers and they add S to each number (as in GSE53816)
+      title_last_word2 <- paste0('S', title_last_word)
       try_match_list <- list(
                           this_targets$description, 
                           this_targets$source_name_ch1,
@@ -161,7 +178,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
                           gsub("[ ;].*", '', this_targets$description), 
                           # last word
                           gsub(".* ", '', this_targets$source_name_ch1), 
-                          gsub(".* ", '', this_targets$title), 
+                          title_last_word, 
+                          title_last_word2,
                           gsub(".*[ ;\t]", '', this_targets$description),
                           # middle one barcode
                           barcode_match
@@ -183,6 +201,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
           stop('try other option 1')
         }
       }
+      # each sample should be only once
+      stopifnot(length(unique(relevant.samples.loc)) == length(relevant.samples.loc))
       
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant.samples.loc, drop = FALSE]
@@ -197,11 +217,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
         }
       }
     }
+    stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
     if (nrow(this_targets) > 1) {
-      if(dim(this_targets)[[1]] != dim(U)[[2]]) {
-        print(sprintf("%d %d", dim(this_targets)[[1]], dim(U))[[2]])
-        stop('different dim!')
-      }
       betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
       write_beta_values_table(output_filename, betas.table)
     } else {
@@ -221,7 +238,8 @@ workOnTargets <- function(targets, all.series.info, geo_data_folder) {
   series_id <- levels(factor(targets$series_id))
   name <- create_name(study, type)
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
-  ret <- lapply(series_id, FUN=readGeoL1Data, targets, all.series.info, study, type, geo_data_folder, generated_GEO_folder)
+  ret <- lapply(series_id, FUN=readGeoL1Data, targets, all.series.info, 
+                study, type, geo_data_folder, generated_GEO_folder)
 }
 
 dir.create(generated_GEO_folder, recursive=TRUE, showWarnings=FALSE)
@@ -244,12 +262,14 @@ wait_list <- c()
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
+stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE42372") # XXX
+#only_vec <- c("GSE50498") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
 #joined_files <- head(joined_files, 26) # XXX
+stopifnot(length(joined_files) > 0)
 print("joined_files:")
 print(joined_files)
 
@@ -270,6 +290,5 @@ for (i in seq_along(splited_targets)) {
   print(sprintf('working on %d/%d', i, length(splited_targets)))
   workOnTargets(splited_targets[[i]], all.series.info, geo_data_folder)
 }
-
 parallel.disable()
 print("DONE")
