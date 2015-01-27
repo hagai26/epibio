@@ -6,7 +6,8 @@ source("common.R")
 
 read_joined_file <- function(filename) {
   t <- read.table(filename, sep='\t', header=TRUE, row.names=1, fill=TRUE, 
-                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
+                  na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE,
+                  strip.white=TRUE)
   if(length(rownames(t)) > 0) {
     df <- data.frame(Filename=filename, t)
   } else {

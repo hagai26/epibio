@@ -6,6 +6,16 @@ source("config.R")
 source("common.R")
 source("geo_utils.R")
 
+paste3 <- function(...,sep="") {
+  L <- list(...)
+  L <- lapply(L,function(x) {x[is.na(x)] <- ""; x})
+  ret <-gsub(paste0("(^",sep,"|",sep,"$)"),"",
+             gsub(paste0(sep,sep),sep,
+                  do.call(paste,c(L,list(sep=sep)))))
+  is.na(ret) <- ret==""
+  ret
+}
+
 
 #' Build new RnbeadsRawset
 rnbReadL1Betas <- function(targets, U, M, p.values) {
@@ -15,6 +25,13 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
   betas.table
 }
 
+#' get the relevant samples in samples.all
+#' 
+#' @param this_targets
+#' @param samples.all
+#' @param this_all.series.info
+#' 
+#' @return relevant samples boolean vector
 get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
   barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; .]+)")[,c(2)]      
   title_last_word <- gsub(".* ", '', this_targets$title)
@@ -36,8 +53,8 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
   )
   
   match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
-  match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
   # find most match locations
+  match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
   most_match_index <- which.max(sapply(match_all_no_na, FUN=length))
   relevant.samples.loc <- match_all[[most_match_index]]
   
@@ -110,13 +127,13 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     series_id_fp <- file.path(series_id_folder, series_id_files)
     p.values <- NULL
     
-    unmeth_suffixes = c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
-                        "[_ .]{1,2}[Uu]nmethylated$",
-                        "_Unmethylated[.]Detection$",
-                        "[._: ]Signal[_]?A$", 
-                        "[.]UM$",
-                        "[.]unmeth$")
-    meth_suffixes = c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
+    problematic_unmeth_suffixes <- c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
+                                     "[_ .]{1,2}[Uu]nmethylated$",
+                                     "_Unmethylated[.]Detection$",
+                                     "[.]UM$",
+                                     "[.]unmeth$")
+    unmeth_suffixes <- c(problematic_unmeth_suffixes, "[._: ]Signal[_]?A$")
+    meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
                       "[_ .]{1,2}[Mm]ethylated$",
                       "_Methylated[.]Detection$",
                       "[._: ]Signal[_]?B$", 
@@ -124,7 +141,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
                       "[.]meth$",
                       # GSE58218 is strange
                       "[^h]ylated Signal")
-    pvalue_suffixes = c("_[ ]?pValue$",
+    pvalue_suffixes <- c("_[ ]?pValue$",
                         "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
                         "[.]Pval$", "[.]Detection$",
                         "[_ ]detection[_ ]p[-]?value[s]?$",
@@ -190,7 +207,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
       unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
       stopifnot(sum(unmeth_ids) > 0)
       # remove all unmeth expressions (because meth expressions are included in unmeth sometimes)
-      orig <- gsub(paste(unmeth_suffixes, collapse="|"), "", orig)
+      orig <- gsub(paste(problematic_unmeth_suffixes, collapse="|"), "", orig)
       meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
       stopifnot(sum(meth_ids) > 0)
       pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
@@ -199,23 +216,25 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
         print(sprintf("%d %d", sum(unmeth_ids), sum(meth_ids)))
         stop("different unmeth_ids and meth_ids!")
       }
-  
       # remove suffixes from colnames
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
-      #print (colnames(signals))
       samples.all <- colnames(signals)[unmeth_ids]
       
       relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
       # assign  unmethylated, methylated and pvalue matrices
       U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
       M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-      if(!is.null(pval_ids)) {
-        signals_pval <- signals[,pval_ids, drop = FALSE]
+      if(!is.null(pval_ids) & sum(pval_ids) > 0) {
+        if(sum(unmeth_ids) != sum(pval_ids)) {
+          print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
+          stop("different unmeth_ids and pval_ids!")
+        }
+        signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
         if(length(signals_pval) > 0) {
           # convert the decimal comma into a dot (as in GSE29290)
-          signals_pval <- data.frame(lapply(signals_pval, function(x) gsub(",", ".", x, fixed = TRUE)), 
-                                   row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-          p.values <- data.matrix(signals_pval)[,relevant_samples, drop = FALSE]
+          x <- lapply(as.data.frame(signals_pval), function(x) gsub(",", ".", x, fixed = TRUE))
+          signals_pval <- data.frame(x, row.names=rownames(signals_pval), stringsAsFactors=FALSE)
+          p.values <- data.matrix(signals_pval)
         }
       }
     }
@@ -236,7 +255,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
 
 workOnTargets <- function(targets, all.series.info, geo_data_folder) {
   study <- levels(factor(targets$disease))[[1]]
-  type <- levels(factor(targets$tissue))[[1]]
+  type <- levels(factor(targets$tissue_or_cell_type))[[1]]
   series_id <- levels(factor(targets$series_id))
   name <- create_name(study, type)
   cat("Reading", nrow(targets), "samples of", name, "from", length(series_id), "serieses\n")
@@ -259,14 +278,14 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
-              "GSE42752", "GSE48684", "GSE49542", "GSE42372")
+              "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079")
 wait_list <- c()
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-only_vec <- c("GSE35069") # XXX
+#only_vec <- c("GSE43091") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
@@ -281,9 +300,22 @@ all.series.info <- subset(all.series.info, is.na(supplementary_file))
 # get only relevant samples
 relevant.samples.idx <- which(as.numeric(all.series.info$relevant) == 1)
 pheno <- all.series.info[relevant.samples.idx, ]
-splited_targets <- split(pheno, list(pheno$disease, pheno$tissue), drop=TRUE)
-geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 
+# Fix pheno values
+col_vec <- c('series_id', 'title', 'cell_type', 'tissue', 'disease')
+missing_cond <- (is.na(pheno$tissue) | pheno$tissue=='') & (is.na(pheno$cell_type) | pheno$cell_type=='')
+missing_both <- subset(pheno, missing_cond)
+write.csv(missing_both[,col_vec], file='missing_both.csv')
+
+duplicate_cond <- !is.na(pheno$tissue) & pheno$tissue!='' & !is.na(pheno$cell_type) & pheno$cell_type!=''
+duplicate_names <- subset(pheno, duplicate_cond)
+write.csv(duplicate_names[,col_vec], file='duplicate_names.csv')
+
+pheno <- subset(pheno, !(missing_cond | duplicate_cond))
+pheno$tissue_or_cell_type <- paste3(pheno$tissue, pheno$cell_type)
+
+splited_targets <- split(pheno, list(pheno$disease, pheno$tissue_or_cell_type), drop=TRUE)
+geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 logger.start(fname=NA)
 num.cores <- 2
 parallel.setup(num.cores)
