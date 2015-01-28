@@ -7,7 +7,6 @@ source("common.R")
 source("geo_utils.R")
 
 
-
 #' Build new RnbeadsRawset
 rnbReadL1Betas <- function(targets, U, M, p.values) {
   pheno <- targets[, c('description','tissue','cell_type','disease')]
@@ -24,7 +23,6 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
 #' 
 #' @return relevant samples boolean vector
 get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
-  
   # GSE43414 has characteristics_ch1 like:
   # GSM1068923 subjectid: NA;\tbarcode: 6057825014_R06C02.1;\tlunnonetal: FALSE;\ttissue_code: NA;\tbraak.stage: NA;\tSex: NA;\tad.disease.status: NA;\tage.brain: NA;\tage.blood: NA;\tsource tissue: cerebellum
   barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]      
@@ -89,22 +87,20 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   cat('\tReading ', series_id_orig, ": ")
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
-  
   series_id <- NULL
+  non_relevant_patterns <- c(
+    "_[Pp]rocessed[._]", "_Summary_icc_M[.]",
+    "upload_Beta[.]","_SampleMethylationProfile[.]",
+    "_average_beta[.]", "_betas?[.]",
+    "_geo_all_cohorts[.]", "_Results[.]",
+    "_dasen[.]", "_NewGSMs[.]")
+  
   for(series_id_tmp in series_id_vec) {
     series_id_folder <- file.path(geo_data_folder, series_id_tmp)
     series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
     # filter non relevant files
-    non_relevant_patterns <- c(
-                        "_[Pp]rocessed[._]", 
-                        "_Summary_icc_M[.]",
-                        "upload_Beta[.]",
-                        "_SampleMethylationProfile[.]",
-                        "_average_beta[.]", "_betas?[.]",
-                        "_geo_all_cohorts[.]",
-                        "_dasen[.]", "_NewGSMs[.]")
-    series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, collapse="|"), 
-                                              series_id_files)]
+    series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, 
+                                                    collapse="|"), series_id_files)]
     if(length(series_id_files) > 0) {
       series_id <- series_id_tmp
       break
