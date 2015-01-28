@@ -29,6 +29,7 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
   # GSM1068923 subjectid: NA;\tbarcode: 6057825014_R06C02.1;\tlunnonetal: FALSE;\ttissue_code: NA;\tbraak.stage: NA;\tSex: NA;\tad.disease.status: NA;\tage.brain: NA;\tage.blood: NA;\tsource tissue: cerebellum
   barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]      
   title_last_word <- gsub(".* ", '', this_targets$title)
+  title_last_word_no_leading_zeros <- gsub("(?<![0-9])0+", "", title_last_word, perl = TRUE)
   # sometimes its numbers and they add S to each number (as in GSE53816)
   title_last_word2 <- paste0('S', title_last_word)
   try_match_list <- list(
@@ -41,6 +42,7 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
     gsub(".* ", '', this_targets$source_name_ch1), 
     title_last_word, 
     title_last_word2,
+    title_last_word_no_leading_zeros,
     gsub(".*[ ;\t]", '', this_targets$description),
     # middle one barcode
     barcode_match
@@ -268,21 +270,22 @@ joined_files <- list.files(joined_folder, full.names = TRUE, pattern="*.txt")
 # GEOs which I don't know how to parse:
 # - no l1 signals txt file
 # - different parsing on l1 txt file
-no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924", "GSE39141")
-not_released_list <- c("GSE62003")
+no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924", 
+                "GSE39141", "GSE34777")
+not_released_list <- c("GSE62003", "GSE49064")
 bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
               "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
-              "GSE46168")
-wait_list <- c("GSE62924")
+              "GSE46168", "GSE47627")
+wait_list <- c("GSE62924", "GSE51245")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE62924") # XXX
+#only_vec <- c("GSE50498") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]

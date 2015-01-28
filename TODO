@@ -54,3 +54,6 @@ GEO
 
 # GSE46168
 # columns names has been commented out!
+
+# GSE47627
+# can't extract samples names from joined
