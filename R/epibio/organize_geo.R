@@ -6,15 +6,6 @@ source("config.R")
 source("common.R")
 source("geo_utils.R")
 
-paste3 <- function(...,sep="") {
-  L <- list(...)
-  L <- lapply(L,function(x) {x[is.na(x)] <- ""; x})
-  ret <-gsub(paste0("(^",sep,"|",sep,"$)"),"",
-             gsub(paste0(sep,sep),sep,
-                  do.call(paste,c(L,list(sep=sep)))))
-  is.na(ret) <- ret==""
-  ret
-}
 
 
 #' Build new RnbeadsRawset
@@ -33,7 +24,10 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
 #' 
 #' @return relevant samples boolean vector
 get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
-  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; .]+)")[,c(2)]      
+  
+  # GSE43414 has characteristics_ch1 like:
+  # GSM1068923 subjectid: NA;\tbarcode: 6057825014_R06C02.1;\tlunnonetal: FALSE;\ttissue_code: NA;\tbraak.stage: NA;\tSex: NA;\tad.disease.status: NA;\tage.brain: NA;\tage.blood: NA;\tsource tissue: cerebellum
+  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]      
   title_last_word <- gsub(".* ", '', this_targets$title)
   # sometimes its numbers and they add S to each number (as in GSE53816)
   title_last_word2 <- paste0('S', title_last_word)
@@ -101,6 +95,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     # filter non relevant files
     non_relevant_patterns <- c(
                         "_[Pp]rocessed[._]", 
+                        "upload_Beta[.]",
+                        "_SampleMethylationProfile[.]",
                         "_average_beta[.]", "_betas?[.]",
                         "_geo_all_cohorts[.]",
                         "_dasen[.]", "_NewGSMs[.]")
@@ -272,20 +268,21 @@ joined_files <- list.files(joined_folder, full.names = TRUE, pattern="*.txt")
 # GEOs which I don't know how to parse:
 # - no l1 signals txt file
 # - different parsing on l1 txt file
-no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924")
+no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924", "GSE39141")
 not_released_list <- c("GSE62003")
 bad_list <- c(no_l1_list, not_released_list,
               "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
-              "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079")
+              "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
+              "GSE46168")
 wait_list <- c()
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE43091") # XXX
+#only_vec <- c("GSE43414") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]

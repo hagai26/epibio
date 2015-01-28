@@ -81,3 +81,16 @@ write_beta_values_table <- function(output_filename, betas.table) {
   fd <- gzfile(output_filename)
   write.table(betas.table, fd, sep='\t', col.names=NA, quote=FALSE)
 }
+
+#' paste which suppress NAs
+#' based on http://stackoverflow.com/questions/13673894/suppress-nas-in-paste
+paste3 <- function(...,sep="") {
+  L <- list(...)
+  L <- lapply(L,function(x) {x[is.na(x)] <- ""; x})
+  ret <-gsub(paste0("(^",sep,"|",sep,"$)"),"",
+             gsub(paste0(sep,sep),sep,
+                  do.call(paste,c(L,list(sep=sep)))))
+  is.na(ret) <- ret==""
+  ret
+}
+
