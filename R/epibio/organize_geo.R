@@ -276,13 +276,13 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
               "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
               "GSE46168")
-wait_list <- c()
+wait_list <- c("GSE62924")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE43414") # XXX
+#only_vec <- c("GSE62924") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
