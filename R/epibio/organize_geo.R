@@ -97,6 +97,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     # filter non relevant files
     non_relevant_patterns <- c(
                         "_[Pp]rocessed[._]", 
+                        "_Summary_icc_M[.]",
                         "upload_Beta[.]",
                         "_SampleMethylationProfile[.]",
                         "_average_beta[.]", "_betas?[.]",
@@ -278,14 +279,14 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
               "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
-              "GSE46168", "GSE47627")
+              "GSE46168", "GSE47627", "GSE61151")
 wait_list <- c("GSE62924", "GSE51245")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE50498") # XXX
+#only_vec <- c("GSE61151") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]

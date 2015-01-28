@@ -64,8 +64,9 @@ read_l1_signal_file <- function(filename, nrows) {
 
   # turn off the interpretation of comments
   # because there are samples names with # sometimes (as in GSE58280)
-  t <- read.table(gzfile(filename), header=TRUE, row.names=1, skip=skip, sep=sep, dec='.', nrows=nrows,
-                  check.names=FALSE, stringsAsFactors=FALSE, comment.char="")
+  t <- read.table(gzfile(filename), header=TRUE, row.names=1, skip=skip, 
+                  sep=sep, dec='.', nrows=nrows, check.names=FALSE, 
+                  stringsAsFactors=FALSE, comment.char="", fill=TRUE)
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
   out_table <- t[good_cols]
