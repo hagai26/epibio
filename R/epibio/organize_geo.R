@@ -143,7 +143,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
                         "[.]pval")
     suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
     
-    nrows = 5000 # XXX (should be -1 on production)
+    #nrows = 5000 # XXX (should be -1 on production)
     unmeth_files <- grep("Signal_A.NA|_unmeth|_Non_Methyl_", series_id_files)
     if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
       # works for GSE62992, GSE50498
@@ -286,7 +286,6 @@ only_vec <- list.files(geo_data_folder)
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
-#joined_files <- head(joined_files, 26) # XXX
 stopifnot(length(joined_files) > 0)
 print("joined_files:")
 print(joined_files)
