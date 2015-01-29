@@ -123,7 +123,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     #nrows = 5000 # XXX (should be -1 on production)
     nrows = -1
     file_sizes <- sum(file.info(series_id_fp)$size/2**20)
-    if(nrows == -1 & file_sizes > memory.limit()/4)  {
+    if(nrows == -1 & file_sizes > memory.limit()/10)  {
       print(sprintf('GEO file too big for memory. skipping', basename(output_filename)))
     } else {
       p.values <- NULL
@@ -286,7 +286,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-only_vec <- c("GSE50498") # XXX
+#only_vec <- c("GSE58218") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
