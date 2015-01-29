@@ -120,131 +120,135 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     this_all.series.info <- subset(all.series.info, 
                                    all.series.info$Filename == filename_first_level)
     series_id_fp <- file.path(series_id_folder, series_id_files)
-    p.values <- NULL
-    
-    problematic_unmeth_suffixes <- c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
-                                     "[_ .]{1,2}[Uu]nmethylated$",
-                                     "_Unmethylated[.]Detection$",
-                                     "[.]UM$",
-                                     "[.]unmeth$")
-    unmeth_suffixes <- c(problematic_unmeth_suffixes, "[._: ]Signal[_]?A$")
-    meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
-                      "[_ .]{1,2}[Mm]ethylated$",
-                      "_Methylated[.]Detection$",
-                      "[._: ]Signal[_]?B$", 
-                      "_ M$", "[.]M$",
-                      "[.]meth$",
-                      # GSE58218 is strange
-                      "[^h]ylated Signal")
-    pvalue_suffixes <- c("_[ ]?pValue$",
-                        "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
-                        "[.]Pval$", "[.]Detection$",
-                        "[_ ]detection[_ ]p[-]?value[s]?$",
-                        "[.]pval")
-    suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
-    
     #nrows = 5000 # XXX (should be -1 on production)
-    unmeth_files <- grep("Signal_A.NA|_unmeth|_Non_Methyl_", series_id_files)
-    if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
-      # works for GSE62992, GSE50498
-      # => two files of raw signals: signal A and signal B, no pvals
-      unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files], nrows)
-      meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files], nrows)
-      
-      colnum <- length(colnames(unmeth_signals))
-      # remove unrelevant stuff from colnames
-      samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
-      relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
-      relevant_samples.all <- samples.all[relevant_samples, drop = FALSE]
-      # assign unmethylated and methylated
-      U <- data.matrix(unmeth_signals)[,relevant_samples, drop = FALSE]
-      colnames(U) <- relevant_samples.all
-      M <- data.matrix(meth_signals)[,relevant_samples, drop = FALSE]
-      colnames(M) <- relevant_samples.all
+    nrows = -1
+    file_sizes <- sum(file.info(series_id_fp)$size/2**20)
+    if(nrows == -1 & file_sizes > memory.limit()/4)  {
+      print(sprintf('GEO file too big for memory. skipping', basename(output_filename)))
     } else {
-      # raw files with 3 columns for each sample
-      # GSE36278 has two raw files for different samples
-      if(length(series_id_fp) < 3) {
-        signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file, nrows))
+      p.values <- NULL
+      problematic_unmeth_suffixes <- c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
+                                       "[_ .]{1,2}[Uu]nmethylated$",
+                                       "_Unmethylated[.]Detection$",
+                                       "[.]UM$",
+                                       "[.]unmeth$")
+      unmeth_suffixes <- c(problematic_unmeth_suffixes, "[._: ]Signal[_]?A$")
+      meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
+                        "[_ .]{1,2}[Mm]ethylated$",
+                        "_Methylated[.]Detection$",
+                        "[._: ]Signal[_]?B$", 
+                        "_ M$", "[.]M$",
+                        "[.]meth$",
+                        # GSE58218 is strange
+                        "[^h]ylated Signal")
+      pvalue_suffixes <- c("_[ ]?pValue$",
+                          "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
+                          "[.]Pval$", "[.]Detection$",
+                          "[_ ]detection[_ ]p[-]?value[s]?$",
+                          "[.]pval")
+      suffixes = c(unmeth_suffixes, meth_suffixes, pvalue_suffixes)
+      unmeth_files <- grep("Signal_A.NA|_unmeth|_Non_Methyl_", series_id_files)
+      if(length(series_id_files) > 1 && length(series_id_files) - length(unmeth_files) == 1 ) {
+        # works for GSE62992, GSE50498
+        # => two files of raw signals: signal A and signal B, no pvals
+        unmeth_signals <- read_l1_signal_file(series_id_fp[unmeth_files], nrows)
+        meth_signals <- read_l1_signal_file(series_id_fp[-unmeth_files], nrows)
+        
+        colnum <- length(colnames(unmeth_signals))
+        # remove unrelevant stuff from colnames
+        samples.all <- gsub("[.]Signal_A","", colnames(unmeth_signals))
+        relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
+        relevant_samples.all <- samples.all[relevant_samples, drop = FALSE]
+        # assign unmethylated and methylated
+        U <- data.matrix(unmeth_signals)[,relevant_samples, drop = FALSE]
+        colnames(U) <- relevant_samples.all
+        M <- data.matrix(meth_signals)[,relevant_samples, drop = FALSE]
+        colnames(M) <- relevant_samples.all
       } else {
-        stop('too many gz files')
-      }
-      
-      if(grepl("ID_REF$|TargetID$", colnames(signals)[[1]], ignore.case = TRUE)) {
-        # GSE46306, GSE48684
-        if (colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
-          # GSE50874
-          rownames(signals) <- signals[, 1]
-          signals <- signals[,-c(1,2,3)]
+        # raw files with 3 columns for each sample
+        # GSE36278 has two raw files for different samples
+        if(length(series_id_fp) < 3) {
+          signals <- do.call("cbind", lapply(series_id_fp, FUN=read_l1_signal_file, nrows))
         } else {
-          # GSE53162 which has two rownames columns
-          rownames(signals) <- signals[, 1]
-          signals <- signals[,-c(1)]
+          stop('too many gz files')
+        }
+        
+        if(grepl("ID_REF$|TargetID$", colnames(signals)[[1]], ignore.case = TRUE)) {
+          # GSE46306, GSE48684
+          if (colnames(signals)[[2]] == "ProbeID_A" && colnames(signals)[[3]] == "ProbeID_B") {
+            # GSE50874
+            rownames(signals) <- signals[, 1]
+            signals <- signals[,-c(1,2,3)]
+          } else {
+            # GSE53162 which has two rownames columns
+            rownames(signals) <- signals[, 1]
+            signals <- signals[,-c(1)]
+          }
+        }
+        
+        # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874, GSE53816)
+        signals <- signals[!grepl("[._]AVG_Beta|[.]Intensity", colnames(signals))]
+        
+        # if there are two reps we use only the first (as in GSE53816)
+        old_ncol <- ncol(signals)
+        signals <- signals[!grepl("-rep2", colnames(signals))]
+        if(ncol(signals) != old_ncol) {
+          # remove the rep1 prefix from colnames
+          colnames(signals) <- gsub('-rep1', '', colnames(signals))
+        }
+        
+        # locate relevant samples
+        if(length(colnames(signals)) == 0) {
+          stop('signals is empty')
+        }
+        orig <- colnames(signals)
+        unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
+        stopifnot(sum(unmeth_ids) > 0)
+        # remove all unmeth expressions (because meth expressions are included in unmeth sometimes)
+        orig <- gsub(paste(problematic_unmeth_suffixes, collapse="|"), "", orig)
+        meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
+        stopifnot(sum(meth_ids) > 0)
+        pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
+        # TODO - check GSE47627, GSE42118
+        if(sum(unmeth_ids) != sum(meth_ids)) {
+          print(sprintf("%d %d", sum(unmeth_ids), sum(meth_ids)))
+          stop("different unmeth_ids and meth_ids!")
+        }
+        # remove suffixes from colnames
+        colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
+        samples.all <- colnames(signals)[unmeth_ids]
+        
+        relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
+        # assign  unmethylated, methylated and pvalue matrices
+        U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+        M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+        if(!is.null(pval_ids) & sum(pval_ids) > 0) {
+          if(sum(unmeth_ids) != sum(pval_ids)) {
+            print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
+            stop("different unmeth_ids and pval_ids!")
+          }
+          signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+          if(length(signals_pval) > 0) {
+            # convert the decimal comma into a dot (as in GSE29290)
+            x <- lapply(as.data.frame(signals_pval), function(x) gsub(",", ".", x, fixed = TRUE))
+            signals_pval <- data.frame(x, row.names=rownames(signals_pval), stringsAsFactors=FALSE)
+            p.values <- data.matrix(signals_pval)
+          }
         }
       }
-      
-      # Remove AVG_Beta or Intensity columns (as in GSE52576, GSE50874, GSE53816)
-      signals <- signals[!grepl("[._]AVG_Beta|[.]Intensity", colnames(signals))]
-      
-      # if there are two reps we use only the first (as in GSE53816)
-      old_ncol <- ncol(signals)
-      signals <- signals[!grepl("-rep2", colnames(signals))]
-      if(ncol(signals) != old_ncol) {
-        # remove the rep1 prefix from colnames
-        colnames(signals) <- gsub('-rep1', '', colnames(signals))
+      stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
+      if (nrow(this_targets) > 1) {
+        betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
+        write_beta_values_table(output_filename, betas.table)
+      } else {
+        # Error in checkSlotAssignment(object, name, value) : 
+        # assignment of an object of class “numeric” is not valid for slot ‘meth.sites’ in an object of class “RnBeadSet”; is(value, "matrixOrff") is not TRUE
+        print("Got only one target - rnbeads raises error on these cases - should fix it - TODO")
       }
       
-      # locate relevant samples
-      if(length(colnames(signals)) == 0) {
-        stop('signals is empty')
-      }
-      orig <- colnames(signals)
-      unmeth_ids = grepl(paste(unmeth_suffixes, collapse="|"), orig)
-      stopifnot(sum(unmeth_ids) > 0)
-      # remove all unmeth expressions (because meth expressions are included in unmeth sometimes)
-      orig <- gsub(paste(problematic_unmeth_suffixes, collapse="|"), "", orig)
-      meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
-      stopifnot(sum(meth_ids) > 0)
-      pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
-      # TODO - check GSE47627, GSE42118
-      if(sum(unmeth_ids) != sum(meth_ids)) {
-        print(sprintf("%d %d", sum(unmeth_ids), sum(meth_ids)))
-        stop("different unmeth_ids and meth_ids!")
-      }
-      # remove suffixes from colnames
-      colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
-      samples.all <- colnames(signals)[unmeth_ids]
-      
-      relevant_samples <- get_relevant_samples(this_targets, samples.all, this_all.series.info)
-      # assign  unmethylated, methylated and pvalue matrices
-      U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-      M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-      if(!is.null(pval_ids) & sum(pval_ids) > 0) {
-        if(sum(unmeth_ids) != sum(pval_ids)) {
-          print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
-          stop("different unmeth_ids and pval_ids!")
-        }
-        signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-        if(length(signals_pval) > 0) {
-          # convert the decimal comma into a dot (as in GSE29290)
-          x <- lapply(as.data.frame(signals_pval), function(x) gsub(",", ".", x, fixed = TRUE))
-          signals_pval <- data.frame(x, row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-          p.values <- data.matrix(signals_pval)
-        }
-      }
+      stime <- (proc.time() - ptime1)[3]
+      cat("   in", stime, "seconds\n")
     }
-    stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
-    if (nrow(this_targets) > 1) {
-      betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
-      write_beta_values_table(output_filename, betas.table)
-    } else {
-      # Error in checkSlotAssignment(object, name, value) : 
-      # assignment of an object of class “numeric” is not valid for slot ‘meth.sites’ in an object of class “RnBeadSet”; is(value, "matrixOrff") is not TRUE
-      print("Got only one target - rnbeads raises error on these cases - should fix it - TODO")
-    }
-    
-    stime <- (proc.time() - ptime1)[3]
-    cat("   in", stime, "seconds\n")
   }
 }
 
@@ -282,7 +286,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE61151") # XXX
+only_vec <- c("GSE50498") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
@@ -301,11 +305,10 @@ pheno <- all.series.info[relevant.samples.idx, ]
 col_vec <- c('series_id', 'title', 'cell_type', 'tissue', 'disease')
 missing_cond <- (is.na(pheno$tissue) | pheno$tissue=='') & (is.na(pheno$cell_type) | pheno$cell_type=='')
 missing_both <- subset(pheno, missing_cond)
-write.csv(missing_both[,col_vec], file='missing_both.csv')
-
 duplicate_cond <- !is.na(pheno$tissue) & pheno$tissue!='' & !is.na(pheno$cell_type) & pheno$cell_type!=''
 duplicate_names <- subset(pheno, duplicate_cond)
-write.csv(duplicate_names[,col_vec], file='duplicate_names.csv')
+#write.csv(missing_both[,col_vec], file='missing_both.csv')
+#write.csv(duplicate_names[,col_vec], file='duplicate_names.csv')
 
 pheno <- subset(pheno, !(missing_cond | duplicate_cond))
 pheno$tissue_or_cell_type <- paste3(pheno$tissue, pheno$cell_type)
