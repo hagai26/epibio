@@ -123,7 +123,8 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     #nrows = 5000 # XXX (should be -1 on production)
     nrows = -1
     file_sizes <- sum(file.info(series_id_fp)$size/2**20)
-    if(nrows == -1 & file_sizes > memory.limit()/14)  {
+	mem_limits <- tryCatch(memory.limit()/14, warning=function(x) NA)
+    if(nrows == -1 & !is.na(mem_limits) && file_sizes > mem_limits)  {
       print(sprintf('GEO file too big for memory. skipping', basename(output_filename)))
     } else {
       p.values <- NULL
