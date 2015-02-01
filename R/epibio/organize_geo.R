@@ -123,7 +123,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     #nrows = 5000 # XXX (should be -1 on production)
     nrows = -1
     file_sizes <- sum(file.info(series_id_fp)$size/2**20)
-	mem_limits <- tryCatch(memory.limit()/14, warning=function(x) NA)
+	  mem_limits <- tryCatch(memory.limit()/50, warning=function(x) NA)
     if(nrows == -1 & !is.na(mem_limits) && file_sizes > mem_limits)  {
       print(sprintf('GEO file too big for memory. skipping', basename(output_filename)))
     } else {
@@ -280,14 +280,14 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
               "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
-              "GSE46168", "GSE47627", "GSE61151")
+              "GSE46168", "GSE47627", "GSE61151", "GSE32146")
 wait_list <- c("GSE62924", "GSE51245")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE58218") # XXX
+#only_vec <- c("GSE32146") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
@@ -317,7 +317,7 @@ pheno$tissue_or_cell_type <- paste3(pheno$tissue, pheno$cell_type)
 splited_targets <- split(pheno, list(pheno$disease, pheno$tissue_or_cell_type), drop=TRUE)
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 logger.start(fname=NA)
-num.cores <- 2
+num.cores <- detectCores()/2
 parallel.setup(num.cores)
 for (i in seq_along(splited_targets)) {
   print(sprintf('working on %d/%d', i, length(splited_targets)))
