@@ -74,4 +74,4 @@ for (group in groups) {
   workOnKind(group, generated_GEO_folder, generated_merged_folder)
   c <- c+1
 }
-
+print("DONE")
