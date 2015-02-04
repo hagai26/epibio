@@ -66,7 +66,7 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
 
 create_name <- function(study, type) {
   name <- paste0(study, ".", type)
-  rep_pat <- c(" ", "/", ":")
+  rep_pat <- c(" ", "/", ":", ">", "<")
   name <- mgsub(rep_pat, rep(c("_"), length(rep_pat)), name , fixed=TRUE)
   name
 }
