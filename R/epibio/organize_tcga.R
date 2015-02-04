@@ -11,11 +11,17 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
   if(file.exists(output_filename)) {
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
-    targets <- head(targets, 7) # XXX
-    data.source <-list(idat_folder, targets)
-    rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
-    betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
-    write_beta_values_table(output_filename, betas.table)
+    tryCatch({
+      targets <- head(targets, 16) # XXX
+      data.source <-list(idat_folder, targets)
+      rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
+      betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
+      write_beta_values_table(output_filename, betas.table)
+    }, error = function(err) {
+      print(err)
+      print(sprintf('Got error during working on %s %s %s - skipping', tcga_inside_name, type, study))
+    }
+    )
   }
 }
 
@@ -42,7 +48,6 @@ dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 tcga_folder <- file.path(external_disk_data_path, 'TCGA')
 tcga_inside_folders <- list.files(tcga_folder)
-tcga_inside_folders <- head(tcga_inside_folders, 5) #XXX
 for (i in seq_along(tcga_inside_folders)) {
   cur <- tcga_inside_folders[[i]]
   print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
