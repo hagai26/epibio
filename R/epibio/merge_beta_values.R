@@ -32,8 +32,7 @@ workOnKind <- function(group, folder, output_folder) {
   name <- group$normalized[[1]]
   output_filename <- file.path(output_folder, paste0(name, '.txt.gz'))
   print(sprintf('Working on %s (%d files)', name, length(group$filename)))
-  todo <- c("glioblastoma.brain", "healthy.buccal_epithelial_cells", 
-            "healthy.cerebellum", "healthy.prefrontal_cortex")
+  todo <- c()
   if(name %in% todo) {
     print("currently skipping this - TODO - fix BUGS on these")
   } else {
@@ -48,7 +47,8 @@ workOnKind <- function(group, folder, output_folder) {
       betas.table <- transform(merged_betas.table_with_rn_col, row.names=Row.names, Row.names=NULL)
       
       row.has.na <- apply(betas.table, 1, function(x) any(is.na(x)) )
-      betas.table <- betas.table[!row.has.na,]
+      betas.table <- betas.table[!row.has.na,, drop=FALSE]
+      stopifnot(nrow(betas.table) > 0)
       samples_num <- ncol(betas.table)
       mean <- rowMeans(betas.table)
       std <- apply(betas.table, 1, sd)
@@ -61,17 +61,29 @@ workOnKind <- function(group, folder, output_folder) {
   }
 }
 
-dir.create(generated_merged_folder, recursive=TRUE, showWarnings=FALSE)
-#beta_files_tcga <- list.files(generated_TCGA_folder, pattern="*.txt.gz")
-beta_files <- list.files(generated_GEO_folder, pattern="*.txt.gz")
-#beta_files <- beta_files[c(6,16,17, 88,214, 87,213,209)] # XXX
-df <- data.frame(filename=beta_files)
-df$normalized <- sapply(beta_files, FUN=normalize_names)
-groups <- split(df, df$normalized, drop=TRUE)
-c <- 1
-for (group in groups) {
-  print(sprintf("%d/%d", c, length(groups)))
-  workOnKind(group, generated_GEO_folder, generated_merged_folder)
-  c <- c+1
+merge_beta_values <- function(generated_folder, output_folder) {
+  beta_files <- list.files(generated_folder, pattern="*.txt.gz")
+  df <- data.frame(filename=beta_files)
+  df$normalized <- sapply(beta_files, FUN=normalize_names)
+  groups <- split(df, df$normalized, drop=TRUE)
+  c <- 1
+  for (group in groups) {
+    print(sprintf("%d/%d", c, length(groups)))
+    workOnKind(group, generated_folder, output_folder)
+    c <- c+1
+  }
 }
+
+dir.create(generated_merged_folder, recursive=TRUE, showWarnings=FALSE)
+
+print("merging GEO")
+output_folder <- file.path(generated_merged_folder, 'GEO')
+dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
+merge_beta_values(generated_GEO_folder, output_folder)
+
+print("merging TCGA")
+output_folder <- file.path(generated_merged_folder, 'TCGA')
+dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
+merge_beta_values(generated_TCGA_folder, output_folder)
+
 print("DONE")

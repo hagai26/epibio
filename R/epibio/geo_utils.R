@@ -27,7 +27,7 @@ read_l1_signal_file <- function(filename, nrows) {
   skip <- which.min(comment_lines | empty_lines) - 1
   lines <- lines[skip+1:length(lines)]
   
-  # choose correct sep
+  # choose correct sep & dec
   sep <- NULL
   MIN_COLS = 4
   sep_list <- c('\t', ',', ' ')
@@ -40,6 +40,18 @@ read_l1_signal_file <- function(filename, nrows) {
   }
   if(is.null(sep)) {
     stop("Can't figure out correct sep")
+  }
+  dec <- NULL
+  dec_list <- c('[.]', ',')
+  for(dec_it in dec_list) {
+    dec_count <- str_count(lines, dec_it)
+    if(mean(dec_count) >= MIN_COLS) {
+      dec <- dec_it
+      break
+    }
+  }
+  if(is.null(dec)) {
+    stop("Can't figure out correct dec")
   }
   
   # skip comments which doesn't look like comments by checking for sep count inside them
@@ -66,7 +78,7 @@ read_l1_signal_file <- function(filename, nrows) {
   # because there are samples names with # sometimes (as in GSE58280)
   con <- gzfile(filename)
   t <- read.table(con, header=TRUE, row.names=1, skip=skip, 
-                  sep=sep, dec='.', nrows=nrows, check.names=FALSE, 
+                  sep=sep, dec=dec, nrows=nrows, check.names=FALSE, 
                   stringsAsFactors=FALSE, comment.char="")
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
@@ -75,5 +87,13 @@ read_l1_signal_file <- function(filename, nrows) {
   if(!is.null(colnames_suffixes)) {
     colnames(out_table) <- paste0(colnames(out_table), colnames_suffixes)
   }
+  
+  # convert the decimal comma into a dot (even after using dec=, - should fix the case of .0 -> 0
+  if(dec == ',') {
+    x <- lapply(out_table, function(x) gsub(",", ".", x, fixed = TRUE))
+    out_table <- data.frame(x, row.names=rownames(out_table), stringsAsFactors=FALSE)
+  }
+  
   out_table
 }
+

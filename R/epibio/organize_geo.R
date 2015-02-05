@@ -209,12 +209,14 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
         orig <- gsub(paste(problematic_unmeth_suffixes, collapse="|"), "", orig)
         meth_ids =  grepl(paste(meth_suffixes, collapse="|"), orig)
         stopifnot(sum(meth_ids) > 0)
-        pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
         # TODO - check GSE47627, GSE42118
         if(sum(unmeth_ids) != sum(meth_ids)) {
           print(sprintf("%d %d", sum(unmeth_ids), sum(meth_ids)))
           stop("different unmeth_ids and meth_ids!")
         }
+        stopifnot(any(meth_ids & unmeth_ids) == FALSE)
+        pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
+        
         # remove suffixes from colnames
         colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
         samples.all <- colnames(signals)[unmeth_ids]
@@ -229,12 +231,6 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
             stop("different unmeth_ids and pval_ids!")
           }
           signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-          if(length(signals_pval) > 0) {
-            # convert the decimal comma into a dot (as in GSE29290)
-            x <- lapply(as.data.frame(signals_pval), function(x) gsub(",", ".", x, fixed = TRUE))
-            signals_pval <- data.frame(x, row.names=rownames(signals_pval), stringsAsFactors=FALSE)
-            p.values <- data.matrix(signals_pval)
-          }
         }
       }
       stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
@@ -287,7 +283,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-#only_vec <- c("GSE32146") # XXX
+only_vec <- c("GSE50586") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
