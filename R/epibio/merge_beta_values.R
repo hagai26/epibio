@@ -40,6 +40,10 @@ workOnKind <- function(group, folder, output_folder) {
       print(sprintf('file exists - skipping'))
     } else {
       betas.table_list <- lapply(group$filename, FUN=readOrganizedFile, folder)
+      # rename all columns to be with sample index in list (so we wont have same column names)
+      for (i in 1:length(betas.table_list)) {
+        colnames(betas.table_list[[i]]) <- paste0(colnames(betas.table_list[[i]]), '__', i)
+      }
       # merge this list by row names
       betas.table_list_with_rn_col <- lapply(betas.table_list, 
                                              function(x) data.frame(x, Row.names = row.names(x)))
@@ -48,7 +52,9 @@ workOnKind <- function(group, folder, output_folder) {
       
       row.has.na <- apply(betas.table, 1, function(x) any(is.na(x)) )
       betas.table <- betas.table[!row.has.na,, drop=FALSE]
-      stopifnot(nrow(betas.table) > 0)
+      if(nrow(betas.table) == 0) {
+        stop("nrow(betas.table) == 0")
+      }
       samples_num <- ncol(betas.table)
       mean <- rowMeans(betas.table)
       std <- apply(betas.table, 1, sd)
