@@ -47,12 +47,13 @@ work_on_tcga_folder <- function(tcga_inside_name, tcga_folder) {
 dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 tcga_folder <- file.path(external_disk_data_path, 'TCGA')
-tcga_inside_folders <- list.files(tcga_folder)
+tcga_inside_folders <- list.dirs(tcga_folder)
+ignore_list <- c("Clinical")
+tcga_inside_folders <- tcga_inside_folders[!(tcga_inside_folders %in% ignore_list)]
 for (i in seq_along(tcga_inside_folders)) {
   cur <- tcga_inside_folders[[i]]
   print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
   work_on_tcga_folder(cur, tcga_folder)
 }
-
 
 print("DONE")
