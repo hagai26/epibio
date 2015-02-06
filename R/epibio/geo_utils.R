@@ -42,16 +42,16 @@ read_l1_signal_file <- function(filename, nrows) {
     stop("Can't figure out correct sep")
   }
   dec <- NULL
-  dec_list <- c('[.]', ',')
+  dec_list <- c(',')
   for(dec_it in dec_list) {
-    dec_count <- str_count(lines, dec_it)
+    dec_count <- str_count(lines[2:length(lines)], dec_it)
     if(mean(dec_count) >= MIN_COLS) {
       dec <- dec_it
       break
     }
   }
   if(is.null(dec)) {
-    stop("Can't figure out correct dec")
+    dec = "."
   }
   
   # skip comments which doesn't look like comments by checking for sep count inside them
