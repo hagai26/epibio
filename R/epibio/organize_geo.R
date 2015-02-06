@@ -283,7 +283,7 @@ ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)
-only_vec <- c("GSE42118") # XXX
+#only_vec <- c("GSE42118") # XXX
 only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 joined_files <- joined_files[(joined_files %in% only_list)]
 joined_files <- joined_files[!(joined_files %in% ignore_list)]
