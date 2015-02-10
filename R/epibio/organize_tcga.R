@@ -49,7 +49,7 @@ dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 tcga_folder <- file.path(external_disk_data_path, 'TCGA')
 stopifnot(file.exists(tcga_folder))
 tcga_inside_folders <- list.dirs(tcga_folder)
-ignore_list <- c("Clinical")
+ignore_list <- c("Clinical", "download_2", "download_3", "download_4")
 tcga_inside_folders <- tcga_inside_folders[!(tcga_inside_folders %in% ignore_list)]
 for (i in seq_along(tcga_inside_folders)) {
   cur <- tcga_inside_folders[[i]]
