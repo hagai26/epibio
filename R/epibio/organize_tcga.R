@@ -12,7 +12,7 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
     tryCatch({
-      targets <- head(targets, 13) # XXX
+      targets <- head(targets, 15) # XXX
       data.source <-list(idat_folder, targets)
       rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
       betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
@@ -47,6 +47,7 @@ work_on_tcga_folder <- function(tcga_inside_name, tcga_folder) {
 dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
 tcga_folder <- file.path(external_disk_data_path, 'TCGA')
+stopifnot(file.exists(tcga_folder))
 tcga_inside_folders <- list.dirs(tcga_folder)
 ignore_list <- c("Clinical")
 tcga_inside_folders <- tcga_inside_folders[!(tcga_inside_folders %in% ignore_list)]
