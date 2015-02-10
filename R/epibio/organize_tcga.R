@@ -12,7 +12,7 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
     tryCatch({
-      targets <- head(targets, 15) # XXX
+      targets <- head(targets, 20) # XXX
       data.source <-list(idat_folder, targets)
       rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
       betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
