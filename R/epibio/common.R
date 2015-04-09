@@ -46,12 +46,12 @@ mgsub <- function(pattern, replacement, x, ...) {
 
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-  rnb.options(disk.dump.big.matrices=TRUE)
-  rnb.options(enforce.memory.management=TRUE)
-  
-  tryCatch({
-    rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
-  }, error = function(err) {
+#  rnb.options(disk.dump.big.matrices=TRUE,
+#			  enforce.memory.management=TRUE)
+  options(fftempdir='/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/')
+  #tryCatch({
+   # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
+  #}, error = function(err) {
     # TODO
     
     # on GSE36278 this causes stops with error:
@@ -63,11 +63,10 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
     # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
     
     # currently, we ignore this error and doesn't call snp.removal
-    print(err)
-  })
+ #   print(err)
+ # })
   
-  #rnb.set <- rnb.execute.normalization(rnb.set, 
-  #                                     method="bmiq",bgcorr.method="methylumi.lumi")
+  rnb.set <- rnb.execute.normalization(rnb.set, method="bmiq",bgcorr.method="methylumi.lumi")
   betas.table <- meth(rnb.set, row.names=TRUE)
   if(has_pvalues) {
     pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)

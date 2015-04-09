@@ -230,7 +230,9 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
             print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
             stop("different unmeth_ids and pval_ids!")
           }
-          signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+          #signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+		  #changed variable name from signals_pval to p.values so it will be passed on to rnbReadL1Betas ##josh##
+		  p.values <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
         }
       }
       stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
@@ -277,9 +279,9 @@ bad_list <- c(no_l1_list, not_released_list,
               "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
               "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
               "GSE46168", "GSE47627", "GSE61151", "GSE32146")
-wait_list <- c("GSE62924", "GSE51245", "GSE38266", "GSE46306")
+wait_list <- c("GSE62924", "GSE51245", "GSE38266", "GSE46306", "GSE59685")
 ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
-
+external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
 geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 stopifnot(file.exists(geo_data_folder))
 only_vec <- list.files(geo_data_folder)

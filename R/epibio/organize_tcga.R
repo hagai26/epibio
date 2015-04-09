@@ -12,8 +12,9 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
     tryCatch({
-      targets <- head(targets, 20) # XXX
+      #targets <- head(targets, 20) # XXX
       data.source <-list(idat_folder, targets)
+	  rnb.options(identifiers.column = 'barcode')
       rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
       betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
       write_beta_values_table(output_filename, betas.table)
@@ -38,6 +39,7 @@ work_on_tcga_folder <- function(tcga_inside_name, tcga_folder) {
   targets <- read.table(samples_filename, sep='\t', header=TRUE, 
                         na.strings=c("NA", "0"), quote="\"", stringsAsFactors=FALSE)
   targets$barcode <- targets$Array.Data.File
+  rownames(targets) <- targets$barcode
   splited_targets <- split(targets, list(targets$histological_type, targets$sample_type), drop=TRUE)
   print(sprintf('-> working on %s targets', length(splited_targets)))
   ret <- lapply(splited_targets, FUN=work_on_targets, idat_folder, tcga_inside_name)
