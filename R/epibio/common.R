@@ -46,8 +46,9 @@ mgsub <- function(pattern, replacement, x, ...) {
 
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-#  rnb.options(disk.dump.big.matrices=TRUE,
-#			  enforce.memory.management=TRUE)
+  rnb.options(disk.dump.big.matrices=TRUE,
+			  enforce.memory.management=TRUE,
+			  region.types="promoters")
   options(fftempdir='/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/')
   #tryCatch({
    # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
