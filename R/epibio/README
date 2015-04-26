@@ -1,0 +1,2 @@
+nohup Rscript organize_geo.R > & nohup1.out &
+
