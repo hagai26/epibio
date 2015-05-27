@@ -1,6 +1,10 @@
 
 library(data.table)
 
+#fftempdir.folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/'
+fftempdir.folder <- 'D:\\home\\work\\r_stuff\\tmp'
+
+
 list.dirs <- function(path=".", pattern=NULL, all.dirs=FALSE,
                       full.names=FALSE, ignore.case=FALSE) {
   # use full.names=TRUE to pass to file.info
@@ -49,7 +53,7 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
   rnb.options(disk.dump.big.matrices=TRUE,
 			  enforce.memory.management=TRUE,
 			  region.types="promoters")
-  options(fftempdir='/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/')
+  options(fftempdir=fftempdir.folder)
   #tryCatch({
    # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
   #}, error = function(err) {
