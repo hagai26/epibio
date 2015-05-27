@@ -5,15 +5,15 @@ library(doParallel)
 source("config.R")
 source("common.R")
 source("geo_utils.R")
-
+args <- commandArgs(trailingOnly = TRUE)
 
 #' Build new RnbeadsRawset
 rnbReadL1Betas <- function(targets, U, M, p.values) {
   pheno <- targets[, c('description','tissue','cell_type','disease')]
   #next three lines added to avoid error in cases of no pvalues ##josh##
   if (is.null(p.values)){
-	        p.values <- matrix(0,nrow=nrow(M),ncol=ncol(M),dimnames=list(rownames(M),colnames(M)))
-    }
+      p.values <- matrix(0,nrow=nrow(M),ncol=ncol(M),dimnames=list(rownames(M),colnames(M)))
+  }
   rnb.set <- RnBeadRawSet(pheno, U=U, M=M, p.values=p.values, useff=FALSE)
   betas.table <- process_rnb_set_to_betas(rnb.set, !is.null(p.values))
   betas.table
@@ -234,9 +234,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
             print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
             stop("different unmeth_ids and pval_ids!")
           }
-          #signals_pval <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
-		  #changed variable name from signals_pval to p.values so it will be passed on to rnbReadL1Betas ##josh##
-		  p.values <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
+          p.values <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
         }
       }
       stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])

@@ -101,7 +101,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   
   for(series_id_tmp in series_id_vec) {
     series_id_folder <- file.path(geo_data_folder, series_id_tmp)
-    series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsiv.gz)$")
+    series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
     # filter non relevant files
     series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, 
                                                     collapse="|"), series_id_files)]
