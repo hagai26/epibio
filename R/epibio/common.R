@@ -4,6 +4,16 @@ library(data.table)
 #fftempdir.folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/'
 fftempdir.folder <- 'D:\\home\\work\\r_stuff\\tmp'
 
+get_indices_to_runon <- function(vec, args) {
+  if(length(args) > 0) {
+    indices <- c(as.numeric(args[1]))
+  } else {
+    indices <- seq_along(vec)  
+  }
+  indices
+}
+
+
 
 list.dirs <- function(path=".", pattern=NULL, all.dirs=FALSE,
                       full.names=FALSE, ignore.case=FALSE) {
