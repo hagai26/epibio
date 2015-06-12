@@ -80,8 +80,9 @@ process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
     # currently, we ignore this error and doesn't call snp.removal
  #   print(err)
  # })
-  
-  rnb.set <- rnb.execute.normalization(rnb.set, method="bmiq",bgcorr.method="methylumi.lumi")
+ 
+  # XXX
+  #rnb.set <- rnb.execute.normalization(rnb.set, method="bmiq",bgcorr.method="methylumi.lumi")
   betas.table <- meth(rnb.set, row.names=TRUE)
   if(has_pvalues) {
     pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)
