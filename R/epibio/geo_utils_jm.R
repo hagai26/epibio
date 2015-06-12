@@ -87,15 +87,15 @@ read_l1_signal_file <- function(filename, nrows) {
  # close(con)
   con <- gzfile(filename)
   # read only first 800 columns
-  if (NUM_COLS > 800){
-  COLS_TO_READ <- c("character",rep("numeric",800),rep("NULL",(NUM_COLS-800)))
-  t <- read.table(con, header=TRUE, row.names=1, skip=skip,
-				  sep=sep, dec=dec, nrows=nrows, check.names=FALSE,
-				  stringsAsFactors=FALSE, comment.char="",colClasses=COLS_TO_READ)
+  if (NUM_COLS > 800) {
+	  COLS_TO_READ <- c("character",rep("numeric",800),rep("NULL",(NUM_COLS-800)))
+	  t <- read.table(con, header=TRUE, row.names=1, skip=skip,
+					  sep=sep, dec=dec, nrows=nrows, check.names=FALSE,
+					  stringsAsFactors=FALSE, comment.char="",colClasses=COLS_TO_READ)
   } else {  
-  t <- read.table(con, header=TRUE, row.names=1, skip=skip, 
-                  sep=sep, dec=dec, nrows=nrows, check.names=FALSE, 
-                  stringsAsFactors=FALSE, comment.char="")
+	  t <- read.table(con, header=TRUE, row.names=1, skip=skip, 
+					  sep=sep, dec=dec, nrows=nrows, check.names=FALSE, 
+					  stringsAsFactors=FALSE, comment.char="")
   }
   # remove columns which doesn't have labels on header (like in GSE32146)
   good_cols <- colnames(t)[colnames(t) != ""]
