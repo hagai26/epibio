@@ -6,3 +6,7 @@ source("http://rnbeads.mpi-inf.mpg.de/install.R")
 
 On problems - install manually from source stuff from biocLite, such as:
 FDb.InfiniumMethylation.hg19
+
+ghost script:
+Make sure the file contents includes the line R_GSCMD=C:\Program Files\gs\gs9.15\bin\gswin64c.exe (assuming Ghostscript is located in C:\Program Files\gs\gs9.15
+
