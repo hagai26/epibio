@@ -7,7 +7,7 @@ source("common.R")
 source("geo_utils.R")
 args <- commandArgs(trailingOnly = TRUE)
 
-
+# GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                    output_filename, targets, all.series.info) {
   idat_folder <- file.path(series_id_folder, "idats")
@@ -50,14 +50,14 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
   data.source <-list(idat_folder, targets)
   rnb.options(identifiers.column = 'barcode')
   rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
-  betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
+  betas.table <- process_rnb_set_to_betas(rnb.set, TRUE)
   write_beta_values_table(output_filename, betas.table)
   
 }
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                       output_filename, targets, all.series.info) {
-  nrows = 1000 # XXX (should be -1 on production)
+  nrows = 10000 # XXX (should be -1 on production)
   #nrows = -1
   
   this_targets = subset(targets, targets$series_id == series_id_orig)  
