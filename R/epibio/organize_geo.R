@@ -14,6 +14,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
   dir.create(idat_folder, recursive=TRUE, showWarnings=FALSE)
   # Download idats
   splited_supplementary_file <- strsplit(targets$supplementary_file, ";")
+  splited_supplementary_file <- lapply(splited_supplementary_file, trim)
+  
   # Each item should be of length two (Green & Red)
   splited_supplementary_file_len_unique <- unique(unlist(lapply(splited_supplementary_file, 
                                                                 function(x) length(x))))
@@ -23,8 +25,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
   targets$idat1_url <- sapply(splited_supplementary_file, "[", 1)
   targets$idat2_url <- sapply(splited_supplementary_file, "[", 2)
   
-  targets$idat1_filename <- tail(unlist(strsplit(targets$idat1_url, split='/', fixed=TRUE)), 1)
-  targets$idat2_filename <- tail(unlist(strsplit(targets$idat2_url, split='/', fixed=TRUE)), 1)
+  targets$idat1_filename <- sapply(strsplit(targets$idat1_url, split='/', fixed=TRUE), tail, 1)
+  targets$idat2_filename <- sapply(strsplit(targets$idat2_url, split='/', fixed=TRUE), tail, 1)
 
   targets$barcode <- gsub("_(Grn|Red).idat.gz", "", targets$idat1_filename)
   rownames(targets) <- targets$barcode
@@ -33,11 +35,13 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
     target <- targets[i,]
     destfile <- file.path(idat_folder, target$idat1_filename)
     if(!file.exists(destfile)) {
-      download.file(url, destfile, "internal")
+      print(sprintf('downloading %s', target$idat1_url))
+      download.file(target$idat1_url, destfile, "internal")
     }
     destfile <- file.path(idat_folder, target$idat2_filename)
     if(!file.exists(destfile)) {
-      download.file(url, destfile, "internal")
+      print(sprintf('downloading %s', target$idat2_url))
+      download.file(target$idat2_url, destfile, "internal")
     }
   }
 
@@ -53,7 +57,7 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                       output_filename, targets, all.series.info) {
-  nrows = 50000 # XXX (should be -1 on production)
+  nrows = 1000 # XXX (should be -1 on production)
   #nrows = -1
   
   this_targets = subset(targets, targets$series_id == series_id_orig)  
@@ -288,7 +292,7 @@ run_organize_geo <- function() {
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	only_vec <- c("GSE50759", "GSE31848", "GSE62727") # XXX
+	only_vec <- c("GSE31848", "GSE62727") # XXX
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)

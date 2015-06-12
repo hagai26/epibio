@@ -4,6 +4,10 @@ library(data.table)
 #fftempdir.folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/'
 fftempdir.folder <- 'D:\\home\\work\\r_stuff\\tmp'
 
+trim <- function (x) {
+  gsub("^\\s+|\\s+$", "", x)
+}
+
 get_indices_to_runon <- function(vec, args) {
   if(length(args) > 0) {
     indices <- c(as.numeric(args[1]))
@@ -60,10 +64,12 @@ mgsub <- function(pattern, replacement, x, ...) {
 
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-  rnb.options(disk.dump.big.matrices=TRUE,
-			  enforce.memory.management=TRUE,
-			  region.types="promoters")
-  options(fftempdir=fftempdir.folder)
+  print('process_rnb_set_to_betas called')
+  # XXX
+  #rnb.options(disk.dump.big.matrices=TRUE, 
+  #            enforce.memory.management=TRUE, 
+  #            region.types="promoters")
+  #options(fftempdir=fftempdir.folder)
   #tryCatch({
    # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
   #}, error = function(err) {
