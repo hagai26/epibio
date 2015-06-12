@@ -288,7 +288,7 @@ run_organize_geo <- function() {
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	#only_vec <- c("GSE31848", "GSE62727") # XXX
+	only_vec <- c("GSE50759", "GSE31848", "GSE62727") # XXX
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)
@@ -303,9 +303,9 @@ run_organize_geo <- function() {
 	# Fix pheno values
 	col_vec <- c('series_id', 'title', 'cell_type', 'tissue', 'disease')
 	missing_cond <- (is.na(pheno$tissue) | pheno$tissue=='') & (is.na(pheno$cell_type) | pheno$cell_type=='')
-	missing_both <- subset(pheno, missing_cond)
 	duplicate_cond <- !is.na(pheno$tissue) & pheno$tissue!='' & !is.na(pheno$cell_type) & pheno$cell_type!=''
-	duplicate_names <- subset(pheno, duplicate_cond)
+	#missing_both <- subset(pheno, missing_cond)
+	#duplicate_names <- subset(pheno, duplicate_cond)
 	#write.csv(missing_both[,col_vec], file='missing_both.csv')
 	#write.csv(duplicate_names[,col_vec], file='duplicate_names.csv')
 	
