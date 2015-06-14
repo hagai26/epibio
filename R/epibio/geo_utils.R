@@ -1,4 +1,5 @@
 
+library(RnBeads)
 library(stringr)  # str_count
 
 source("common.R")
@@ -18,14 +19,16 @@ read_joined_file <- function(filename) {
 }
 
 read_l1_signal_file <- function(filename, nrows) {
+  print(sprintf('read_l1_signal_file called on %s for %d rows', filename, nrows))
   # skip comments starts with: [#"]
   con <- gzfile(filename)
-  lines <- readLines(con, n=30)
+  lines <- readLines(con, n=40)
   close(con)
   comment_lines <- grepl('^[#"].*', lines)
   empty_lines <- grepl('^\\s*$', lines)
   skip <- which.min(comment_lines | empty_lines) - 1
   lines <- lines[skip+1:length(lines)]
+  lines <- lines[!is.na(lines)]
   
   # choose correct sep & dec
   sep <- NULL
@@ -39,12 +42,13 @@ read_l1_signal_file <- function(filename, nrows) {
     }
   }
   if(is.null(sep)) {
-    stop("Can't figure out correct sep")
+    stop("read_l1_signal_file - Can't figure out correct sep")
   }
   dec <- NULL
   dec_list <- c(',')
+  lines_without_header <- lines[2:length(lines)]
   for(dec_it in dec_list) {
-    dec_count <- str_count(lines[2:length(lines)], dec_it)
+    dec_count <- str_count(lines_without_header, dec_it)
     if(mean(dec_count) >= MIN_COLS) {
       dec <- dec_it
       break
@@ -93,7 +97,78 @@ read_l1_signal_file <- function(filename, nrows) {
     x <- lapply(out_table, function(x) gsub(",", ".", x, fixed = TRUE))
     out_table <- data.frame(x, row.names=rownames(out_table), stringsAsFactors=FALSE)
   }
-  
+  print('read_l1_signal_file done')
   out_table
 }
 
+
+#' Build new RnbeadsRawset
+rnbReadL1Betas <- function(targets, U, M, p.values) {
+  print('rnbReadL1Betas called')
+  pheno <- targets[, c('description','tissue','cell_type','disease')]
+  #next three lines added to avoid error in cases of no pvalues ##josh##
+  if (is.null(p.values)){
+      p.values <- matrix(0,nrow=nrow(M),ncol=ncol(M),dimnames=list(rownames(M),colnames(M)))
+  }
+  rnb.set <- RnBeadRawSet(pheno, U=U, M=M, p.values=p.values, useff=FALSE)
+  betas.table <- process_rnb_set_to_betas(rnb.set, !is.null(p.values))
+  print('rnbReadL1Betas done')
+  betas.table
+}
+
+#' get the relevant samples in samples.all
+#' 
+#' @param this_targets
+#' @param samples.all
+#' @param this_all.series.info
+#' 
+#' @return relevant samples boolean vector
+get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
+  # GSE43414 has characteristics_ch1 like:
+  # GSM1068923 subjectid: NA;\tbarcode: 6057825014_R06C02.1;\tlunnonetal: FALSE;\ttissue_code: NA;\tbraak.stage: NA;\tSex: NA;\tad.disease.status: NA;\tage.brain: NA;\tage.blood: NA;\tsource tissue: cerebellum
+  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]
+  barcode_match_with_leading_X <- paste0("X", barcode_match)
+  title_last_word <- gsub(".* ", '', this_targets$title)
+  title_last_word_no_leading_zeros <- gsub("(?<![0-9])0+", "", title_last_word, perl = TRUE)
+  # sometimes its numbers and they add S to each number (as in GSE53816)
+  title_last_word2 <- paste0('S', title_last_word)
+  try_match_list <- list(
+    this_targets$description, 
+    this_targets$source_name_ch1,
+    # first word
+    gsub("[ ;].*", '', this_targets$source_name_ch1), 
+    gsub("[ ;].*", '', this_targets$description), 
+    # last word
+    gsub(".* ", '', this_targets$source_name_ch1), 
+    title_last_word, 
+    title_last_word2,
+    title_last_word_no_leading_zeros,
+    gsub(".*[ ;\t]", '', this_targets$description),
+    # middle one barcode
+    barcode_match, barcode_match_with_leading_X
+  )
+  
+  match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
+  # find most match locations
+  match_all_no_na <- lapply(match_all, function(x) x[!is.na(x)])
+  most_match_index <- which.max(sapply(match_all_no_na, FUN=length))
+  relevant.samples.loc <- match_all[[most_match_index]]
+  
+  if(all(is.na(relevant.samples.loc))) {
+    if(length(samples.all) == dim(this_all.series.info)[[1]]) {
+      relevant_samples <- (this_all.series.info$description %in% this_targets$description) & 
+                    (this_all.series.info$source_name_ch1 %in% this_targets$source_name_ch1) &
+                    (this_all.series.info$title %in% this_targets$title) &
+                    (this_all.series.info$extract_protocol_ch1 %in% this_targets$extract_protocol_ch1)
+    } else {
+      stop('get_relevant_samples failed')
+    }
+  } else {
+    relevant_samples <- !is.na(relevant.samples.loc)
+    # each sample should be only once
+    # Remove NA's
+    relevant.samples.loc_no_na <- relevant.samples.loc[relevant_samples]
+    stopifnot(length(unique(relevant.samples.loc_no_na)) == length(relevant.samples.loc_no_na))
+  }
+  relevant_samples
+}

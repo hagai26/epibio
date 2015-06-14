@@ -1,11 +1,12 @@
 
 source("config.R")
 source("common.R")
+args <- commandArgs(trailingOnly = TRUE)
 
 normalize_names <- function(name) {
   name <- tolower(name)
   # removes
-  remove_re <- c('.*___', '.txt.gz')
+  remove_re <- c('gse.*___', '.txt.gz')
   name <- mgsub(remove_re, character(length(remove_re)), name)
   # converts
   name <- gsub('healthy_obese', 'obese', name)
@@ -72,11 +73,11 @@ merge_beta_values <- function(generated_folder, output_folder) {
   df <- data.frame(filename=beta_files)
   df$normalized <- sapply(beta_files, FUN=normalize_names)
   groups <- split(df, df$normalized, drop=TRUE)
-  c <- 1
-  for (group in groups) {
-    print(sprintf("%d/%d", c, length(groups)))
+  indices <- get_indices_to_runon(groups, args)
+  for (i in indices) {
+	  group <- groups[[i]]
+    print(sprintf("%d/%d", i, length(groups)))
     workOnKind(group, generated_folder, output_folder)
-    c <- c+1
   }
 }
 

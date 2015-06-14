@@ -1,8 +1,9 @@
 
-library(RnBeads)
-
 source("config.R")
 source("common.R")
+source("RnBeadsCommon.R")
+args <- commandArgs(trailingOnly = TRUE)
+
 
 work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
   type <- targets$histological_type[[1]]
@@ -12,12 +13,8 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
     tryCatch({
-      #targets <- head(targets, 20) # XXX
-      data.source <-list(idat_folder, targets)
-	  rnb.options(identifiers.column = 'barcode')
-      rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
-      betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
-      write_beta_values_table(output_filename, betas.table)
+      targets <- head(targets, 20) # XXX
+      workOnIdatsFolder(idat_folder, targets, output_filename)
     }, error = function(err) {
       print(err)
       print(sprintf('Got error during working on %s %s %s - skipping', tcga_inside_name, type, study))
@@ -46,17 +43,22 @@ work_on_tcga_folder <- function(tcga_inside_name, tcga_folder) {
 }
 
 
-dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
+run_organize_tcga <- function() {
+	dir.create(generated_TCGA_folder, recursive=TRUE, showWarnings=FALSE)
 
-tcga_folder <- file.path(external_disk_data_path, 'TCGA')
-stopifnot(file.exists(tcga_folder))
-tcga_inside_folders <- list.dirs(tcga_folder)
-ignore_list <- c("Clinical", "download_2", "download_3", "download_4")
-tcga_inside_folders <- tcga_inside_folders[!(tcga_inside_folders %in% ignore_list)]
-for (i in seq_along(tcga_inside_folders)) {
-  cur <- tcga_inside_folders[[i]]
-  print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
-  work_on_tcga_folder(cur, tcga_folder)
+	tcga_folder <- file.path(external_disk_data_path, 'TCGA')
+	stopifnot(file.exists(tcga_folder))
+	tcga_inside_folders <- list.dirs(tcga_folder)
+	ignore_list <- c("Clinical", "download_2", "download_3", "download_4")
+	tcga_inside_folders <- tcga_inside_folders[!(tcga_inside_folders %in% ignore_list)]
+	indices <- get_indices_to_runon(tcga_inside_folders, args)
+	#indices <- c(3)
+	for (i in indices) {
+	  cur <- tcga_inside_folders[[i]]
+	  print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
+	  work_on_tcga_folder(cur, tcga_folder)
+	}
+	print("DONE")
 }
 
-print("DONE")
+run_organize_tcga()

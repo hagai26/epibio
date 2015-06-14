@@ -6,7 +6,7 @@ args <- commandArgs(trailingOnly = TRUE)
 normalize_names <- function(name) {
   name <- tolower(name)
   # removes
-  remove_re <- c('.*___', '.txt.gz')
+  remove_re <- c('gse.*___', '.txt.gz')
   name <- mgsub(remove_re, character(length(remove_re)), name)
   # converts
   name <- gsub('healthy_obese', 'obese', name)

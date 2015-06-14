@@ -1,6 +1,19 @@
 
 library(data.table)
 
+trim <- function (x) {
+  gsub("^\\s+|\\s+$", "", x)
+}
+
+get_indices_to_runon <- function(vec, args) {
+  if(length(args) > 0) {
+    indices <- c(as.numeric(args[1]))
+  } else {
+    indices <- seq_along(vec)  
+  }
+  indices
+}
+
 list.dirs <- function(path=".", pattern=NULL, all.dirs=FALSE,
                       full.names=FALSE, ignore.case=FALSE) {
   # use full.names=TRUE to pass to file.info
@@ -8,12 +21,12 @@ list.dirs <- function(path=".", pattern=NULL, all.dirs=FALSE,
                     full.names=TRUE, recursive=FALSE, ignore.case)
   dirs <- all[file.info(all)$isdir]
   # determine whether to return full names or just dir names
-  if(isTRUE(full.names))
-    return(dirs)
-  else
-    return(basename(dirs))
+  if(isTRUE(full.names)) {
+    dirs
+  } else {
+    basename(dirs)
+  }
 }
-
 
 chunked_group_by <- function(targets, group_by_list, chunk_size) {
   orig_colnames <- colnames(targets)
@@ -25,7 +38,7 @@ chunked_group_by <- function(targets, group_by_list, chunk_size) {
   t <- lapply(grouped_chunked_targets, function(x) as.data.frame(x, row.names=x$tmp_row_name))
   grouped <- lapply(t, function(x) subset(x, select=orig_colnames))
   result <- list("grouped"=grouped, "splited"=splited_targets)
-  return(result)
+  result
 }
 
 write_nrow_per_group <- function(splited_targets, filepath) {
@@ -42,39 +55,6 @@ mgsub <- function(pattern, replacement, x, ...) {
     result <- gsub(pattern[i], replacement[i], result, ...)
   }
   result
-}
-
-
-process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-  rnb.options(disk.dump.big.matrices=TRUE,
-			  enforce.memory.management=TRUE,
-			  region.types="promoters")
-  options(fftempdir='/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/')
-  #tryCatch({
-   # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
-  #}, error = function(err) {
-    # TODO
-    
-    # on GSE36278 this causes stops with error:
-    # Error in checkSlotAssignment(object, name, value) : 
-    # assignment of an object of class “numeric” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE
-    
-    # on GSE42118 (and GSE52576, GSE44667, GSE53740):
-    # <simpleError in checkSlotAssignment(object, name, value): 
-    # assignment of an object of class “integer” is not valid for slot ‘M’ in an object of class “RnBeadRawSet”; is(value, "matrixOrffOrNULL") is not TRUE>
-    
-    # currently, we ignore this error and doesn't call snp.removal
- #   print(err)
- # })
-  
-  rnb.set <- rnb.execute.normalization(rnb.set, method="bmiq",bgcorr.method="methylumi.lumi")
-  betas.table <- meth(rnb.set, row.names=TRUE)
-  if(has_pvalues) {
-    pvalue.high <- which(dpval(rnb.set) > 0.05, arr.ind=TRUE)
-    betas.table[pvalue.high[,'row'], pvalue.high[,'col']] <- NA
-  }
-  destroy(rnb.set)  
-  betas.table
 }
 
 create_name <- function(study, type) {
@@ -106,4 +86,3 @@ paste3 <- function(...,sep="") {
   is.na(ret) <- ret==""
   ret
 }
-
