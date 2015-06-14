@@ -126,7 +126,8 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
 get_relevant_samples <- function(this_targets, samples.all, this_all.series.info) {
   # GSE43414 has characteristics_ch1 like:
   # GSM1068923 subjectid: NA;\tbarcode: 6057825014_R06C02.1;\tlunnonetal: FALSE;\ttissue_code: NA;\tbraak.stage: NA;\tSex: NA;\tad.disease.status: NA;\tage.brain: NA;\tage.blood: NA;\tsource tissue: cerebellum
-  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]      
+  barcode_match <- str_match(this_targets$characteristics_ch1, "barcode: ([^; ]+)")[,c(2)]
+  barcode_match_with_leading_X <- paste0("X", barcode_match)
   title_last_word <- gsub(".* ", '', this_targets$title)
   title_last_word_no_leading_zeros <- gsub("(?<![0-9])0+", "", title_last_word, perl = TRUE)
   # sometimes its numbers and they add S to each number (as in GSE53816)
@@ -144,7 +145,7 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
     title_last_word_no_leading_zeros,
     gsub(".*[ ;\t]", '', this_targets$description),
     # middle one barcode
-    barcode_match
+    barcode_match, barcode_match_with_leading_X
   )
   
   match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
