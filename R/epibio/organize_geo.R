@@ -8,6 +8,20 @@ source("geo_utils.R")
 source("RnBeadsCommon.R")
 args <- commandArgs(trailingOnly = TRUE)
 
+list_seris_id_files <- function(series_id_folder) {
+  non_relevant_patterns <- c(
+    "_[Pp]rocessed[._]", "_Summary_icc_M[.]",
+    "upload_Beta[.]","_SampleMethylationProfile[.]",
+    "_average_beta[.]", "_betas?[.]",
+    "_geo_all_cohorts[.]", "_Results[.]",
+    "_dasen[.]", "_NewGSMs[.]")
+  
+  series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
+  # filter non relevant files
+  series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, 
+                                                  collapse="|"), series_id_files)]
+  series_id_files
+}
 
 # GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
@@ -203,12 +217,6 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   # handle samples which comes from multiple serieses
   series_id_vec <- unlist(strsplit(series_id_orig, ","))
   series_id <- NULL
-  non_relevant_patterns <- c(
-    "_[Pp]rocessed[._]", "_Summary_icc_M[.]",
-    "upload_Beta[.]","_SampleMethylationProfile[.]",
-    "_average_beta[.]", "_betas?[.]",
-    "_geo_all_cohorts[.]", "_Results[.]",
-    "_dasen[.]", "_NewGSMs[.]")
   
   # check for idat files in the first series id
   idat_targets <- subset(targets, !is.na(supplementary_file))
@@ -216,15 +224,13 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   if(nrow(idat_targets) > 0) {
     series_id <- series_id_vec[[1]]
     series_id_folder <- file.path(geo_data_folder, series_id)
+    series_id_files <- list_seris_id_files(series_id_folder)
   }
   if(is.null(series_id)) {
     for(series_id_tmp in series_id_vec) {
       # check for data files
       series_id_folder <- file.path(geo_data_folder, series_id_tmp)
-      series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
-      # filter non relevant files
-      series_id_files <- series_id_files[!grepl(paste(non_relevant_patterns, 
-                                                      collapse="|"), series_id_files)]
+      series_id_files <- list_seris_id_files(series_id_folder)
       if(length(series_id_files) > 0) {
         series_id <- series_id_tmp
         break
@@ -239,7 +245,7 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
     print(sprintf('%s already exists. skipping', basename(output_filename)))
   } else {
     ptime1 <- proc.time()
-    if(nrow(idat_targets) > 0) {
+    if(nrow(idat_targets) > 0 & length(series_id_files) == 0) {
       readGeoL1DataWithIdats(series_id_folder, series_id_orig, series_id_files, 
                              output_filename, targets, all.series.info)
     } else {
@@ -289,7 +295,7 @@ run_organize_geo <- function() {
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	only_vec <- c("GSE31848", "GSE62727") # XXX
+	#only_vec <- c("GSE31848") # XXX
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)
