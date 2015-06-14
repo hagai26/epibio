@@ -1,9 +1,8 @@
 
-library(RnBeads)
-
 source("config.R")
 source("common.R")
 source("tcga_utils.R")
+source("RnBeadsCommon.R")
 args <- commandArgs(trailingOnly = TRUE)
 
 
@@ -16,11 +15,7 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
   } else {
     tryCatch({
       targets <- head(targets, 20) # XXX
-      data.source <-list(idat_folder, targets)
-      rnb.options(identifiers.column = 'barcode')
-      rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
-      betas.table <- process_rnb_set_to_betas(rnb.set, FALSE)
-      write_beta_values_table(output_filename, betas.table)
+      workOnIdatsFolder(idat_folder, targets, output_filename)
     }, error = function(err) {
       print(err)
       print(sprintf('Got error during working on %s %s %s - skipping', tcga_inside_name, type, study))

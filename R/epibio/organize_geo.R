@@ -5,7 +5,9 @@ library(stringr)
 source("config.R")
 source("common.R")
 source("geo_utils.R")
+source("RnBeadsCommon.R")
 args <- commandArgs(trailingOnly = TRUE)
+
 
 # GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
@@ -47,12 +49,7 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
   # Work on idats
   print("working on idats")
-  data.source <-list(idat_folder, targets)
-  rnb.options(identifiers.column = 'barcode')
-  rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
-  betas.table <- process_rnb_set_to_betas(rnb.set, TRUE)
-  write_beta_values_table(output_filename, betas.table)
-  
+  workOnIdatsFolder(idat_folder, targets, output_filename)
 }
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 
