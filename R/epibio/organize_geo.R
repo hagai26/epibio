@@ -296,7 +296,9 @@ run_organize_geo <- function() {
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	#only_vec <- c("GSE31848") # XXX
+	#only_vec <- c("GSE46306") # XXX # TODO
+	#only_vec <- c('GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE36278', 'GSE41826', 'GSE42882', 'GSE43414', 'GSE46573', 'GSE48472', 'GSE48461', 'GSE50798', 'GSE44661', 'GSE54776', 'GSE55712', 'GSE53816', 'GSE58218', 'GSE59524', 'GSE49377', 'GSE49576', 'GSE61107', 'GSE61380', 'GSE61431', 'GSE62727', 'GSE31848') # XXX # for hai
+	only_vec <- c('GSE31848') # XXX
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)
