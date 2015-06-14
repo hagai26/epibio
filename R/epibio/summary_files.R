@@ -35,18 +35,22 @@ summary_files <- function(input_folder,output_folder){
 			    write.table(perc.90,file.path(output_folder,'perc_90.txt'),sep='\t',col.names=T,row.names=F)
 }
 
+dir.create('/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary',showWarnings=F)
 print('Summarizing GEO')
 input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/GEO'
 output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/GEO'
+dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 
 print('Summarizing TCGA')
 input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/TCGA'
 output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/TCGA'
+dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 
 print('Summarizing lab_data')
 input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/lab_data'
 output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/lab_data'
+dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 

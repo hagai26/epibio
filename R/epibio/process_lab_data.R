@@ -13,6 +13,8 @@ betas.table <- process_rnb_set_to_betas(rnb.set,TRUE)
 pheno <- pheno(rnb.set)
 sample_groups <- unique(pheno$Sample_Group)
 
+dir.create(output_dir,showWarnings=TRUE)
+
 for (i in 1:length(sample_groups)){
 	cols <- which(pheno$Sample_Group == sample_groups[i])
 	output_file <- gzfile(file.path(output_dir,paste(sample_groups[i],'.txt.gz',sep='')))
