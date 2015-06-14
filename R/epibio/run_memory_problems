@@ -1,0 +1,29 @@
+#mem,15,17,19,20,39,40,42,45,46,47,55,58,59,70,71,79,80,115,120,143,145,166,167,177,185,187,189,190,194
+#other_error,31,32,34
+source /cs/icore/joshua.moss/dor/hagaic/epibio/hagaic_env.sh
+
+nohup Rscript organize_geo_jm.R 45  > & nohup_geo_45.out &
+nohup Rscript organize_geo_jm.R 46  > & nohup_geo_46.out &
+nohup Rscript organize_geo_jm.R 47  > & nohup_geo_47.out &
+nohup Rscript organize_geo_jm.R 55  > & nohup_geo_55.out &
+nohup Rscript organize_geo_jm.R 58  > & nohup_geo_58.out &
+nohup Rscript organize_geo_jm.R 59  > & nohup_geo_59.out &
+nohup Rscript organize_geo_jm.R 70  > & nohup_geo_70.out &
+nohup Rscript organize_geo_jm.R 71  > & nohup_geo_71.out &
+nohup Rscript organize_geo_jm.R 79  > & nohup_geo_79.out &
+nohup Rscript organize_geo_jm.R 80  > & nohup_geo_80.out &
+nohup Rscript organize_geo_jm.R 115  > & nohup_geo_115.out &
+nohup Rscript organize_geo_jm.R 120  > & nohup_geo_120.out &
+nohup Rscript organize_geo_jm.R 143  > & nohup_geo_143.out &
+nohup Rscript organize_geo_jm.R 145  > & nohup_geo_145.out &
+nohup Rscript organize_geo_jm.R 166  > & nohup_geo_166.out &
+nohup Rscript organize_geo_jm.R 167  > & nohup_geo_167.out &
+nohup Rscript organize_geo_jm.R 177  > & nohup_geo_177.out &
+nohup Rscript organize_geo_jm.R 185  > & nohup_geo_185.out &
+nohup Rscript organize_geo_jm.R 187  > & nohup_geo_187.out &
+nohup Rscript organize_geo_jm.R 189  > & nohup_geo_189.out &
+nohup Rscript organize_geo_jm.R 190  > & nohup_geo_190.out &
+nohup Rscript organize_geo_jm.R 194  > & nohup_geo_194.out &
+nohup Rscript organize_geo_jm.R 31  > & nohup_geo_31.out &
+nohup Rscript organize_geo_jm.R 32  > & nohup_geo_32.out &
+nohup Rscript organize_geo_jm.R 34  > & nohup_geo_34.out &

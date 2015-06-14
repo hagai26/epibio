@@ -1,0 +1,3 @@
+#!/bin/sh
+srun Rscript /cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/organize_geo.R
+
