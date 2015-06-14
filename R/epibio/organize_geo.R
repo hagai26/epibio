@@ -289,7 +289,8 @@ run_organize_geo <- function() {
 				  "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
 				  "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
 				  "GSE46168", "GSE47627", "GSE61151", "GSE32146", "GSE41114")
-	wait_list <- c("GSE62924", "GSE51245", "GSE38266", "GSE46306", "GSE59685")
+	#wait_list <- c("GSE62924", "GSE51245", "GSE38266", "GSE46306", "GSE59685")
+	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
