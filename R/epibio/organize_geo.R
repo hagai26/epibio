@@ -65,7 +65,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
   # Work on idats
   print("working on idats")
-  workOnIdatsFolder(idat_folder, targets, output_filename)
+  betas.table <- workOnIdatsFolder(idat_folder, targets, 'barcode')
+  write_beta_values_table(output_filename, betas.table)
 }
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 

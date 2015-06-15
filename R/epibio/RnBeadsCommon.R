@@ -4,16 +4,17 @@ library(RnBeads)
 #fftempdir.folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/'
 fftempdir.folder <- 'D:\\home\\work\\r_stuff\\tmp'
 
-workOnIdatsFolder <- function(idat_folder, targets, output_filename) {
-  data.source <-list(idat_folder, targets)
-  rnb.options(identifiers.column = 'barcode')
+workOnIdatsFolder <- function(idat_folder, targets, identifiers_column) {
+  data.source <- list(idat_folder, targets)
+  rnb.options(identifiers.column = identifiers_column)
   rnb.set <- rnb.execute.import(data.source=data.source, data.type="infinium.idat.dir")
   betas.table <- process_rnb_set_to_betas(rnb.set, TRUE)
-  write_beta_values_table(output_filename, betas.table)
+  betas.table
 }
+# 
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
-  print('process_rnb_set_to_betas called')
+  #print('process_rnb_set_to_betas called')
   
   # XXX
   #rnb.options(disk.dump.big.matrices=TRUE, 

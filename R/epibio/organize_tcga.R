@@ -14,7 +14,8 @@ work_on_targets <- function(targets, idat_folder, tcga_inside_name) {
   } else {
     tryCatch({
       targets <- head(targets, 20) # XXX
-      workOnIdatsFolder(idat_folder, targets, output_filename)
+      betas.table <- workOnIdatsFolder(idat_folder, targets, 'barcode')
+	  write_beta_values_table(output_filename, betas.table)
     }, error = function(err) {
       print(err)
       print(sprintf('Got error during working on %s %s %s - skipping', tcga_inside_name, type, study))
