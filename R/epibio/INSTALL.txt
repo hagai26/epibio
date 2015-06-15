@@ -2,7 +2,8 @@
 install.packages("data.table")
 
 To install rnbeads, run:
-source("http://rnbeads.mpi-inf.mpg.de/install.R")
+source("http://bioconductor.org/biocLite.R")
+biocLite("RnBeads")
 
 On problems - install manually from source stuff from biocLite, such as:
 FDb.InfiniumMethylation.hg19
