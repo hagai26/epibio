@@ -28,8 +28,6 @@ list_series_id_files <- function(series_id_folder) {
 # GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                    output_filename, targets, all.series.info) {
-  idat_folder <- file.path(series_id_folder, "idats")
-  dir.create(idat_folder, recursive=TRUE, showWarnings=FALSE)
   # Download idats
   splited_supplementary_file <- strsplit(targets$supplementary_file, ";")
   splited_supplementary_file <- lapply(splited_supplementary_file, trim)
@@ -39,6 +37,9 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
                                                                 function(x) length(x))))
   stopifnot(splited_supplementary_file_len_unique[[1]] == 2)
   stopifnot(length(splited_supplementary_file_len_unique) == 1)
+  
+  idat_folder <- file.path(series_id_folder, "idats")
+  dir.create(idat_folder, recursive=TRUE, showWarnings=FALSE)
 
   targets$idat1_url <- sapply(splited_supplementary_file, "[", 1)
   targets$idat2_url <- sapply(splited_supplementary_file, "[", 2)
