@@ -287,16 +287,19 @@ run_organize_geo <- function() {
 				  "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
 				  "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
 				  "GSE46168", "GSE47627", "GSE61151", "GSE32146", "GSE41114")
-	#wait_list <- c("GSE62924", "GSE51245", "GSE38266", "GSE46306", "GSE59685")
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	#only_vec <- c("GSE46306") # XXX # TODO
-	#only_vec <- c('GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE36278', 'GSE41826', 'GSE42882', 'GSE43414', 'GSE46573', 'GSE48472', 'GSE48461', 'GSE50798', 'GSE44661', 'GSE54776', 'GSE55712', 'GSE53816', 'GSE58218', 'GSE59524', 'GSE49377', 'GSE49576', 'GSE61107', 'GSE61380', 'GSE61431', 'GSE62727', 'GSE31848') # XXX # for hai
-	only_vec <- c('GSE31848') # XXX
+	#only_vec <- c("GSE46306") # XXX # TODO - see GSE46306 is working
+	# for hai
+	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573')
+	only_vec <- c('GSE54776', 'GSE55712', 'GSE61107', 'GSE61380')
+	#only_vec <- c('GSE48472', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE44661', 'GSE53816', 'GSE49576')
+	#only_vec <- c('GSE58218', 'GSE59524', 'GSE49377', 'GSE61431', 'GSE62727', 'GSE31848')
+	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)
