@@ -35,22 +35,25 @@ summary_files <- function(input_folder,output_folder){
 			    write.table(perc.90,file.path(output_folder,'perc_90.txt'),sep='\t',col.names=T,row.names=F)
 }
 
-dir.create('/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary',showWarnings=F)
+generated_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated'
+merged_folder <- file.path(generated_folder, 'merged')
+summary_folder <- file.path(generated_folder, 'summary')
+dir.create(file.path(summary_folder), showWarnings=F)
 print('Summarizing GEO')
-input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/GEO'
-output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/GEO'
+input_folder <- file.path(merged_folder, 'GEO')
+output_folder <- file.path(summary_folder, 'GEO')
 dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 
 print('Summarizing TCGA')
-input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/TCGA'
-output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/TCGA'
+input_folder <- file.path(merged_folder, 'TCGA')
+output_folder <- file.path(summary_folder, 'TCGA')
 dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 
 print('Summarizing lab_data')
-input_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/merged/lab_data'
-output_folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/generated/summary/lab_data'
+input_folder <- file.path(merged_folder, 'lab_data')
+output_folder <- file.path(summary_folder, 'lab_data')
 dir.create(output_folder,showWarnings=F)
 summary_files(input_folder,output_folder)
 

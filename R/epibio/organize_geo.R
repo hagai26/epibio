@@ -8,13 +8,15 @@ source("geo_utils.R")
 source("RnBeadsCommon.R")
 args <- commandArgs(trailingOnly = TRUE)
 
-list_seris_id_files <- function(series_id_folder) {
+list_series_id_files <- function(series_id_folder) {
   non_relevant_patterns <- c(
     "_[Pp]rocessed[._]", "_Summary_icc_M[.]",
     "upload_Beta[.]","_SampleMethylationProfile[.]",
     "_average_beta[.]", "_betas?[.]",
     "_geo_all_cohorts[.]", "_Results[.]",
-    "_dasen[.]", "_NewGSMs[.]")
+    "_dasen[.]", "_NewGSMs[.]",
+    "_Normalized_data[.]",
+    "_Metrics[.]", "_qc[.]", "_BM_Oligos_samplsheet[.]")
   
   series_id_files <- list.files(series_id_folder, pattern="*.(txt.gz|csv.gz|tsv.gz)$")
   # filter non relevant files
@@ -92,7 +94,7 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
     meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
                        "[_ .]{1,2}[Mm]ethylated$",
                        "_Methylated[.]Detection$",
-                       "[._: ]Signal[_]?B$", 
+                       "Signal[_]?B$", 
                        "_ M$", "[.]M$",
                        "[.]meth$",
                        # GSE58218 is strange
@@ -189,14 +191,8 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
       }
     }
     stopifnot(dim(this_targets)[[1]] == dim(U)[[2]])
-    if (nrow(this_targets) > 1) {
-      betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
-      write_beta_values_table(output_filename, betas.table)
-    } else {
-      # Error in checkSlotAssignment(object, name, value) : 
-      # assignment of an object of class “numeric” is not valid for slot ‘meth.sites’ in an object of class “RnBeadSet”; is(value, "matrixOrff") is not TRUE
-      print("Got only one target - rnbeads raises error on these cases - should fix it - TODO")
-    }
+    betas.table <- rnbReadL1Betas(this_targets, U, M, p.values)
+    write_beta_values_table(output_filename, betas.table)
   }
 }
 
@@ -224,13 +220,13 @@ readGeoL1Data <- function(series_id_orig, targets, all.series.info, study, type,
   if(nrow(idat_targets) > 0) {
     series_id <- series_id_vec[[1]]
     series_id_folder <- file.path(geo_data_folder, series_id)
-    series_id_files <- list_seris_id_files(series_id_folder)
+    series_id_files <- list_series_id_files(series_id_folder)
   }
   if(is.null(series_id)) {
     for(series_id_tmp in series_id_vec) {
       # check for data files
       series_id_folder <- file.path(geo_data_folder, series_id_tmp)
-      series_id_files <- list_seris_id_files(series_id_folder)
+      series_id_files <- list_series_id_files(series_id_folder)
       if(length(series_id_files) > 0) {
         series_id <- series_id_tmp
         break
