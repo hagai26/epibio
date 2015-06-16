@@ -79,12 +79,12 @@ merge_beta_values <- function(generated_folder, output_folder) {
     # prevent errors in middle of run
     # we could give indices which are good for geo or tcga and the other will skip them
     if(i <= length(groups)) {
-	  group <- groups[[i]]
-	  print(sprintf("%d/%d", i, length(groups)))
-	  workOnKind(group, generated_folder, output_folder)
+	    group <- groups[[i]]
+	    print(sprintf("%d/%d", i, length(groups)))
+	    workOnKind(group, generated_folder, output_folder)
     } else {
-	  print(sprintf("skipping %d/%d, index out of range", i, length(groups)))
-	}
+	    print(sprintf("skipping %d/%d, index out of range", i, length(groups)))
+	  }
   }
 }
 
