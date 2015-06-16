@@ -69,6 +69,7 @@ workOnKind <- function(group, folder, output_folder) {
 }
 
 merge_beta_values <- function(generated_folder, output_folder) {
+  dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
   beta_files <- list.files(generated_folder, pattern="*.txt.gz")
   df <- data.frame(filename=beta_files)
   df$normalized <- sapply(beta_files, FUN=normalize_names)
@@ -78,10 +79,12 @@ merge_beta_values <- function(generated_folder, output_folder) {
     # prevent errors in middle of run
     # we could give indices which are good for geo or tcga and the other will skip them
     if(i <= length(groups)) {
-	    group <- groups[[i]]
-      print(sprintf("%d/%d", i, length(groups)))
-      workOnKind(group, generated_folder, output_folder)
-    }
+	  group <- groups[[i]]
+	  print(sprintf("%d/%d", i, length(groups)))
+	  workOnKind(group, generated_folder, output_folder)
+    } else {
+	  print(sprintf("skipping %d/%d, index out of range", i, length(groups)))
+	}
   }
 }
 
@@ -89,12 +92,14 @@ dir.create(generated_merged_folder, recursive=TRUE, showWarnings=FALSE)
 
 print("merging GEO")
 output_folder <- file.path(generated_merged_folder, 'GEO')
-dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
 merge_beta_values(generated_GEO_folder, output_folder)
 
 print("merging TCGA")
 output_folder <- file.path(generated_merged_folder, 'TCGA')
-dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
 merge_beta_values(generated_TCGA_folder, output_folder)
+
+print("merging lab_data")
+output_folder <- file.path(generated_merged_folder, 'lab_data')
+merge_beta_values(generated_lab_data_folder, output_folder)
 
 print("DONE")
