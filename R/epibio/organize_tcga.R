@@ -55,9 +55,13 @@ run_organize_tcga <- function() {
 	indices <- get_indices_to_runon(tcga_inside_folders, args)
 	#indices <- c(3)
 	for (i in indices) {
-	  cur <- tcga_inside_folders[[i]]
-	  print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
-	  work_on_tcga_folder(cur, tcga_folder)
+	  if(i <= length(tcga_inside_folders)) {
+	    cur <- tcga_inside_folders[[i]]
+	    print(sprintf('working on %s (%d/%d)', cur, i, length(tcga_inside_folders)))
+	    work_on_tcga_folder(cur, tcga_folder)
+	  } else {
+	    print(sprintf("skipping %d/%d, index out of range", i, length(tcga_inside_folders)))
+	  }
 	}
 	print("DONE")
 }

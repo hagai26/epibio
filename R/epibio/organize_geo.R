@@ -330,8 +330,12 @@ run_organize_geo <- function() {
 	#num.cores <- detectCores()/2
 	#parallel.setup(num.cores)
 	for (i in indices) {
-	  print(sprintf('working on %d/%d', i, length(splited_targets)))
-	  workOnGEOTargets(splited_targets[[i]], all.series.info, geo_data_folder)
+	  if(i <= length(splited_targets)) {
+	    print(sprintf('working on %d/%d', i, length(splited_targets)))
+	    workOnGEOTargets(splited_targets[[i]], all.series.info, geo_data_folder)
+	  } else {
+	    print(sprintf("skipping %d/%d, index out of range", i, length(splited_targets)))
+	  }
 	}
 	#parallel.disable()
   
