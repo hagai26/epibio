@@ -293,12 +293,11 @@ run_organize_geo <- function() {
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	#only_vec <- c("GSE46306") # XXX # TODO - see GSE46306 is working
+	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai
-	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573')
-	only_vec <- c('GSE54776', 'GSE55712', 'GSE61107', 'GSE61380')
-	#only_vec <- c('GSE48472', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE44661', 'GSE53816', 'GSE49576')
-	#only_vec <- c('GSE58218', 'GSE59524', 'GSE49377', 'GSE61431', 'GSE62727', 'GSE31848')
+	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE61380', 'GSE58218', 'GSE49377')
+	only_vec <- c('GSE61431', 'GSE62727', 'GSE31848')
+	#only_vec <- c('GSE48472', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE44661', 'GSE53816', 'GSE49576', 'GSE61107')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
@@ -328,7 +327,7 @@ run_organize_geo <- function() {
 	indices <- get_indices_to_runon(splited_targets, args)
 	#indices <- c(3)
 	logger.start(fname=NA)
-	num.cores <- detectCores()/2
+	#num.cores <- detectCores()/2
 	#parallel.setup(num.cores)
 	for (i in indices) {
 	  print(sprintf('working on %d/%d', i, length(splited_targets)))
