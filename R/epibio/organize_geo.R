@@ -25,6 +25,23 @@ list_series_id_files <- function(series_id_folder) {
   series_id_files
 }
 
+downloadIfNotExist <- function(destfile, url) {
+  if(!file.exists(destfile)) {
+    print(sprintf('downloading %s', url))
+    download.file(url, destfile, "internal")
+  }
+}
+
+decompressIfNotExist <- function(destfile) {
+  # if it's compressed - decompress it
+  if(grepl('[.]gz$', destfile)) {
+    destfile_without_gz <- substr(destfile, 1, nchar(destfile)-3)
+    if(!file.exists(destfile_without_gz)) {
+      gunzip(destfile, remove=FALSE)
+    }
+  }
+}
+
 # GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                    output_filename, targets, all.series.info) {
@@ -53,15 +70,12 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
   for(i in 1:nrow(targets)) {
     target <- targets[i,]
     destfile <- file.path(idat_folder, target$idat1_filename)
-    if(!file.exists(destfile)) {
-      print(sprintf('downloading %s', target$idat1_url))
-      download.file(target$idat1_url, destfile, "internal")
-    }
+    downloadIfNotExist(destfile, target$idat1_url)
+    decompressIfNotExist(destfile)
+    
     destfile <- file.path(idat_folder, target$idat2_filename)
-    if(!file.exists(destfile)) {
-      print(sprintf('downloading %s', target$idat2_url))
-      download.file(target$idat2_url, destfile, "internal")
-    }
+    downloadIfNotExist(destfile, target$idat2_url)
+    decompressIfNotExist(destfile)
   }
 
   # Work on idats
@@ -295,9 +309,9 @@ run_organize_geo <- function() {
 	only_vec <- list.files(geo_data_folder)
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai
-	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE61380', 'GSE58218', 'GSE49377')
-	only_vec <- c('GSE61431', 'GSE62727', 'GSE31848')
-	#only_vec <- c('GSE48472', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE44661', 'GSE53816', 'GSE49576', 'GSE61107')
+	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE61380', 'GSE58218', 'GSE49377', 'GSE61431', 'GSE62727', 'GSE31848')
+	only_vec <- c('GSE48472', 'GSE43414')
+	#only_vec <- c('GSE50798', 'GSE48461', 'GSE59524', 'GSE44661', 'GSE53816', 'GSE49576', 'GSE61107')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]

@@ -5,6 +5,8 @@ To install rnbeads, run:
 source("http://bioconductor.org/biocLite.R")
 biocLite("RnBeads")
 
+install.packages(R.utils) 
+
 On problems - install manually from source stuff from biocLite, such as:
 FDb.InfiniumMethylation.hg19
 
