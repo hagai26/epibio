@@ -316,11 +316,11 @@ run_organize_geo <- function() {
   #	                   invalid 'n' argument 
 	
 	bad_list <- c(no_l1_list, not_released_list,
-				  "GSE37754", "GSE40360", "GSE40279", "GSE41826", "GSE43976", "GSE42882", 
-				  "GSE46573", 'GSE49377', "GSE55598", "GSE55438", "GSE56044", "GSE61044", 
-				  "GSE61380", 'GSE48684', "GSE49542", "GSE42372", "GSE32079", "GSE46168", 
-				  "GSE47627", "GSE61151", "GSE32146", "GSE41114", 'GSE48472', 'GSE30338', 
-				  'GSE42752')
+				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
+				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
+				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
+				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
+				  'GSE42752', 'GSE61107')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
@@ -330,10 +330,10 @@ run_organize_geo <- function() {
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai ( is bad)
 	hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 'GSE53924',
-	                 'GSE42882', 'GSE46573')
+	                 'GSE42882', 'GSE46573', 'GSE61107')
 	working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE53816', 
 	                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
-	                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306', 'GSE61107')
+	                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
 	only_vec <- working_vec
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
