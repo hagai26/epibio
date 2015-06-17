@@ -116,6 +116,7 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
                        "[.]meth$",
                        # GSE58218 is strange
                        "[^h]ylated Signal")
+    problematic_pvalue_suffixes <- c('Adjust.Pval')
     pvalue_suffixes <- c("_[ ]?pValue$",
                          "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
                          "[.]Pval$", "[.]Detection$",
@@ -189,7 +190,14 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
         stop("different unmeth_ids and meth_ids!")
       }
       stopifnot(any(meth_ids & unmeth_ids) == FALSE)
+      # remove some problematic pvalue expressions
+      orig <- gsub(paste(problematic_pvalue_suffixes, collapse="|"), "", orig)
       pval_ids = grepl(paste(pvalue_suffixes, collapse="|"), orig)
+      if(!is.null(pval_ids) & sum(pval_ids) > 0) {
+        if(sum(unmeth_ids) != sum(pval_ids)) {
+          stop(sprintf("different unmeth_ids (%d) and pval_ids (%d)!", sum(unmeth_ids), sum(pval_ids)))
+        }
+      }
       
       # remove suffixes from colnames
       colnames(signals) <- mgsub(suffixes, character(length(suffixes)), colnames(signals))
@@ -200,10 +208,6 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
       U <- data.matrix(signals[,unmeth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
       M <- data.matrix(signals[,meth_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
       if(!is.null(pval_ids) & sum(pval_ids) > 0) {
-        if(sum(unmeth_ids) != sum(pval_ids)) {
-          print(sprintf("%d %d", sum(unmeth_ids), sum(pval_ids)))
-          stop("different unmeth_ids and pval_ids!")
-        }
         p.values <- data.matrix(signals[,pval_ids, drop = FALSE])[,relevant_samples, drop = FALSE]
       }
     }
@@ -306,12 +310,11 @@ run_organize_geo <- function() {
   #	                   invalid 'n' argument 
 	
 	bad_list <- c(no_l1_list, not_released_list,
-				  "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
-				  "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
-				  "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
-				  "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
-				  "GSE46168", "GSE47627", "GSE61151", "GSE32146", "GSE41114",
-				  'GSE48472')
+				  "GSE37754", "GSE40360", "GSE40279", "GSE41826", "GSE43976", "GSE42882", 
+				  "GSE46573", 'GSE49377', "GSE55598", "GSE55438", "GSE56044", "GSE61044", 
+				  "GSE61380", 'GSE48684', "GSE49542", "GSE42372", "GSE32079", "GSE46168", 
+				  "GSE47627", "GSE61151", "GSE32146", "GSE41114", 'GSE48472', 'GSE30338', 
+				  'GSE42752')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
@@ -319,10 +322,12 @@ run_organize_geo <- function() {
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
-	# for hai
-	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE61380', 'GSE58218', 'GSE49377', 'GSE61431', 'GSE62727', 'GSE31848')
-	only_vec <- c('GSE43414')
-	#only_vec <- c('GSE50798', 'GSE48461', 'GSE59524', 'GSE44661', 'GSE53816', 'GSE49576', 'GSE61107')
+	# for hai ( is bad)
+	hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 'GSE53924')
+	working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE42882', 'GSE53816', 
+	                 'GSE49576', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
+	                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
+	only_vec <- c('GSE61107')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
