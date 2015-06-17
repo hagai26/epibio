@@ -1,8 +1,6 @@
 
 library(RnBeads)
 
-#fftempdir.folder <- '/cs/icore/joshua.moss/dor/hagaic/epibio/R/epibio/tmp/'
-fftempdir.folder <- 'D:\\home\\work\\r_stuff\\tmp'
 
 workOnIdatsFolder <- function(idat_folder, targets, identifiers_column) {
   data.source <- list(idat_folder, targets)
@@ -15,12 +13,6 @@ workOnIdatsFolder <- function(idat_folder, targets, identifiers_column) {
 
 process_rnb_set_to_betas <- function(rnb.set, has_pvalues) {
   #print('process_rnb_set_to_betas called')
-  
-  # XXX
-  #rnb.options(disk.dump.big.matrices=TRUE, 
-  #            enforce.memory.management=TRUE, 
-  #            region.types="promoters")
-  #options(fftempdir=fftempdir.folder)
   
   #tryCatch({
    # rnb.set <- rnb.execute.snp.removal(rnb.set)$dataset
