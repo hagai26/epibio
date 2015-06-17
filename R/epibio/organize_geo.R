@@ -1,6 +1,7 @@
 
 library(doParallel)
 library(stringr)
+library(R.utils)
 
 source("config.R")
 source("common.R")
@@ -294,13 +295,23 @@ run_organize_geo <- function() {
 	no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924", 
 					"GSE39141", "GSE34777")
 	not_released_list <- c("GSE62003", "GSE49064")
+	# bad ids:
   # GSE41114 - has problem with the header columns - there is another ID_REF in it
+	
+	# GSE48472 - on the 9/10 target it has error inside illuminaio (which is used by rnbeads):
+	#   "Reading 6 samples of Healthy.Subcutaneous_fat from 1 serieses (study=Healthy, type=Subcutaneous fat)"
+	#    Reading  GSE48472 : [1] "working on idats"
+	#     2015-06-17 13:23:38     0.8  STATUS STARTED Loading Data from IDAT Files
+	#    Error in readBin(con, what = "integer", n = n, size = 4, endian = "little",  : 
+  #	                   invalid 'n' argument 
+	
 	bad_list <- c(no_l1_list, not_released_list,
 				  "GSE30338", "GSE37754", "GSE40360", "GSE40279", "GSE41826", 
 				  "GSE43976", "GSE49377", "GSE48461", "GSE42882", "GSE46573",
 				  "GSE55598", "GSE55438", "GSE56044", "GSE61044", "GSE61380",
 				  "GSE42752", "GSE48684", "GSE49542", "GSE42372", "GSE32079",
-				  "GSE46168", "GSE47627", "GSE61151", "GSE32146", "GSE41114")
+				  "GSE46168", "GSE47627", "GSE61151", "GSE32146", "GSE41114",
+				  'GSE48472')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
@@ -310,7 +321,7 @@ run_organize_geo <- function() {
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai
 	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE53924', 'GSE42752', 'GSE30338', 'GSE32283', 'GSE41826', 'GSE42882', 'GSE46573', 'GSE54776', 'GSE55712', 'GSE61380', 'GSE58218', 'GSE49377', 'GSE61431', 'GSE62727', 'GSE31848')
-	only_vec <- c('GSE48472', 'GSE43414')
+	only_vec <- c('GSE43414')
 	#only_vec <- c('GSE50798', 'GSE48461', 'GSE59524', 'GSE44661', 'GSE53816', 'GSE49576', 'GSE61107')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
