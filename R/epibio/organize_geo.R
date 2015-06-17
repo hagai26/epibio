@@ -302,9 +302,9 @@ run_organize_geo <- function() {
 	# GEOs which I don't know how to parse:
 	# - no l1 signals txt file
 	# - different parsing on l1 txt file
-	no_l1_list <- c("GSE37965", "GSE39279", "GSE39560", "GSE41169", "GSE53924", 
-					"GSE39141", "GSE34777")
-	not_released_list <- c("GSE62003", "GSE49064")
+	no_l1_list <- c('GSE37965', 'GSE39279', 'GSE39560', 'GSE41169', 'GSE53924', 'GSE39141', 
+	                'GSE34777')
+	not_released_list <- c('GSE62003', 'GSE49064')
 	# bad ids:
   # GSE41114 - has problem with the header columns - there is another ID_REF in it
 	
@@ -329,8 +329,8 @@ run_organize_geo <- function() {
 	only_vec <- list.files(geo_data_folder)
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai ( is bad)
-	hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 'GSE53924',
-	                 'GSE42882', 'GSE46573', 'GSE61107')
+	hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
+	                 'GSE53924', 'GSE42882', 'GSE46573', 'GSE61107')
 	working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE53816', 
 	                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
 	                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
