@@ -315,19 +315,27 @@ run_organize_geo <- function() {
 	#    Error in readBin(con, what = "integer", n = n, size = 4, endian = "little",  : 
   #	                   invalid 'n' argument 
 	
+	# GSE40699 - idat file names are not like 450k standart
+	# RnBeads raises:
+	# Undefined platform; please check Sentrix ID and Sentrix Position columns in the sample sheet
+	
 	bad_list <- c(no_l1_list, not_released_list,
 				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
-				  'GSE42752', 'GSE61107')
+				  'GSE42752', 'GSE61107', 'GSE40699')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
-	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
+	# TODO
+	# check GSE59250
+	# it raises 
+	# WARNING Some of the supplied probes are missing annotation and will be discarded
+	
 	# for hai ( is bad)
 	#hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
 	#                 'GSE53924', 'GSE42882', 'GSE46573', 'GSE61107')
