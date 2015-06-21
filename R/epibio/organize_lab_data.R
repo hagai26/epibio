@@ -5,7 +5,7 @@ source('config.R')
 source('common.R')
 source("RnBeadsCommon.R")
 
-data_folder <- '../../../lab_data'
+data_folder <- '../../../../lab_data'
 idat_folder <- file.path(data_folder, 'idats')
 pheno_file <- file.path(data_folder, 'samples_cluster.csv')
 
