@@ -329,12 +329,12 @@ run_organize_geo <- function() {
 	only_vec <- list.files(geo_data_folder)
 	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
 	# for hai ( is bad)
-	hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
-	                 'GSE53924', 'GSE42882', 'GSE46573', 'GSE61107')
-	working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE53816', 
-	                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
-	                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
-	only_vec <- working_vec
+	#hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
+	#                 'GSE53924', 'GSE42882', 'GSE46573', 'GSE61107')
+	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE53816', 
+	#                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
+	#                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
+	#only_vec <- working_vec
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	skiped_joined_files <- joined_files[(joined_files %in% only_list) & (joined_files %in% ignore_list)]

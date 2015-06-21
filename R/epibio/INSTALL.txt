@@ -1,14 +1,16 @@
 
-install.packages("data.table")
+install.packages(c('data.table', 'R.utils', 'doParallel'))
 
 To install rnbeads, run:
-source("http://bioconductor.org/biocLite.R")
-biocLite("RnBeads")
+source('http://bioconductor.org/biocLite.R')
+biocLite('RnBeads')
 
-install.packages('R.utils') 
 
 On problems - install manually from source stuff from biocLite, such as:
-FDb.InfiniumMethylation.hg19
+biocLite('RnBeads.hg19')
+biocLite("GenomicFeatures")
+
+biocLite('FDb.InfiniumMethylation.hg19')
 
 ghost script:
 Make sure the file contents includes the line R_GSCMD=C:\Program Files\gs\gs9.15\bin\gswin64c.exe (assuming Ghostscript is located in C:\Program Files\gs\gs9.15

@@ -71,20 +71,22 @@ workOnKind <- function(group, folder, output_folder) {
 merge_beta_values <- function(generated_folder, output_folder) {
   dir.create(output_folder, recursive=TRUE, showWarnings=FALSE)
   beta_files <- list.files(generated_folder, pattern="*.txt.gz")
-  df <- data.frame(filename=beta_files)
-  df$normalized <- sapply(beta_files, FUN=normalize_names)
-  groups <- split(df, df$normalized, drop=TRUE)
-  indices <- get_indices_to_runon(groups, args)
-  for (i in indices) {
-    # prevent errors in middle of run
-    # we could give indices which are good for geo or tcga and the other will skip them
-    if(i <= length(groups)) {
-	    group <- groups[[i]]
-	    print(sprintf("%d/%d", i, length(groups)))
-	    workOnKind(group, generated_folder, output_folder)
-    } else {
-	    print(sprintf("skipping %d/%d, index out of range", i, length(groups)))
-	  }
+  if(length(beta_files) > 0) {
+    df <- data.frame(filename=beta_files)
+    df$normalized <- sapply(beta_files, FUN=normalize_names)
+    groups <- split(df, df$normalized, drop=TRUE)
+    indices <- get_indices_to_runon(groups, args)
+    for (i in indices) {
+      # prevent errors in middle of run
+      # we could give indices which are good for geo or tcga and the other will skip them
+      if(i <= length(groups)) {
+  	    group <- groups[[i]]
+  	    print(sprintf("%d/%d", i, length(groups)))
+  	    workOnKind(group, generated_folder, output_folder)
+      } else {
+  	    print(sprintf("skipping %d/%d, index out of range", i, length(groups)))
+  	  }
+    }
   }
 }
 
