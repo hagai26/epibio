@@ -87,8 +87,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                       output_filename, targets, all.series.info) {
-  nrows = 10000 # XXX (should be -1 on production)
-  #nrows = -1
+  #nrows = 10000 # XXX (should be -1 on production)
+  nrows = -1
   
   this_targets = subset(targets, targets$series_id == series_id_orig)  
   filename_first_level <- levels(factor(this_targets$Filename))[[1]]
@@ -323,7 +323,6 @@ run_organize_geo <- function() {
 				  'GSE42752', 'GSE61107')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
-	#external_disk_data_path <- '/cs/icore/joshua.moss/dor/atlas'
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
