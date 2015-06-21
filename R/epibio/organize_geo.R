@@ -87,8 +87,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
 readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                       output_filename, targets, all.series.info) {
-  nrows = 10000 # XXX (should be -1 on production)
-  #nrows = -1
+  #nrows = 10000 # XXX (should be -1 on production)
+  nrows = -1
   
   this_targets = subset(targets, targets$series_id == series_id_orig)  
   filename_first_level <- levels(factor(this_targets$Filename))[[1]]
