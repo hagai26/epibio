@@ -47,7 +47,7 @@ workOnKind <- function(group, folder, output_folder) {
       }
       # merge this list by row names
       betas.table_list_with_rn_col <- lapply(betas.table_list, 
-                                             function(x) data.frame(x, Row.names = row.names(x)))
+                                         function(x) data.frame(x, Row.names = row.names(x)))
       merged_betas.table_with_rn_col <- Reduce(merge, betas.table_list_with_rn_col)
       betas.table <- transform(merged_betas.table_with_rn_col, row.names=Row.names, Row.names=NULL)
       
