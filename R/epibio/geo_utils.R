@@ -97,14 +97,12 @@ read_l1_signal_file <- function(filename, nrows) {
     x <- lapply(out_table, function(x) gsub(",", ".", x, fixed = TRUE))
     out_table <- data.frame(x, row.names=rownames(out_table), stringsAsFactors=FALSE)
   }
-  print('read_l1_signal_file done')
   out_table
 }
 
 
 #' Build new RnbeadsRawset
 rnbReadL1Betas <- function(targets, U, M, p.values) {
-  print('rnbReadL1Betas called')
   pheno <- targets[, c('description','tissue','cell_type','disease')]
   #next three lines added to avoid error in cases of no pvalues ##josh##
   if (is.null(p.values)){
@@ -112,7 +110,6 @@ rnbReadL1Betas <- function(targets, U, M, p.values) {
   }
   rnb.set <- RnBeadRawSet(pheno, U=U, M=M, p.values=p.values, useff=FALSE)
   betas.table <- process_rnb_set_to_betas(rnb.set, !is.null(p.values))
-  print('rnbReadL1Betas done')
   betas.table
 }
 
