@@ -11,7 +11,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 list_series_id_files <- function(series_id_folder) {
   non_relevant_patterns <- c(
-    "_[Pp]rocessed[._]", "_Summary_icc_M[.]",
+    "_[Pp]rocessed2?[._]", "_Summary_icc_M[.]",
     "upload_Beta[.]","_SampleMethylationProfile[.]",
     "_average_beta[.]", "_betas?[.]",
     "_geo_all_cohorts[.]", "_Results[.]",
@@ -97,9 +97,12 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
   print(series_id_files)
   series_id_fp <- file.path(series_id_folder, series_id_files)
   file_sizes <- sum(file.info(series_id_fp)$size/2**20)
-  mem_limits <- tryCatch(memory.limit()/50, warning=function(x) NA)
+  mem_limits <- tryCatch(memory.limit()/20, warning=function(x) NA)
   if(nrows == -1 & !is.na(mem_limits) && file_sizes > mem_limits)  {
-    print(sprintf('GEO file too big for memory. skipping', basename(output_filename)))
+    print(mem_limits)
+    print (file_sizes)
+    print(sprintf('GEO file %s is too big for memory. skipping', 
+                  basename(output_filename)))
   } else {
     p.values <- NULL
     problematic_unmeth_suffixes <- c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
@@ -324,7 +327,7 @@ run_organize_geo <- function() {
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
-				  'GSE42752', 'GSE61107', 'GSE40699')
+				  'GSE42752', 'GSE61107', 'GSE40699', 'GSE40790')
 	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
@@ -343,6 +346,7 @@ run_organize_geo <- function() {
 	#                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
 	#                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
 	#only_vec <- working_vec
+	#only_vec <- c('GSE50759')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	skiped_joined_files <- joined_files[(joined_files %in% only_list) & (joined_files %in% ignore_list)]
