@@ -43,6 +43,10 @@ decompressIfNotExist <- function(destfile) {
   }
 }
 
+lastUrlComponent <- function(url) {
+  sapply(strsplit(url, split='/', fixed=TRUE), tail, 1)
+}
+
 # GSE62727 for example
 readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_files, 
                                    output_filename, targets, all.series.info) {
@@ -62,8 +66,8 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
   targets$idat1_url <- sapply(splited_supplementary_file, "[", 1)
   targets$idat2_url <- sapply(splited_supplementary_file, "[", 2)
   
-  targets$idat1_filename <- sapply(strsplit(targets$idat1_url, split='/', fixed=TRUE), tail, 1)
-  targets$idat2_filename <- sapply(strsplit(targets$idat2_url, split='/', fixed=TRUE), tail, 1)
+  targets$idat1_filename <- lastUrlComponent(targets$idat1_url)
+  targets$idat2_filename <- lastUrlComponent(targets$idat2_url)
 
   targets$barcode <- gsub("_(Grn|Red).idat.gz", "", targets$idat1_filename)
   rownames(targets) <- targets$barcode
@@ -309,7 +313,7 @@ run_organize_geo <- function() {
 	                'GSE34777')
 	not_released_list <- c('GSE62003', 'GSE49064')
 	# bad ids:
-  # GSE41114 - has problem with the header columns - there is another ID_REF in it
+  # GSE41114 - has problem with the header columns - there 2is another ID_REF in it
 	
 	# GSE48472 - on the 9/10 target it has error inside illuminaio (which is used by rnbeads):
 	#   "Reading 6 samples of Healthy.Subcutaneous_fat from 1 serieses (study=Healthy, type=Subcutaneous fat)"
@@ -322,13 +326,20 @@ run_organize_geo <- function() {
 	# RnBeads raises:
 	# Undefined platform; please check Sentrix ID and Sentrix Position columns in the sample sheet
 	
+	# GSE30338
+	# I don't understand the methylation_intensity files (3 files)
+	
+	# GSE48472
+	# idats urls inside targets - but only 3 targets has idats, all other are empty
+	
 	bad_list <- c(no_l1_list, not_released_list,
 				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
 				  'GSE42752', 'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069')
-	wait_list <- c("GSE62924", "GSE51245", "GSE38266")
+	bad_list <- c(no_l1_list, not_released_list, 'GSE30338', 'GSE48472')
+	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
