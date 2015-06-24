@@ -1,0 +1,12 @@
+nohup Rscript organize_geo.R > & nohup1.out &
+
+show jobs:
+squeue -u hagaic
+
+workflow:
+./run_all_geo.csh
+./run_all_tcga.csh
+Rscript organize_lab_data.R
+
+./run_all_merge.csh
+./INSTALL.txt
