@@ -331,15 +331,25 @@ run_organize_geo <- function() {
 	
 	# GSE48472
 	# idats urls inside targets - but only 3 targets has idats, all other are empty
-	
+
+	# GSE29290
+	# "read_l1_signal_file called on ../../../my_atlas/GEO/GSE29290/GSE29290_Matrix_Signal.txt.gz for -1 rows"
+	#        Reading  GSE60185 : Error: splited_supplementary_file_len_unique[[1]] == 2 is not TRUE
+
+	# GSE51032
+	# Reading  GSE51032 : Error in `row.names<-.data.frame`(`*tmp*`, value = value) :
+	# duplicate 'row.names' are not allowed
+	# Calls: run_organize_geo ... rownames<- -> row.names<- -> row.names<-.data.frame
+
+	#  GSE51032,GSE51057
+
 	bad_list <- c(no_l1_list, not_released_list,
 				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
-				  'GSE42752', 'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069')
-	bad_list <- c(no_l1_list, not_released_list, 'GSE30338', 'GSE48472')
-	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266')
+				  'GSE42752', 'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032')
+	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266', 'GSE29290', 'GSE50759', 'GSE51032', 'GSE51057')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
