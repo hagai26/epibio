@@ -11,7 +11,8 @@ args <- commandArgs(trailingOnly = TRUE)
 
 list_series_id_files <- function(series_id_folder) {
   non_relevant_patterns <- c(
-    "_[Pp]rocessed2?[._]", "_Summary_icc_M[.]",
+    "_[Pp]rocessed2?[._]", "[Mm]atrix[Pp]rocessed2?[._]",
+    "_Summary_icc_M[.]",
     "upload_Beta[.]","_SampleMethylationProfile[.]",
     "_average_beta[.]", "_betas?[.]",
     "_geo_all_cohorts[.]", "_Results[.]",
