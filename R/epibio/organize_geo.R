@@ -112,12 +112,14 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
     p.values <- NULL
     problematic_unmeth_suffixes <- c("[. _-]?[Uu]nmethylated[. _-]?[Ss]ignal$", 
                                      "[_ .]{1,2}[Uu]nmethylated$",
+                                     "^Unmethylated_",
                                      "_Unmethylated[.]Detection$",
                                      "[.]UM$",
                                      "[.]unmeth$")
     unmeth_suffixes <- c(problematic_unmeth_suffixes, "[._: ]Signal[_]?A$")
     meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
                        "[_ .]{1,2}[Mm]ethylated$",
+                       "^Methylated_",
                        "_Methylated[.]Detection$",
                        "[.]?Signal[_]?B$", 
                        "_ M$", "[.]M$",
@@ -126,6 +128,7 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
                        "[^h]ylated Signal")
     problematic_pvalue_suffixes <- c('Adjust.Pval')
     pvalue_suffixes <- c("_[ ]?pValue$",
+                         "^Detection_P_",
                          "[. _:-]?Detection[. _-]?P[Vv]al(.\\d+)?$", 
                          "[.]Pval$", "[.]Detection$",
                          "[_ ]detection[_ ]p[-]?value[s]?$",
@@ -313,25 +316,25 @@ run_organize_geo <- function() {
 	no_l1_list <- c('GSE37965', 'GSE39279', 'GSE39560', 'GSE41169', 'GSE53924', 'GSE39141', 
 	                'GSE34777')
 	not_released_list <- c('GSE62003', 'GSE49064')
-	# bad ids:
-  # GSE41114 - has problem with the header columns - there 2is another ID_REF in it
+	# work ids:
 	
-	# GSE48472 - on the 9/10 target it has error inside illuminaio (which is used by rnbeads):
+	# GSE48472 - When using idats - on the 9/10 target it has error inside illuminaio (which is used by rnbeads):
 	#   "Reading 6 samples of Healthy.Subcutaneous_fat from 1 serieses (study=Healthy, type=Subcutaneous fat)"
-	#    Reading  GSE48472 : [1] "working on idats"
 	#     2015-06-17 13:23:38     0.8  STATUS STARTED Loading Data from IDAT Files
 	#    Error in readBin(con, what = "integer", n = n, size = 4, endian = "little",  : 
-  #	                   invalid 'n' argument 
+	#	                   invalid 'n' argument
+	# => But it works using GSE48472_non-normalized.txt.gz.
 	
+	
+	# bad ids:
+	
+  # GSE41114 - has problem with the header columns - there 2is another ID_REF in it
 	# GSE40699 - idat file names are not like 450k standart
 	# RnBeads raises:
 	# Undefined platform; please check Sentrix ID and Sentrix Position columns in the sample sheet
 	
 	# GSE30338
 	# I don't understand the methylation_intensity files (3 files)
-	
-	# GSE48472
-	# idats urls inside targets - but only 3 targets has idats, all other are empty
 
 	# GSE29290
 	# "read_l1_signal_file called on ../../../my_atlas/GEO/GSE29290/GSE29290_Matrix_Signal.txt.gz for -1 rows"
@@ -356,7 +359,7 @@ run_organize_geo <- function() {
 				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
-				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
+				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE30338', 
 				  'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278')
 	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266', 'GSE29290', 'GSE50759', 'GSE51032', 'GSE51057')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
@@ -370,13 +373,12 @@ run_organize_geo <- function() {
 	# WARNING Some of the supplied probes are missing annotation and will be discarded
 	
 	# for hai ( is bad)
-	#hai_bad_vec <- c('GSE48472', 'GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
+	#hai_bad_vec <- c('GSE30338', 'GSE42752', 'GSE41826', 'GSE49377', 'GSE61380', 
 	#                 'GSE53924', 'GSE42882', 'GSE46573', 'GSE61107')
 	#working_vec <- c('GSE36278', 'GSE52556', 'GSE52576', 'GSE61160', 'GSE32283', 'GSE53816', 
 	#                 'GSE49576', 'GSE54776', 'GSE55712', 'GSE58218', 'GSE61431', 'GSE62727', 
 	#                 'GSE31848', 'GSE43414', 'GSE50798', 'GSE48461', 'GSE59524', 'GSE46306')
 	#only_vec <- working_vec
-	#only_vec <- c('GSE50759')
 	
 	only_list <- paste0(joined_folder, "/", c(only_vec), ".txt")
 	skiped_joined_files <- joined_files[(joined_files %in% only_list) & (joined_files %in% ignore_list)]
