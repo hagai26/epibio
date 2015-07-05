@@ -119,7 +119,7 @@ readGeoL1DataWithoutIdats <- function(series_id_folder, series_id_orig, series_i
     meth_suffixes <- c("[. _-]?[Mm]ethylated[. _-]?[Ss]ignal$", 
                        "[_ .]{1,2}[Mm]ethylated$",
                        "_Methylated[.]Detection$",
-                       "Signal[_]?B$", 
+                       "[.]?Signal[_]?B$", 
                        "_ M$", "[.]M$",
                        "[.]meth$",
                        # GSE58218 is strange
@@ -357,7 +357,7 @@ run_organize_geo <- function() {
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE48472', 'GSE30338', 
-				  'GSE42752', 'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278')
+				  'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278')
 	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266', 'GSE29290', 'GSE50759', 'GSE51032', 'GSE51057')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
