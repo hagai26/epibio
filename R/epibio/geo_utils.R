@@ -129,6 +129,7 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
   title_last_word_no_leading_zeros <- gsub("(?<![0-9])0+", "", title_last_word, perl = TRUE)
   # sometimes its numbers and they add S to each number (as in GSE53816)
   title_last_word2 <- paste0('S', title_last_word)
+  name_match <- str_match(this_targets$characteristics_ch1, "name: ([^; ]+)")[,c(2)]
   try_match_list <- list(
     this_targets$description, 
     this_targets$source_name_ch1,
@@ -142,7 +143,9 @@ get_relevant_samples <- function(this_targets, samples.all, this_all.series.info
     title_last_word_no_leading_zeros,
     gsub(".*[ ;\t]", '', this_targets$description),
     # middle one barcode
-    barcode_match, barcode_match_with_leading_X
+    barcode_match, barcode_match_with_leading_X,
+    # name match
+    name_match
   )
   
   match_all <- lapply(try_match_list, function(x) match(samples.all, as.character(x)))
