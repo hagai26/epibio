@@ -5,6 +5,7 @@ generated_TCGA_folder <- file.path(generated_folder, "TCGA")
 generated_GEO_folder <- file.path(generated_folder, "GEO")
 generated_lab_data_folder <- file.path(generated_folder, "lab_data")
 generated_merged_folder <- file.path(generated_folder, "merged")
+summary_folder <- file.path(generated_folder, 'summary')
 
 data_folder <- file.path("..", "..", "data")
 external_disk_data_path <- file.path('../../../my_atlas')

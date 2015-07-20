@@ -1,3 +1,6 @@
+## merge organized files to different kind.type.gz files
+## each with columns:
+## mean, std, 10th percentile, 90th percentile, samples_num
 
 source("config.R")
 source("common.R")
