@@ -48,7 +48,6 @@ summary_files <- function(input_folder, output_folder) {
               col.names=TRUE, row.names=FALSE, quote=FALSE)
 }
 
-
 summary_merged_folder <- function(folder_name) {
   print(sprintf('- Summarizing %s -', folder_name))
   input_folder <- file.path(generated_merged_folder, folder_name)
