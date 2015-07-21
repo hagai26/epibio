@@ -40,9 +40,12 @@ summary_files <- function(input_folder, output_folder) {
     perc.10 <- merge(perc.10, perc.10.new, all=TRUE)
     perc.90 <- merge(perc.90, perc.90.new, all=TRUE)
   }
-  write.table(means, file.path(output_folder,'means.txt'), sep = '\t', col.names=TRUE, row.names=FALSE)
-  write.table(perc.10, file.path(output_folder,'perc_10.txt'), sep = '\t', col.names=TRUE, row.names=FALSE)
-  write.table(perc.90, file.path(output_folder,'perc_90.txt'), sep = '\t', col.names=TRUE, row.names=FALSE)
+  write.table(means, file.path(output_folder,'means.txt'), sep = '\t', 
+              col.names=TRUE, row.names=FALSE, quote=FALSE)
+  write.table(perc.10, file.path(output_folder,'perc_10.txt'), sep = '\t', 
+              col.names=TRUE, row.names=FALSE, quote=FALSE)
+  write.table(perc.90, file.path(output_folder,'perc_90.txt'), sep = '\t', 
+              col.names=TRUE, row.names=FALSE, quote=FALSE)
 }
 
 
