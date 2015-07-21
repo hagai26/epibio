@@ -1,5 +1,5 @@
 
-install.packages(c('data.table', 'R.utils', 'doParallel'))
+install.packages(c('data.table', 'R.utils', 'doParallel', 'openxlsx'))
 
 To install rnbeads, run:
 source('http://bioconductor.org/biocLite.R')
