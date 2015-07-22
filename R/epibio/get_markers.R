@@ -87,7 +87,7 @@ lab_data.90 <- data.table(lab_data.90,keep.rownames=T,key="rn")
 #all.table.90 <- data.frame(merge(geos.90,tcga.90),row.names=1)
 all.table.10 <- data.frame(merge(merge(geos.10,tcga.10),lab_data.10),row.names=1)
 all.table.90 <- data.frame(merge(merge(geos.90,tcga.90),lab_data.90),row.names=1)
-
+blood.cols <- intersect(blood.cols, colnames(all.table.10))
 
 blood.table.10 <- all.table.10[,blood.cols]
 blood.table.90 <- all.table.90[,blood.cols]

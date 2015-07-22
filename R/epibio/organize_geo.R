@@ -355,12 +355,26 @@ run_organize_geo <- function() {
 	#   arguments imply differing number of rows: 366306, 485512
 	# Calls: run_organize_geo ... do.call -> do.call -> cbind -> cbind -> cbind -> data.frame
 
+
+	# on 22.7
+	# GSE42861
+	# Error: sum(unmeth_ids) > 0 is not TRUE
+
+	# GSE61450
+	# 2015-07-22 14:41:14     2.7  STATUS STARTED Loading Data from IDAT Files
+	# Error in if (magic != "IDAT") { : argument is of length zero
+	# Calls: run_organize_geo ... workOnIdatsFolder -> rnb.execute.import -> read.idat.files -> readIDAT
+
+	# GSE60655
+	# Reading  GSE60655 : Error: splited_supplementary_file_len_unique[[1]] == 2 is not TRUE
+
 	bad_list <- c(no_l1_list, not_released_list,
 				  'GSE37754', 'GSE40360', 'GSE40279', 'GSE41826', 'GSE43976', 'GSE42882', 
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE30338', 
-				  'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278')
+				  'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278', 
+				  'GSE42861', 'GSE61450', 'GSE60655')
 	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266', 'GSE29290', 'GSE50759', 'GSE51032', 'GSE51057')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
@@ -388,8 +402,8 @@ run_organize_geo <- function() {
 	}
 	joined_files <- joined_files[(joined_files %in% only_list) & !(joined_files %in% ignore_list)]
 	stopifnot(length(joined_files) > 0)
-	print("joined_files:")
-	print(joined_files)
+	#print("joined_files:")
+	#print(joined_files)
 
 	all.series.info <- do.call("rbind", lapply(joined_files, FUN=read_joined_file))
 	# get only relevant samples

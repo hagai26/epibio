@@ -26,8 +26,9 @@ print('Done GEO!')
 
 tcga.perc_10.file <- file.path(tcga.dir,'perc_10.txt')
 tcga.perc_10.data <- read.table(tcga.perc_10.file,sep='\t', header=T, row.names=1,nrow=nrow)
-tcga.healthy.cols <- names(tcga.perc_10.data)[substr(names(tcga.perc_10.data),1,19)=='solid_tissue_normal']
-tcga.healthy.cols <- setdiff(tcga.healthy.cols,c('solid_tissue_normal.other__specify','solid_tissue_normal..not_available.','solid_tissue_normal.mixed_histology_.please_specify.'))
+#tcga.healthy.cols <- names(tcga.perc_10.data)[substr(names(tcga.perc_10.data),1,19)=='solid_tissue_normal']
+tcga.healthy.cols <- names(tcga.perc_10.data)[grepl('*solid_tissue_normal*',names(tcga.perc_10.data))]
+#tcga.healthy.cols <- setdiff(tcga.healthy.cols,c('solid_tissue_normal.other__specify','solid_tissue_normal..not_available.','solid_tissue_normal.mixed_histology_.please_specify.'))
 
 tcga.perc_10.data.healthy <- tcga.perc_10.data[,tcga.healthy.cols]
 
