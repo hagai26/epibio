@@ -14,12 +14,13 @@ make_summary_smaller <- function(folder_name, good_blood_rows) {
   output_folder <- file.path(summary_folder, folder_name)
   
   csv_filename <- file.path(input_folder, 'means.txt')
-  data <- read.table(csv_filename, sep='\t', header = TRUE)
+  data <- read.table(csv_filename, sep='\t', header = TRUE, nrows = -1)
+  rownames(data) <- data$rn
   old_row_num <- nrow(data)
   if(is.null(good_blood_rows)) {
     good_blood_rows <- data[!is.na(data$healthy.whole_blood) & data$healthy.whole_blood>=0.7,]$rn
   }
-  striped_data <- data[good_blood_rows,]
+  striped_data <- data[row.names(data) %in% good_blood_rows,]
   print(sprintf('new nrow=%d, old nrow=%d', nrow(striped_data), old_row_num))
   striped_data[,-1] <- round(striped_data[,-1], 2) # the "-1" excludes column 1
   write.csv(striped_data, file.path(output_folder, 'means_small.csv'), 
