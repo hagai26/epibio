@@ -9,6 +9,7 @@ source("geo_utils.R")
 source("RnBeadsCommon.R")
 args <- commandArgs(trailingOnly = TRUE)
 
+
 list_series_id_files <- function(series_id_folder) {
   non_relevant_patterns <- c(
     "_[Pp]rocessed2?[._]", "[Mm]atrix[Pp]rocessed2?[._]",
@@ -41,11 +42,41 @@ decompressIfNotExist <- function(destfile) {
     if(!file.exists(destfile_without_gz)) {
       gunzip(destfile, remove=FALSE)
     }
+    destfile_without_gz
+  } else {
+    destfile
   }
 }
 
 lastUrlComponent <- function(url) {
   sapply(strsplit(url, split='/', fixed=TRUE), tail, 1)
+}
+
+prepareIdatTarget <- function(targets, i, idat_folder, idat_filename, idat_url, some_index, r_index, c_index) {
+  destfile <- file.path(idat_folder, idat_filename)
+  downloadIfNotExist(destfile, idat_url)
+  destfile_without_gz <- decompressIfNotExist(destfile)
+  
+  # GSE40699 had bad idat filenames:
+  # GSM999355_hg19_wgEncodeHaibMethyl450HaeSitesRep1_Grn.idat
+  # we copy them to inf450 format in order for RnBeads to work correctly
+  inf450k.idats.present <- grepl("_R0[1-6]C0[1-2]", idat_filename)
+  
+  if(!inf450k.idats.present) {
+    gsm_id <- str_match(idat_filename, '(GSM\\d+)_')[[2]]
+    barcode <- paste0(gsm_id, '_', str_pad(some_index, 10, pad="0"), '_', 'R', str_pad(r_index,2,pad='0'), 'C', str_pad(c_index,2, pad='0'))
+    targets[i,]$barcode <- barcode
+    
+    color <- str_match(idat_filename, '(Red|Grn)')[[2]]
+    new_filename <- paste0(barcode, '_', color, '.idat')
+    print(idat_filename)
+    print(new_filename)
+    new_fullfilename <- file.path(idat_folder, new_filename)
+    if(!file.exists(new_fullfilename)) {
+      file.copy(destfile_without_gz, new_fullfilename)
+    }
+  }
+  targets
 }
 
 # GSE62727 for example
@@ -72,20 +103,21 @@ readGeoL1DataWithIdats <- function(series_id_folder, series_id_orig, series_id_f
 
   targets$barcode <- gsub("_(Grn|Red).idat.gz", "", targets$idat1_filename)
   rownames(targets) <- targets$barcode
+  r_index <- 1
+  c_index <- 1
+  some_index <- 1
   
   for(i in 1:nrow(targets)) {
     target <- targets[i,]
-    destfile <- file.path(idat_folder, target$idat1_filename)
-    downloadIfNotExist(destfile, target$idat1_url)
-    decompressIfNotExist(destfile)
-    
-    destfile <- file.path(idat_folder, target$idat2_filename)
-    downloadIfNotExist(destfile, target$idat2_url)
-    decompressIfNotExist(destfile)
+    targets <- prepareIdatTarget(targets, i, idat_folder, target$idat1_filename, target$idat1_url, some_index, r_index, c_index)
+    targets <- prepareIdatTarget(targets, i, idat_folder, target$idat2_filename, target$idat2_url, some_index, r_index, c_index)
+    r_index <- r_index + 1
+    c_index <- c_index + 1
+    some_index <- some_index + 1
   }
-
   # Work on idats
   print("working on idats")
+  print(targets)
   betas.table <- workOnIdatsFolder(idat_folder, targets, 'barcode')
   write_beta_values_table(output_filename, betas.table)
 }
@@ -373,14 +405,16 @@ run_organize_geo <- function() {
 				  'GSE46573', 'GSE49377', 'GSE55598', 'GSE55438', 'GSE56044', 'GSE61044', 
 				  'GSE61380', 'GSE48684', 'GSE49542', 'GSE42372', 'GSE32079', 'GSE46168', 
 				  'GSE47627', 'GSE61151', 'GSE32146', 'GSE41114', 'GSE30338', 
-				  'GSE61107', 'GSE40699', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278', 
+				  'GSE61107', 'GSE40790', 'GSE35069', 'GSE51032', 'GSE61278', 
 				  'GSE42861', 'GSE61450', 'GSE60655')
 	wait_list <- c('GSE62924', 'GSE51245', 'GSE38266', 'GSE29290', 'GSE50759', 'GSE51032', 'GSE51057')
 	ignore_list <- paste0(joined_folder, "/", c(bad_list, wait_list), ".txt")
 	geo_data_folder <- file.path(external_disk_data_path, 'GEO')
 	stopifnot(file.exists(geo_data_folder))
 	only_vec <- list.files(geo_data_folder)
-	#only_vec <- c("GSE46306") # XXX # TODO - see if GSE46306 is working?
+	# XXX # TODO - see if GSE46306 is working?
+	only_vec <- c('GSE40699')
+	#only_vec <- c('GSE62727')
 	# TODO
 	# check GSE59250
 	# it raises 
